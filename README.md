@@ -26,30 +26,33 @@ This interface has been tested and is confirmed to work with the following softw
 Before using the script, you must configure NewtonX to recognize it as a valid program interface.
 
 1. **Locate colib\_perl.pm:** Open the colib\_perl.pm file, which is typically located in the $NX/lib/ directory, where $NX is the environment variable pointing to your NewtonX installation.  
-2. **Add Program Definition:** Add the following Perl code block to the colib\_perl.pm file. This defines "program 21.0" as the TeraChem interface.  
-   if (($prog \>= 20.95) and ($prog \< 21.05)){  
-         %progconf=(progname     \=\> "terachem",  
-                     methodname \=\> "terachem",  
-                     ic         \=\> "y",  
-                     dyn        \=\> "y",  
-                     hyb        \=\> "n",  
-                     ip         \=\> "n",  
-                     key        \=\> sprintf("%4.1f",21.0),  
-                     label      \=\> "Terachem",  
-                     method     \=\> "CASSCF/FOMO\_CASCI/DFT",  
-                     parfile    \=\> "terachem.par",  
-                     nad\_exec   \=\> "y",  
-                     lvprt\_d    \=\> 1,  
-                     vdoth\_d    \=\> 0,  
-                     never\_state\_d  \=\> 0,  
-                     cio\_options\_d  \=\> "NULL",  
-                     cisc\_options\_d \=\> "NULL",  
-                     cprog\_d    \=\> 0,  
-                     progic     \=\> "",  
-                     progdyn    \=\> "run-tera-cas.pl");  
+2. **Add Program Definition:** Add the following Perl code block to the colib\_perl.pm file. This defines "program 21.0" as the TeraChem interface.
+   
+   ```perl
+   if (($prog >= 20.95) and ($prog < 21.05)){  
+         %progconf=(progname     = "terachem",  
+                     methodname => "terachem",  
+                     ic         => "y",  
+                     dyn        => "y",  
+                     hyb        => "n",  
+                     ip         => "n",  
+                     key        => sprintf("%4.1f",21.0),  
+                     label      => "Terachem",  
+                     method     => "CASSCF/FOMO_CASCI/DFT",  
+                     parfile    => "terachem.par",  
+                     nad_exec   => "y",  
+                     lvprt_d    => 1,  
+                     vdoth_d    => 0,  
+                     never_state_d  => 0,  
+                     cio_options_d  => "NULL",  
+                     cisc_options_d => "NULL",  
+                     cprog_d    => 0,  
+                     progic     => "",  
+                     progdyn    => "run-tera-cas.pl");  
    }
+   ```
 
-3. **Place the Script:** Copy the run-tera-cas.pl script into your NewtonX bin directory ($NX/bin/).
+4. **Place the Script:** Copy the run-tera-cas.pl script into your NewtonX bin directory ($NX/bin/).
 
 ## **Running a Trajectory**
 
@@ -58,19 +61,22 @@ To start a non-adiabatic dynamics simulation, you need to set up a trajectory di
 1. **Set prog in control.dyn:** In your main dynamics control file (control.dyn), set the prog parameter to 21.0 to tell NewtonX to use this TeraChem interface.  
    prog \= 21.0
 
-2. **Directory Structure:** Your trajectory directory (e.g., TRAJ\_01) must contain the following files and subdirectories:  
-   TRAJ\_01/  
-   ├── control.dyn      \# Main NewtonX dynamics parameters  
-   ├── sh.inp           \# Surface hopping parameters  
-   ├── geom             \# Initial geometry (in Bohr)  
-   ├── veloc            \# Initial velocities (in atomic units)  
-   └── JOB\_NAD/         \# Directory for non-adiabatic calculations  
+2. **Directory Structure:** Your trajectory directory (e.g., TRAJ\_01) must contain the following files and subdirectories:
+   ```
+   TRAJ01/  
+   ├── control.dyn      # Main NewtonX dynamics parameters  
+   ├── sh.inp           # Surface hopping parameters  
+   ├── geom             # Initial geometry (in Bohr)  
+   ├── veloc            # Initial velocities (in atomic units)  
+   └── JOB_NAD/         # Directory for non-adiabatic calculations  
        ├── GRAD/  
-       │   └── start.sp \# TeraChem template for gradient calculations  
-       ├── NAD\_N1N0/  
-       │   └── start.sp \# Template for NAC with state below  
-       └── NAD\_N1N2/  
-           └── start.sp \# Template for NAC with state above
+       │   └── start.sp # TeraChem template for gradient calculations  
+       ├── NAD_N1N0/  
+       │   └── start.sp # Template for NAC with state below  
+       └── NAD_N1N2/  
+           └── start.sp # Template for NAC with state above
+   ```
 
-3. TeraChem Templates (start.sp):  
+4. TeraChem Templates (start.sp):  
    The start.sp files are your TeraChem input templates. You must specify the electronic structure method (CASSCF, TDA, etc.), basis set, and all other relevant quantum chemistry parameters within these files. The run-tera-cas.pl script will automatically modify these templates at each time step to update the geometry, target states, and wavefunction guess.
+
