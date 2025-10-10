@@ -77,8 +77,12 @@ To start a non-adiabatic dynamics simulation, you need to set up a trajectory di
            └── start.sp # Template for NAC with state above
    ```
 
-4. TeraChem Templates (start.sp):  
+3. TeraChem Templates (start.sp):  
    The start.sp files are your TeraChem input templates. You must specify the electronic structure method (CASSCF, TDA, etc.), basis set, and all other relevant quantum chemistry parameters within these files. The run-tera-cas.pl script will automatically modify these templates at each time step to update the geometry, target states, and wavefunction guess.
+
+4. Sample Trajectories
+Sample trajectories, complete with all necessary input files for running NewtonX-TeraChem simulations utilizing FOMO-CASCI and CASSCF with non adiabatic couplings are provided in the `sample_trajectories/` directory. These examples can serve as a guide for setting up your own simulations.
+
 
 
 
