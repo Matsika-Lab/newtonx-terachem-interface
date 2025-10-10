@@ -5,8 +5,6 @@
 # Interface between TeraChem and NewtonX built from the template
 # provided by Mario Barbatti, 2021.
 #
-# This script has been refactored for clarity and reduced redundancy.
-#
 # Authors:
 # Dakshitha Abeygunewardane
 # Vaibhav Signh
