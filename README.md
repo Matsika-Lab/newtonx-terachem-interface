@@ -63,7 +63,7 @@ To start a non-adiabatic dynamics simulation, you need to set up a trajectory di
 
 2. **Directory Structure:** Your trajectory directory (e.g., TRAJ\_01) must contain the following files and subdirectories:
    ```
-   TRAJ01/  
+   TRAJ1/  
    ├── control.dyn      # Main NewtonX dynamics parameters  
    ├── sh.inp           # Surface hopping parameters  
    ├── geom             # Initial geometry (in Bohr)  
@@ -79,4 +79,5 @@ To start a non-adiabatic dynamics simulation, you need to set up a trajectory di
 
 4. TeraChem Templates (start.sp):  
    The start.sp files are your TeraChem input templates. You must specify the electronic structure method (CASSCF, TDA, etc.), basis set, and all other relevant quantum chemistry parameters within these files. The run-tera-cas.pl script will automatically modify these templates at each time step to update the geometry, target states, and wavefunction guess.
+
 
