@@ -1,0 +1,3228 @@
+
+          ============================================================  
+                                     NEWTON-X                           
+                   Newtonian dynamics close to the crossing seam        
+          ============================================================  
+
+                                  www.newtonx.org                       
+
+    Newton-X version 2.4 (build 06, 2021-11-11)
+    www.newtonx.org
+----------------------------------------------------------------------
+    The Newton-X program is distributed free of charge for non-
+    commercial and non-profit uses. You may use the program freely 
+    and adapt the code to your needs. Please, if you have any 
+    enhancements, share them with us. You are, however, not allowed 
+    to re-distribute code or binaries in parts or total. Anyone 
+    intending to use Newton-X must contact us. This program is 
+    shipped to the user "as is". There is no guarantee that it will 
+    work as described. Usage is at your own risk, there is no 
+    liability taken for any damage or loss of data and/or money. 
+    If you experience problems, you may contact the developers and 
+    a community of users at the Newton-X discussion group, but bear 
+    in mind that there is no kind of official support for Newton-X.
+
+    Cite Newton-X as:
+    M. Barbatti, G. Granucci, M. Ruckenbauer, F. Plasser, 
+    R. Crespo-Otero, J. Pittner, M. Persico, H. Lischka, NEWTON-X: 
+    a package for Newtonian dynamics close to the crossing seam, 
+    version 2.3, www.newtonx.org (2017).
+
+    M. Barbatti, M. Ruckenbauer, F. Plasser, J. Pittner, G. Granucci, 
+    M. Persico, H. Lischka, WIREs: Comp. Mol. Sci., 4, 26 (2014).
+
+    Please, check the documentation for references to specific 
+    methods and algorithms.
+
+    For download the program, documentation, and tutorial, visit:
+    http://www.newtonx.org
+
+    For support, visit the Newton-X discussion group at:
+    https://groups.google.com/d/forum/newtonx
+----------------------------------------------------------------------
+
+
+Newton-X path: /software/NX-2.4-B06/bin
+
+Base directory: /data/dakshitha/testnxtera/COD
+
+STARTING MOLECULAR DYNAMICS   
+
+	Initial parameters:
+	Nat       = 20
+	istep     = 0
+	nstat     = 3
+	nstatdyn  = 2
+	ndamp     = 0
+	kt        = 1
+	dt        = 0.2500
+	t         = 0.0000
+	tmax      = 500.0000
+	nintc     = 54
+	mem       = 500
+	nxrestart = 0
+	thres     = 100.00
+	killstat  = 1
+	timekill  = 0.0000
+	prog      = 21.0
+	lvprt     = 1
+	etot_jump = 0.700
+	etot_drift= 0.700
+
+Non-adiabatic dynamics was requested.
+
+
+moldyn.pl: Parameters for nonadiabatic dynamics (jiri.inp):
+	kross        = 1
+	cascade      = 0
+	current      = 0
+	never_state  = 0
+	include_pair = 0
+	e_ci         = 0.2
+	ci_cons      = 1
+	cio_options  = NULL
+	cisc_options = NULL
+	idalton      = 64
+	cprog        = 0
+	coptda       = 1
+	ncore        = 0
+	ndisc        = 0
+	blasthread   = 1
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+Dynamics with Terachem
+
+
+moldyn.pl: Parameters for nonadiabatic dynamics (sh.inp):
+	integrator   = 5
+	phase        = 1
+	nohop        = 0
+	forcesurf    = 0
+	getphase     = 1
+	nrelax       = 0
+	vdoth        = 0
+	tully        = 1
+	ms           = 100
+	mom          = 1
+	adjmom       = 0
+	probmin      = 0
+	popdev       = 0.05
+	decohmod     = 1
+	decay        = 0.1
+	run_complex  = 0
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 04:39:52 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 04:39:52 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 04:41:14 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 04:41:14 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 04:42:36 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 04:42:36 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 04:43:58 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=0.0000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 04:43:58 PM EDT 2025
+---------------------------------------------------------------------------
+moldyn.pl: Surface hopping with SH routine.
+
+
+moldyn.pl: Nonadiabatic dynamics information: 
+             seed       =       2
+
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 0, TIME 0.0000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 04:43:58 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 04:43:58 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 04:45:07 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 04:45:07 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 04:46:02 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 04:46:02 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 04:46:58 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=0.2500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 04:46:58 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 1, TIME 0.2500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 04:47:01 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 04:47:01 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 04:48:14 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 04:48:14 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 04:49:08 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 04:49:08 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 04:50:05 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=0.5000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 04:50:05 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 2, TIME 0.5000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 04:50:07 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 04:50:07 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 04:51:22 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 04:51:22 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 04:52:18 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 04:52:18 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 04:53:13 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=0.7500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 04:53:13 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 3, TIME 0.7500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 04:53:16 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 04:53:16 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 04:54:32 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 04:54:32 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 04:55:27 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 04:55:27 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 04:56:23 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=1.0000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 04:56:23 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 4, TIME 1.0000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 04:56:26 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 04:56:26 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 04:57:41 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 04:57:41 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 04:58:35 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 04:58:35 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 04:59:31 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=1.2500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 04:59:31 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 5, TIME 1.2500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 04:59:33 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 04:59:33 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 05:00:48 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 05:00:48 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 05:01:42 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 05:01:42 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 05:02:40 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=1.5000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 05:02:40 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 6, TIME 1.5000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 05:02:42 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 05:02:42 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 05:03:58 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 05:03:58 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 05:04:54 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 05:04:54 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 05:05:51 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=1.7500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 05:05:51 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 7, TIME 1.7500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 05:05:54 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 05:05:54 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 05:07:08 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 05:07:08 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 05:08:04 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 05:08:04 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 05:09:00 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=2.0000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 05:09:00 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 8, TIME 2.0000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 05:09:03 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 05:09:03 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 05:10:16 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 05:10:16 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 05:11:11 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 05:11:11 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 05:12:07 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=2.2500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 05:12:07 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 9, TIME 2.2500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 05:12:10 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 05:12:10 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 05:13:22 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 05:13:22 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 05:14:17 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 05:14:17 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 05:15:12 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=2.5000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 05:15:12 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 10, TIME 2.5000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 05:15:15 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 05:15:15 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 05:16:25 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 05:16:25 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 05:17:20 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 05:17:20 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 05:18:16 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=2.7500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 05:18:16 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 11, TIME 2.7500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 05:18:18 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 05:18:18 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 05:19:29 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 05:19:29 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 05:20:24 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 05:20:24 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 05:21:20 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=3.0000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 05:21:20 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 12, TIME 3.0000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 05:21:23 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 05:21:23 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 05:22:31 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 05:22:32 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 05:23:27 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 05:23:27 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 05:24:21 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=3.2500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 05:24:21 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 13, TIME 3.2500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 05:24:24 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 05:24:24 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 05:25:34 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 05:25:34 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 05:26:30 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 05:26:30 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 05:27:26 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=3.5000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 05:27:26 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 14, TIME 3.5000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 05:27:29 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 05:27:29 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 05:28:37 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 05:28:37 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 05:29:32 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 05:29:32 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 05:30:28 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=3.7500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 05:30:28 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 15, TIME 3.7500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 05:30:30 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 05:30:30 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 05:31:41 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 05:31:41 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 05:32:36 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 05:32:36 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 05:33:32 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=4.0000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 05:33:32 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 16, TIME 4.0000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 05:33:35 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 05:33:35 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 05:34:44 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 05:34:44 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 05:35:40 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 05:35:40 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 05:36:36 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=4.2500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 05:36:36 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 17, TIME 4.2500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 05:36:38 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 05:36:39 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 05:37:49 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 05:37:49 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 05:38:44 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 05:38:44 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 05:39:41 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=4.5000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 05:39:41 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 18, TIME 4.5000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 05:39:43 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 05:39:43 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 05:40:55 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 05:40:55 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 05:41:51 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 05:41:51 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 05:42:46 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=4.7500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 05:42:46 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 19, TIME 4.7500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 05:42:49 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 05:42:49 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 05:43:57 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 05:43:57 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 05:44:53 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 05:44:53 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 05:45:49 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=5.0000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 05:45:49 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 20, TIME 5.0000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 05:45:52 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 05:45:52 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 05:47:03 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 05:47:03 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 05:48:00 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 05:48:00 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 05:48:54 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=5.2500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 05:48:54 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 21, TIME 5.2500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 05:48:56 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 05:48:56 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 05:50:06 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 05:50:06 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 05:51:01 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 05:51:01 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 05:51:58 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=5.5000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 05:51:58 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 22, TIME 5.5000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 05:52:01 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 05:52:01 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 05:53:09 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 05:53:09 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 05:54:05 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 05:54:05 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 05:55:00 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=5.7500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 05:55:00 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 23, TIME 5.7500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 05:55:03 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 05:55:03 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 05:56:10 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 05:56:10 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 05:57:06 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 05:57:06 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 05:58:01 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=6.0000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 05:58:01 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 24, TIME 6.0000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 05:58:03 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 05:58:03 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 05:59:10 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 05:59:10 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 06:00:06 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 06:00:06 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 06:01:01 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=6.2500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 06:01:01 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 25, TIME 6.2500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 06:01:04 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 06:01:04 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 06:02:08 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 06:02:08 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 06:03:03 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 06:03:03 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 06:03:58 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=6.5000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 06:03:59 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 26, TIME 6.5000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 06:04:01 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 06:04:01 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 06:05:06 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 06:05:06 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 06:06:02 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 06:06:02 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 06:06:57 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=6.7500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 06:06:57 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 27, TIME 6.7500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 06:06:59 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 06:07:00 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 06:08:02 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 06:08:02 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 06:08:57 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 06:08:57 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 06:09:53 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=7.0000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 06:09:53 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 28, TIME 7.0000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 06:09:56 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 06:09:56 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 06:11:00 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 06:11:00 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 06:11:55 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 06:11:55 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 06:12:50 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=7.2500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 06:12:50 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 29, TIME 7.2500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 06:12:53 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 06:12:53 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 06:13:55 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 06:13:55 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 06:14:50 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 06:14:50 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 06:15:44 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=7.5000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 06:15:44 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 30, TIME 7.5000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 06:15:47 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 06:15:47 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 06:16:49 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 06:16:49 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 06:17:44 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 06:17:44 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 06:18:39 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=7.7500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 06:18:39 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 31, TIME 7.7500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 06:18:42 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 06:18:42 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 06:19:44 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 06:19:44 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 06:20:40 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 06:20:40 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 06:21:35 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=8.0000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 06:21:35 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 32, TIME 8.0000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 06:21:38 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 06:21:38 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 06:22:42 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 06:22:42 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 06:23:37 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 06:23:37 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 06:24:32 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=8.2500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 06:24:32 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 33, TIME 8.2500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 06:24:35 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 06:24:35 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 06:25:39 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 06:25:39 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 06:26:33 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 06:26:33 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 06:27:28 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=8.5000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 06:27:28 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 34, TIME 8.5000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 06:27:30 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 06:27:31 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 06:28:36 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 06:28:36 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 06:29:32 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 06:29:32 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 06:30:25 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=8.7500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 06:30:25 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 35, TIME 8.7500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 06:30:28 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 06:30:28 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 06:31:32 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 06:31:32 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 06:32:27 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 06:32:27 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 06:33:22 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=9.0000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 06:33:22 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 36, TIME 9.0000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 06:33:25 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 06:33:25 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 06:34:29 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 06:34:29 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 06:35:23 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 06:35:23 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 06:36:18 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=9.2500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 06:36:18 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 37, TIME 9.2500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 06:36:21 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 06:36:21 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 06:37:27 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 06:37:27 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 06:38:22 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 06:38:22 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 06:39:18 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=9.5000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 06:39:18 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 38, TIME 9.5000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 06:39:21 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 06:39:21 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 06:40:24 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 06:40:24 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 06:41:18 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 06:41:18 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 06:42:13 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=9.7500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 06:42:13 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 39, TIME 9.7500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 06:42:16 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 06:42:16 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 06:43:19 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 06:43:19 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 06:44:15 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 06:44:15 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 06:45:10 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=10.0000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 06:45:10 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 40, TIME 10.0000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 06:45:13 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 06:45:13 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 06:46:17 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 06:46:17 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 06:47:12 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 06:47:12 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 06:48:06 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=10.2500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 06:48:06 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 41, TIME 10.2500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 06:48:09 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 06:48:09 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 06:49:13 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 06:49:13 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 06:50:07 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 06:50:07 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 06:51:02 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=10.5000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 06:51:03 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 42, TIME 10.5000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 06:51:05 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 06:51:05 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 06:52:09 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 06:52:09 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 06:53:04 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 06:53:04 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 06:53:58 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=10.7500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 06:53:58 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 43, TIME 10.7500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 06:54:01 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 06:54:01 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 06:55:05 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 06:55:05 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 06:56:00 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 06:56:00 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 06:56:55 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=11.0000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 06:56:55 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 44, TIME 11.0000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 06:56:58 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 06:56:58 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 06:58:01 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 06:58:01 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 06:58:55 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 06:58:55 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 06:59:50 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=11.2500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 06:59:50 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 45, TIME 11.2500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 06:59:53 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 06:59:53 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 07:00:56 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 07:00:56 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 07:01:52 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 07:01:52 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 07:02:47 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=11.5000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 07:02:48 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 46, TIME 11.5000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 07:02:50 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 07:02:50 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 07:03:53 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 07:03:53 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 07:04:48 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 07:04:48 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 07:05:43 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=11.7500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 07:05:43 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 47, TIME 11.7500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 07:05:46 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 07:05:46 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 07:06:50 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 07:06:50 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 07:07:46 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 07:07:46 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 07:08:40 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=12.0000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 07:08:40 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 48, TIME 12.0000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 07:08:43 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 07:08:43 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 07:09:47 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 07:09:47 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 07:10:42 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 07:10:42 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 07:11:37 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=12.2500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 07:11:37 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 49, TIME 12.2500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 07:11:39 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 07:11:39 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 07:12:41 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 07:12:41 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 07:13:34 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 07:13:34 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 07:14:29 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=12.5000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 07:14:29 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 50, TIME 12.5000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 07:14:32 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 07:14:32 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 07:15:35 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 07:15:35 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 07:16:30 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 07:16:30 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 07:17:23 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=12.7500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 07:17:23 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 51, TIME 12.7500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 07:17:26 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 07:17:26 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 07:18:28 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 07:18:28 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 07:19:21 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 07:19:21 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 07:20:14 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=13.0000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 07:20:14 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 52, TIME 13.0000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 07:20:17 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 07:20:17 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 07:21:19 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 07:21:19 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 07:22:12 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 07:22:12 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 07:23:05 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=13.2500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 07:23:05 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 53, TIME 13.2500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 07:23:08 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 07:23:08 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 07:24:11 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 07:24:11 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 07:25:05 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 07:25:05 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 07:25:58 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=13.5000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 07:25:59 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 54, TIME 13.5000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 07:26:01 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 07:26:01 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 07:27:03 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 07:27:03 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 07:27:56 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 07:27:56 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 07:28:50 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=13.7500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 07:28:50 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 55, TIME 13.7500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 07:28:53 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 07:28:53 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 07:29:56 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 07:29:56 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 07:30:49 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 07:30:49 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 07:31:42 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=14.0000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 07:31:42 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 56, TIME 14.0000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 07:31:45 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 07:31:45 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 07:32:48 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 07:32:48 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 07:33:43 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 07:33:43 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 07:34:37 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=14.2500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 07:34:37 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 57, TIME 14.2500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 07:34:39 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 07:34:40 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 07:35:42 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 07:35:42 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 07:36:35 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 07:36:35 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 07:37:29 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=14.5000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 07:37:29 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 58, TIME 14.5000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 07:37:32 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 07:37:32 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 07:38:33 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 07:38:33 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 07:39:26 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 07:39:26 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 07:40:19 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=14.7500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 07:40:19 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 59, TIME 14.7500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 07:40:22 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 07:40:22 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 07:41:22 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 07:41:22 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 07:42:16 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 07:42:16 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 07:43:08 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=15.0000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 07:43:08 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 60, TIME 15.0000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 07:43:11 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 07:43:11 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 07:44:14 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 07:44:14 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 07:45:07 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 07:45:07 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 07:46:00 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=15.2500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 07:46:00 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 61, TIME 15.2500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 07:46:03 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 07:46:03 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 07:47:05 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 07:47:05 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 07:47:57 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 07:47:57 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 07:48:49 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=15.5000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 07:48:49 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 62, TIME 15.5000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 07:48:52 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 07:48:52 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 07:49:54 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 07:49:54 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 07:50:47 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 07:50:47 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 07:51:39 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=15.7500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 07:51:39 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 63, TIME 15.7500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 07:51:42 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 07:51:42 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 07:52:43 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 07:52:43 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 07:53:34 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 07:53:34 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 07:54:26 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=16.0000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 07:54:26 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 64, TIME 16.0000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 07:54:29 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 07:54:29 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 07:55:31 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 07:55:31 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 07:56:20 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 07:56:20 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 07:57:12 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=16.2500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 07:57:12 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 65, TIME 16.2500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 07:57:15 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 07:57:15 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 07:58:15 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 07:58:15 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 07:59:06 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 07:59:06 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 07:59:57 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=16.5000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 07:59:57 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 66, TIME 16.5000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 08:00:00 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 08:00:00 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 08:01:01 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 08:01:01 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 08:01:52 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 08:01:52 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 08:02:42 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=16.7500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 08:02:42 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 67, TIME 16.7500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 08:02:45 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 08:02:45 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 08:03:45 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 08:03:45 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 08:04:36 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 08:04:36 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 08:05:27 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=17.0000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 08:05:27 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 68, TIME 17.0000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 08:05:30 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 08:05:30 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 08:06:29 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 08:06:29 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 08:07:20 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 08:07:20 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 08:08:11 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=17.2500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 08:08:11 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 69, TIME 17.2500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 08:08:14 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 08:08:14 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 08:09:16 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 08:09:16 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 08:10:07 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 08:10:07 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 08:10:58 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=17.5000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 08:10:58 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 70, TIME 17.5000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 08:11:01 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 08:11:01 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 08:12:02 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 08:12:02 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 08:12:53 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 08:12:53 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 08:13:44 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=17.7500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 08:13:44 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 71, TIME 17.7500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 08:13:47 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 08:13:47 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 08:14:49 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 08:14:49 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 08:15:39 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 08:15:39 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 08:16:31 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=18.0000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 08:16:31 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 72, TIME 18.0000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 08:16:34 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 08:16:34 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 08:17:36 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 08:17:36 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 08:18:26 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 08:18:26 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 08:19:17 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=18.2500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 08:19:17 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 73, TIME 18.2500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 08:19:19 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 08:19:19 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 08:20:21 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 08:20:21 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 08:21:13 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 08:21:13 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 08:22:04 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=18.5000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 08:22:04 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 74, TIME 18.5000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 08:22:07 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 08:22:07 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 08:23:08 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 08:23:08 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 08:23:59 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 08:23:59 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 08:24:51 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=18.7500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 08:24:51 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 75, TIME 18.7500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 08:24:54 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 08:24:54 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 08:25:57 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 08:25:57 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 08:26:51 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 08:26:51 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 08:27:51 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=19.0000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 08:27:51 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 76, TIME 19.0000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 08:27:55 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 08:27:55 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 08:29:07 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 08:29:07 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 08:30:02 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 08:30:02 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 08:30:55 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=19.2500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 08:30:55 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 77, TIME 19.2500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 08:30:59 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 08:30:59 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 08:32:12 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 08:32:12 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 08:33:11 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 08:33:11 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 08:34:05 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=19.5000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 08:34:05 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 78, TIME 19.5000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 08:34:08 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 08:34:08 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 08:35:13 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 08:35:13 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 08:36:12 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 08:36:12 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 08:37:08 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=19.7500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 08:37:08 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 79, TIME 19.7500 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 08:37:11 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 08:37:11 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 08:38:16 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 08:38:16 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 08:39:07 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 08:39:07 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 08:40:00 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=20.0000:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
+Finished run-tera-cas.pl successfuly at Thu Oct  9 08:40:00 PM EDT 2025
+---------------------------------------------------------------------------
+ write_pair: In the next step, Nad coupling for the following pairs will
+ be computed (1=ground state):
+   2   1
+   3   1
+   3   2
+
+       =======================================================================
+            FINISHING STEP 80, TIME 20.0000 fs on SURFACE 2            
+       =======================================================================
+
+
+Starting normal electronic structure calculation
+
+---------------------------------------------------------------------------
+Starting run-tera-cas.pl at Thu Oct  9 08:40:03 PM EDT 2025
+---------------------------------------------------------------------------
+Starting /bin/terachem GRAD/start.sp  at Thu Oct  9 08:40:03 PM EDT 2025
+Finished /bin/terachem GRAD/start.sp  successfuly at Thu Oct  9 08:41:12 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N0/start.sp  at Thu Oct  9 08:41:12 PM EDT 2025
+Finished /bin/terachem NAD_N1N0/start.sp  successfuly at Thu Oct  9 08:42:12 PM EDT 2025
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Starting /bin/terachem NAD_N1N2/start.sp  at Thu Oct  9 08:42:12 PM EDT 2025
+Finished /bin/terachem NAD_N1N2/start.sp  successfuly at Thu Oct  9 08:43:12 PM EDT 2025
+---------------------------------------------------------------------------
+--------------------------------------------------
+run-tera-cas.pl: Energies (Hartree) at time t=20.2500:
+--------------------------------------------------
+run-tera-cas.pl: Gradient for state 2 (Hartree/Bohr):
+--------------------------------------------------
+run-tera-cas.pl: Non-adiabatic couplings (1/Bohr):
+Coupling between states 2 and 1 (Vector index 0):
+Coupling between states 3 and 2 (Vector index 2):
+--------------------------------------------------
