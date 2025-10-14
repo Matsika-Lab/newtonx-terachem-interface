@@ -58,8 +58,8 @@ Before using the script, you must configure NewtonX to recognize it as a valid p
 
 To start a non-adiabatic dynamics simulation, you need to set up a trajectory directory with a specific structure and set of input files.
 
-1. **Set prog in control.dyn:** In your main dynamics control file (control.dyn), set the prog parameter to 21.0 to tell NewtonX to use this TeraChem interface.  
-   prog \= 21.0
+1. **Set prog in control.dyn:** In your main dynamics control file (control.dyn), set the `prog` parameter to 21.0 to tell NewtonX to use this TeraChem interface.  
+   `prog = 21.0`
 
 2. **Directory Structure:** Your trajectory directory (e.g., TRAJ1) must contain the following files and subdirectories:
    ```
@@ -82,6 +82,7 @@ To start a non-adiabatic dynamics simulation, you need to set up a trajectory di
 
 4. Sample Trajectories
 Sample trajectories, complete with all necessary input files for running NewtonX-TeraChem simulations utilizing FOMO-CASCI and CASSCF with non adiabatic couplings are provided in the `sample_trajectories/` directory. These examples can serve as a guide for setting up your own simulations.
+
 
 
 
