@@ -54,6 +54,19 @@ Before using the script, you must configure NewtonX to recognize it as a valid p
 
 4. **Place the Script:** Copy the run-tera-cas.pl script into your NewtonX bin directory ($NX/bin/).
 
+## **Wavefunction Guess Options**
+
+Two switches at the top of `run-tera-cas.pl` control the SCF guess at each time step. Both default to 0, which gives a fresh TeraChem guess at every step.
+
+* **`use_prev_wf` (CASSCF only):** applies when `start.sp` contains `casscf yes`. The CASSCF orbitals of the previous step (`c0.casscf`) are read as the guess, and the SCF is skipped with `maxit 0`, so CASSCF optimizes the orbitals itself.
+* **`use_prev_scf_wf` (FOMO-CASCI, TDA/TDDFT, hh-TDA):** applies when `casscf yes` is absent. The converged SCF orbitals of the previous step (`GRAD/scr.geom/c0`, saved as `INFO_RESTART/WF_OLD/c0_scf`) are read as the guess. Only a `guess` line is added, so the SCF, including FON-SCF for FOMO, still runs to convergence. The NAC jobs of a step start from that step's GRAD orbitals.
+  * *Note:* do not use `use_prev_wf`-style `maxit 0` for FOMO; the FON-SCF would then be skipped and CASCI would run on unconverged orbitals.
+  * *Note:* in tests on hh-TDA trajectories with near-degenerate SCF solutions, this option did not remove total-energy jumps caused by switches between SCF solutions.
+
+## **Coupling Phase Fix (2026-10-29)**
+
+NewtonX's `interpol.f90` rebuilds the couplings at every substep from `oldh` and `newh`. Earlier versions copied the raw couplings to `newh` before the phase correction, so the substep integration used uncorrected phases. The script now copies the phase-corrected `nad_vectors` to `newh` after `adjust_phase()`.
+
 ## **Running a Trajectory**
 
 To start a non-adiabatic dynamics simulation, you need to set up a trajectory directory with a specific structure and set of input files.
