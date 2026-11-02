@@ -24,9 +24,27 @@ use Cwd 'abs_path';
 use lib join( '/', $ENV{"NX"}, "lib" );
 use colib_perl;
 
+#====================================================================================
+#                                 USER CONFIGURATION
+#====================================================================================
+
+# Set to 1 to use the wavefunction from the previous step as the guess.
+# Set to 0 to generate a fresh scf guess at every step.
+# NOTE: This only applies if 'casscf yes' is present in start.sp. for FOMO and TDDFT
+# this is treated as 0 by default.
+my $use_prev_wf = 0;
+
+# Set to 1 to start the SCF of FOMO, TDDFT/TDA and hh-TDA runs (no 'casscf yes') from the converged orbitals of the
+# previous step. Only a 'guess' line is added; the SCF (including FON-SCF) still runs to convergence, unlike the
+# CASSCF option above, which skips the SCF with maxit 0. The NAC jobs of a step start from that step's GRAD orbitals.
+# Set to 0 for a fresh guess at every step, as in the original runs.
+my $use_prev_scf_wf = 0;
+
+#====================================================================================
+
 # We are using "strict." Thus, all variables must be declared.
 my ( $mld, $mdle, $BASEDIR, $DEBUG, $JAD, $JND, $ctd, $fpar );
-my ( $old_guess, $grad_loc, $nac10_loc, $nac12_loc, $tpp, $tpp_outfile, $e_loc, $molden_ar, $wf_ar );
+my ( $old_scf_guess, $old_guess, $grad_loc, $nac10_loc, $nac12_loc, $tpp, $tpp_outfile, $e_loc, $molden_ar, $wf_ar );
 my ( $nat, $istep, $nstat, $nstatdyn, $ndamp, $kt, $dt, $t, $tmax, $nintc );
 my ( $nxrestart, $thres, $killstat, $timekill, $prog, $lvprt, $etot_jump, $etot_drift );
 my ( @symb, @zn, @x, @y, @z, @Mass, $ia );
@@ -39,9 +57,7 @@ my ($mem);
 my (%progconf);
 
 #====================================================================================
-#
-# 				MAIN EXECUTION BLOCK
-#
+#                                MAIN EXECUTION BLOCK
 #====================================================================================
 
 # 1. Define global variables and load simulation status
@@ -70,9 +86,7 @@ read_gradients();
 treat_nacme();
 
 #====================================================================================
-#
-# 				START SUBROUTINES
-#
+#                                START SUBROUTINES
 #====================================================================================
 
 sub define_variables {
@@ -83,7 +97,7 @@ sub define_variables {
     $mdle = "run-tera-cas.pl:";
 
     # TeraChem specific variables
-    $tpp         = $ENV{"TeraChem"};
+    $tpp             = $ENV{"TeraChem"};
     $tpp_outfile = "tera.out";
     $e_loc       = "GRAD/tera.out";
     $grad_loc    = "GRAD/scr.geom/grad.xyz";
@@ -92,6 +106,7 @@ sub define_variables {
 
     # Variables for handling wavefunction restart
     $old_guess = "../INFO_RESTART/WF_OLD/c0";
+    $old_scf_guess = "../INFO_RESTART/WF_OLD/c0_scf";
     $molden_ar = "../INFO_RESTART/MOLDEN_ARCHIVE";
     $wf_ar     = "../INFO_RESTART/WF_ARCHIVE";
 
@@ -174,27 +189,6 @@ sub read_geom {
         $ia++;
     }
     close($gm_fh);
-
-    # Look for a guess wavefunction to use. If a persistent guess ($old_guess) from a
-    # previous step exists, use it. Otherwise, look for output from an initial
-    # calculation and copy it to the persistent location for subsequent steps.
-    my $initial_casscf_guess = "GRAD/scr.geom/c0.casscf";
-    my $initial_dft_guess    = "GRAD/scr.geom/c0";
-
-    if ( -e $old_guess ) {
-        print "Using existing wavefunction from previous step as guess: $old_guess\n";
-    }
-    elsif ( -e $initial_casscf_guess ) {
-        copy( $initial_casscf_guess, $old_guess ) or die "Failed to copy initial CASSCF guess: $!";
-        print "Using initial CASSCF wavefunction as first guess: $initial_casscf_guess\n";
-    }
-    elsif ( -e $initial_dft_guess ) {
-        copy( $initial_dft_guess, $old_guess ) or die "Failed to copy initial DFT guess: $!";
-        print "Using initial DFT wavefunction as first guess: $initial_dft_guess\n";
-    }
-    else {
-        print "Guess wavefunction not provided. TeraChem will generate one.\n";
-    }
 }
 
 sub prepare_input {
@@ -203,6 +197,22 @@ sub prepare_input {
     #
     if ( $lvprt >= 3 ) { print_STDOUT( "$mdle Preparing input for TeraChem.\n", $istep, $kt ); }
     my $au2ang = units("au2ang");
+
+    # Handles the starting guess if running casscf.
+    # Order of precedence: User povided in GRAD/scr.geom > previous timestep ($old_guess) > generate from hf
+    my $initial_casscf_guess = "GRAD/scr.geom/c0.casscf";
+
+    # Logic updated to respect $use_prev_wf toggle
+    if ( $use_prev_wf && -e $old_guess ) {
+        print "Using existing wavefunction from previous step as guess (if CASSCF is active): $old_guess\n";
+    }
+    elsif ( -e $initial_casscf_guess ) {
+        copy( $initial_casscf_guess, $old_guess ) or die "Failed to copy initial CASSCF guess: $!";
+        print "Using initial CASSCF wavefunction as first guess: $initial_casscf_guess\n";
+    }
+    else {
+        print "Guess wavefunction generated by TeraChem defaults (toggle=$use_prev_wf).\n";
+    }
 
     # Create the new XYZ file with updated coordinates
     my $xyz_file = "geom.xyz";
@@ -240,7 +250,7 @@ sub process_start_sp {
     # It intelligently handles commented lines and existing keywords.
     #
     my ( $file_path, $updates ) = @_;
-    
+
     unless ( -e $file_path ) {
         print_STDOUT("Template input file '$file_path' not found!\n", $istep, $kt);
         die;
@@ -251,47 +261,60 @@ sub process_start_sp {
     close $fh;
 
     # --- Keyword Checks (on uncommented lines) ---
-    # Check for keywords in the active content and whether a guess WF will be used.
-    my $is_rhf_method = 0;
     my $is_casscf_run = 0;
-    my $guess_is_provided = -e $old_guess; # This is the crucial check.
 
     foreach my $line (@lines) {
         next if $line =~ /^\s*#/; # Skip commented lines
-        $is_rhf_method = 1 if $line =~ /^\s*method\s+r?hf/;
-        $is_casscf_run = 1 if $line =~ /^\s*casscf\s+yes/;
+        # Check specifically for casscf yes
+        if ($line =~ /^\s*casscf\s+yes/i) {
+             $is_casscf_run = 1;
+        }
     }
+
+    # Strict condition:
+    # 1. Must be a CASSCF run
+    # 2. Toggle must be ON
+    # 3. Previous WF file must exist
+    my $should_inject_guess = ($is_casscf_run && $use_prev_wf && -e $old_guess);
+    my $inject_scf_guess = (!$is_casscf_run && $use_prev_scf_wf && -e $old_scf_guess);
 
     # --- File Modifications ---
 
-    # 1. Handle guess wavefunction
-    if ( $guess_is_provided ) {
-        my @filtered_lines;
-        # Filter out existing, uncommented 'guess' lines
-        foreach my $line (@lines) {
-            push @filtered_lines, $line unless ($line !~ /^\s*#/ && $line =~ /^\s*guess\s+\S+/);
+    my @filtered_lines;
+    foreach my $line (@lines) {
+        # Keep comments and blank lines
+        if ($line =~ /^\s*#/) {
+            push @filtered_lines, $line;
+            next;
         }
-        @lines = @filtered_lines;
-        # Add the new guess line to the end.
-        push @lines, "guess        " . abs_path($old_guess) . "\n";
-    }
 
-    # 2. Handle CASSCF orbital generation case (maxit/convthre)
-    # If the method is RHF/HF, a subsequent CASSCF is requested, AND a guess is provided,
-    # we want to skip the SCF cycle by using the provided guess orbitals.
-    if ( $is_rhf_method && $is_casscf_run && $guess_is_provided ) {
-        my @filtered_lines;
-        # Filter out existing, uncommented maxit/convthre lines
-        foreach my $line (@lines) {
-            push @filtered_lines, $line unless ($line !~ /^\s*#/ && $line =~ /^\s*(maxit|convthre)\s+/);
+        # If we are injecting our own guess logic (skipping SCF),
+        # we must remove existing 'guess', 'maxit', and 'convthre' from the template
+        # to prevent duplicates or conflicts.
+        # If $should_inject_guess is FALSE, we keep the original lines.
+        if ( $should_inject_guess ) {
+             if ( $line =~ /^\s*guess\s+\S+/i ) { next; }
+             if ( $line =~ /^\s*(maxit|convthre)\s+/i ) { next; }
         }
-        @lines = @filtered_lines;
-        # Add the lines required to skip the SCF cycle.
+        if ( $inject_scf_guess && $line =~ /^\s*guess\s+\S+/i ) { next; }
+
+        push @filtered_lines, $line;
+    }
+    @lines = @filtered_lines;
+
+    # Inject the previous wavefunction and skip SCF only if all conditions met
+    if ( $should_inject_guess ) {
+        push @lines, "guess        " . abs_path($old_guess) . "\n";
         push @lines, "maxit        0\n";
         push @lines, "convthre     1e7\n";
     }
 
-    # 3. Handle dynamic state updates (castarget, nacstate1, etc.)
+    # Previous-step SCF orbitals as the guess; the SCF still converges normally
+    if ( $inject_scf_guess ) {
+        push @lines, "guess        " . abs_path($old_scf_guess) . "\n";
+    }
+
+    # Handle dynamic state updates (castarget, nacstate1, etc.)
     # This is done in-place to preserve line order and comments.
     for my $i ( 0 .. $#lines ) {
         foreach my $key ( keys %$updates ) {
@@ -334,6 +357,7 @@ sub run_terachem {
         # Save orbitals after the gradient calculation is complete
         if ( $task eq 'GRAD' ) {
             save_orbitals();
+            set_nad_guess();
         }
     }
 }
@@ -361,13 +385,34 @@ sub process_directory {
     }
 }
 
+sub set_nad_guess {
+    #
+    # With use_prev_scf_wf, the NAC jobs of this step start from the GRAD job's converged orbitals, so that all three
+    # jobs of a step sit on the same SCF solution.
+    #
+    return unless $use_prev_scf_wf;
+    my $c0 = "GRAD/scr.geom/c0";
+    return unless -e $c0 && !-e "GRAD/scr.geom/c0.casscf";
+    foreach my $dir ( 'NAD_N1N0', 'NAD_N1N2' ) {
+        my $f = "$dir/start.sp";
+        next unless -e $f;
+        open my $fh, '<', $f or die "Could not open '$f': $!";
+        my @lines = grep { !/^\s*guess\s+\S+/i } <$fh>;
+        close $fh;
+        push @lines, "guess        " . abs_path($c0) . "\n";
+        open $fh, '>', $f or die "Could not open '$f' for writing: $!";
+        print $fh @lines;
+        close $fh;
+    }
+}
+
 sub save_orbitals {
     #
     # Archives the Molden file and the wavefunction/CI vectors for visualization and restart.
     #
     my $source_dir = "GRAD/scr.geom";
 
-    # Check for casscf.molden for CASSCF or geom.molden for DFT/HF
+    # Check for casscf.molden for CASSCF
     my $molden_src = -e "$source_dir/cas.molden" ? "$source_dir/cas.molden" : "$source_dir/geom.molden";
     if ( -e $molden_src ) {
         my $molden_dest = "$molden_ar/$t.molden";
@@ -375,12 +420,17 @@ sub save_orbitals {
         print "Archived molden file to $molden_dest\n";
     }
 
-    # Save wavefunction file (c0.casscf for CASSCF, c0 for DFT/HF)
-    my $wf_file = -e "$source_dir/c0.casscf" ? "$source_dir/c0.casscf" : "$source_dir/c0";
-    if ( -e $wf_file ) {
-        copy( $wf_file, $old_guess )      or die "Failed to copy WF to $old_guess: $!";
-        copy( $wf_file, "$wf_ar/c$t" ) or die "Failed to archive WF to $wf_ar/c$t: $!";
-    }
+   # Save the SCF orbitals of a non-CASSCF run for the next step's guess
+       if ( $use_prev_scf_wf && !-e "$source_dir/c0.casscf" && -e "$source_dir/c0" ) {
+           copy( "$source_dir/c0", $old_scf_guess ) or die "Failed to copy SCF orbitals to $old_scf_guess: $!";
+       }
+
+   # Save CASSCF wavefunction file
+       my $wf_file = "$source_dir/c0.casscf";
+       if ( -e $wf_file ) {
+           copy( $wf_file, $old_guess )       or die "Failed to copy WF to $old_guess: $!";
+           copy( $wf_file, "$wf_ar/c$t" ) or die "Failed to archive WF to $wf_ar/c$t: $!";
+       }
 }
 
 sub read_energy {
@@ -395,36 +445,71 @@ sub read_energy {
         die;
     }
 
-    # The parsing logic below is specific to TeraChem's output format and may
-    # need adjustment if the format changes in future versions.
-    my $cas_lines = $nstat + 2;
-    my $dft_lines = $cas_lines - 1;
+    open( my $fh, '<', $e_loc ) or die "Cannot open $e_loc: $!";
+    my @lines = <$fh>;
+    close($fh);
 
-    my $cas_section = `grep -A $cas_lines '  Root   Mult.   Total Energy (a.u.)' $e_loc`;
-    my $dft_section = `grep -A $dft_lines '  Root   Total Energy (a.u.)   Ex. Energy' $e_loc`;
-    my @total_energies;
+    my @total_energies = ();
 
-    if ($cas_section) {
-        my @lines = split( "\n", $cas_section );
-        foreach my $line ( @lines[ 2 .. $#lines ] ) {
-            my @fields = split( /\s+/, $line );
-            push @total_energies, $fields[3] if @fields > 3; # Energy is 4th column
+    # Scan file for energies
+    for (my $i = 0; $i < @lines; $i++) {
+
+        # 1. CASSCF Table Match
+        # Pattern: "  Root   Mult.   Total Energy..." (Spacing flexible)
+        if ( $lines[$i] =~ /Root\s+Mult\.\s+Total Energy/ ) {
+            # Found CASSCF table.
+            # Assume table contains all requested states starting 2 lines down.
+            for (my $state = 0; $state < $nstat; $state++) {
+                my $line_idx = $i + 2 + $state; # Skip Header and Dashes
+                last if $line_idx > $#lines;
+
+                my $line = $lines[$line_idx];
+                my @fields = split(' ', $line);
+                # Expected format: "1 singlet -309.612..."
+                # split ' ' gives: [0]=Root, [1]=Mult, [2]=Energy
+                if (@fields >= 3) {
+                    push @total_energies, $fields[2];
+                }
+            }
+            last; # Stop after finding the first table
+        }
+
+        # 2. DFT/CIS Table Match
+        # Pattern: "  Root   Total Energy..."
+        elsif ( $lines[$i] =~ /Root\s+Total Energy/ ) {
+            # Found DFT/CIS table (usually Excited States).
+
+            # Step A: Find Ground State (FINAL ENERGY) if not already found
+            if (!@total_energies) {
+                my ($gs_line) = grep { /FINAL ENERGY:/ } @lines;
+                if ($gs_line) {
+                    my @f = split(' ', $gs_line);
+                    # Format: FINAL ENERGY: -123.456
+                    push @total_energies, $f[2] if @f >= 3;
+                }
+            }
+
+            # Step B: Read Excited States from table
+            my $states_needed = @total_energies ? $nstat - 1 : $nstat;
+
+            for (my $state = 0; $state < $states_needed; $state++) {
+                my $line_idx = $i + 2 + $state;
+                last if $line_idx > $#lines;
+
+                my $line = $lines[$line_idx];
+                my @fields = split(' ', $line);
+                # Expected format: "1 -309.612... ..."
+                # split ' ' gives: [0]=Root, [1]=TotalEnergy
+                if (@fields >= 2) {
+                    push @total_energies, $fields[1];
+                }
+            }
+            last;
         }
     }
-    elsif ($dft_section) {
-        my $dft_ground_line = `grep 'FINAL ENERGY:' $e_loc`;
-        my @fields          = split( /\s+/, $dft_ground_line );
-        push @total_energies, $fields[2] if @fields > 2;
 
-        my @lines = split( "\n", $dft_section );
-        foreach my $line ( @lines[ 2 .. $#lines ] ) {
-            my @fields = split( /\s+/, $line );
-            push @total_energies, $fields[2] if @fields > 2; # Energy is 3rd column
-        }
-    }
-    
     # Check if we successfully parsed the energies
-    if ( !@total_energies || $#total_energies + 1 < $nstat ) {
+    if ( !@total_energies || @total_energies < $nstat ) {
         print_STDOUT( "Could not parse all $nstat state energies from '$e_loc'. Check TeraChem output.\n", $istep, $kt );
         die;
     }
@@ -443,7 +528,7 @@ sub write_energy {
 
     # Print energies to STDOUT
     print_STDOUT( "--------------------------------------------------\n", $istep, $kt );
-    print_STDOUT( "$mdle Energies (Hartree) at time t=$t:\n",          $istep, $kt );
+    print_STDOUT( "$mdle Energies (Hartree) at time t=$t:\n",           $istep, $kt );
     for my $i ( 0 .. $#epot ) {
         my $state_num = $i + 1;
         printf STDOUT ("State %2d: %20.10f\n", $state_num, $epot[$i]);
@@ -521,7 +606,7 @@ sub treat_nacme {
     # Processes the non-adiabatic coupling matrix elements (NACME).
     #
     if ( $lvprt >= 3 ) { print_STDOUT( "$mdle Treating couplings.\n", $istep, $kt ); }
-    
+
     # If there is only one state (or fewer), there are no couplings to process.
     return if ($nstat <= 1);
 
@@ -556,8 +641,12 @@ sub treat_nacme {
 
     # Create newh (couplings at current step) BEFORE calling phase adjustment.
     copy( "nad_vectors", "newh" ) or die "Copy to newh failed: $!";
-    
+
     adjust_phase(); # Correct nonadiabatic coupling phases
+
+    # escalar needs the raw couplings in newh (above); after it, newh must hold the phase-corrected couplings,
+    # because NX's interpol.f90 rebuilds nad_vectors from oldh/newh at every substep (fix 2026-10-29).
+    copy( "nad_vectors", "newh" ) or die "Copy of phase-corrected nad_vectors to newh failed: $!";
 }
 
 sub read_nacme {
@@ -566,17 +655,17 @@ sub read_nacme {
     # It has been reverted to the original script's logic to ensure correctness.
     #
     if ( $lvprt >= 3 ) { print_STDOUT( "$mdle Reading coupling vectors.\n", $istep, $kt ); }
-    
+
     my ( @nac01x, @nac01y, @nac01z );
     my ( @nac12x, @nac12y, @nac12z );
     my ( $ncc1, $ncc2 );
 
     # Read the necessary vector files based on the current state
     if ( $nstatdyn > 1 ) {
-         my ( $nac_x, $nac_y, $nac_z ) = read_xyz_vector_file($nac10_loc);
-         @nac01x = @$nac_x;
-         @nac01y = @$nac_y;
-         @nac01z = @$nac_z;
+          my ( $nac_x, $nac_y, $nac_z ) = read_xyz_vector_file($nac10_loc);
+          @nac01x = @$nac_x;
+          @nac01y = @$nac_y;
+          @nac01z = @$nac_z;
     }
     if ($nstatdyn < $nstat) {
         my ( $nac_x, $nac_y, $nac_z ) = read_xyz_vector_file($nac12_loc);
@@ -718,5 +807,3 @@ sub adjust_phase {
         close($ep_fh);
     }
 }
-
-
