@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Caching stand-in for TeraChem, used by the replay tests.
 
 The interface calls "$TeraChem/bin/terachem <input>" from TEMP/. Point $TeraChem at

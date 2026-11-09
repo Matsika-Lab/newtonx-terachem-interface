@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Replays recorded interface calls with one or more script versions and compares them.
 
 Each recorded call (SNAPSHOTS/call_NNNN, made by record_wrapper.sh) holds TEMP/ and

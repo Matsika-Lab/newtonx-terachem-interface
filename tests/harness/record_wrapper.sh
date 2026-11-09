@@ -1,4 +1,5 @@
 #!/bin/bash
+# SPDX-License-Identifier: GPL-3.0-or-later
 # Installed as $NX/run-tera-cas.pl by make_nxbin.sh ... record.
 # Runs from TEMP/. Saves, per call, a "before" tarball of TEMP plus INFO_RESTART/WF_OLD,
 # the interface's stdout, and the files the interface writes for NX.

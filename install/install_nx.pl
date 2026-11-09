@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
 # Installs the TeraChem interface into a NewtonX 2.4 installation.
 #

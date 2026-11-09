@@ -1,11 +1,20 @@
 #!/usr/bin/env perl
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
 #====================================================================================
 #
 # TeraChem interface for NewtonX initial conditions and absorption spectra
 # (initcond.pl, prog = 21.0). Built from the NX template by Mario Barbatti, 2021.
 #
+# Authors: Dakshitha Abeygunewardane, Vaibhav Singh, Spiridoula Matsika.
 # Matsika Lab, Temple University, USA.
+#
+# The 2026-11-09 revision (version 2.0) was refactored and improved with Claude Code
+# (Anthropic), using the Claude Opus 5.5 model. See the Credits section of README.md.
+#
+# Copyright (C) 2025-2026 the authors above. Licensed under the GNU General Public
+# License, version 3 or (at your option) any later version; see the LICENSE file.
+# It is distributed WITHOUT ANY WARRANTY.
 #
 #====================================================================================
 #

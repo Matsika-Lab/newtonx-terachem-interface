@@ -1,0 +1,163 @@
+cff-version: 1.2.0
+message: "If you use this interface, please cite it as below, together with NewtonX and TeraChem (see references)."
+title: "NewtonX-TeraChem interface for nonadiabatic dynamics"
+type: software
+version: "2.0.0"
+license: GPL-3.0-or-later
+repository-code: "https://github.com/Matsika-Lab/newtonx-terachem-interface"
+url: "https://github.com/Matsika-Lab/newtonx-terachem-interface"
+abstract: >-
+  Perl interface between the NewtonX surface-hopping program and the TeraChem
+  electronic-structure package. It provides energies, gradients and nonadiabatic
+  coupling vectors for CASSCF, FOMO-CASCI, TDA/TDDFT and hh-TDA, supports
+  time-dependent Baeck-An couplings, and computes vertical excitations for
+  initial conditions and absorption spectra.
+keywords:
+  - nonadiabatic dynamics
+  - surface hopping
+  - NewtonX
+  - TeraChem
+authors:
+  - family-names: Abeygunewardane
+    given-names: Dakshitha
+    affiliation: "Department of Chemistry, Temple University, Philadelphia, PA, USA"
+  - family-names: Singh
+    given-names: Vaibhav
+    affiliation: "Department of Chemistry, Temple University, Philadelphia, PA, USA"
+  - family-names: Matsika
+    given-names: Spiridoula
+    affiliation: "Department of Chemistry, Temple University, Philadelphia, PA, USA"
+references:
+  - type: article
+    title: "Newton-X: a surface-hopping program for nonadiabatic molecular dynamics"
+    authors:
+      - family-names: Barbatti
+        given-names: Mario
+      - family-names: Ruckenbauer
+        given-names: Matthias
+      - family-names: Plasser
+        given-names: Felix
+      - family-names: Pittner
+        given-names: Jiri
+      - family-names: Granucci
+        given-names: Giovanni
+      - family-names: Persico
+        given-names: Maurizio
+      - family-names: Lischka
+        given-names: Hans
+    journal: "WIREs Computational Molecular Science"
+    volume: 4
+    issue: 1
+    start: 26
+    end: 33
+    year: 2014
+    doi: 10.1002/wcms.1158
+  - type: article
+    title: "TeraChem: A graphical processing unit-accelerated electronic structure package for large-scale ab initio molecular dynamics"
+    authors:
+      - family-names: Seritan
+        given-names: Stefan
+      - family-names: Bannwarth
+        given-names: Christoph
+      - family-names: Fales
+        given-names: Bryan S.
+      - family-names: Hohenstein
+        given-names: Edward G.
+      - family-names: Isborn
+        given-names: Christine M.
+      - family-names: Kokkila-Schumacher
+        given-names: Sara I. L.
+      - family-names: Li
+        given-names: Xin
+      - family-names: Liu
+        given-names: Fang
+      - family-names: Luehr
+        given-names: Nathan
+      - family-names: Snyder
+        given-names: James W.
+      - family-names: Song
+        given-names: Chenchen
+      - family-names: Titov
+        given-names: Alexey V.
+      - family-names: Ufimtsev
+        given-names: Ivan S.
+      - family-names: Wang
+        given-names: Lee-Ping
+      - family-names: Martínez
+        given-names: Todd J.
+    journal: "WIREs Computational Molecular Science"
+    volume: 11
+    issue: 2
+    start: e1494
+    year: 2021
+    doi: 10.1002/wcms.1494
+  - type: article
+    title: "Molecular dynamics with electronic transitions"
+    authors:
+      - family-names: Tully
+        given-names: John C.
+    journal: "The Journal of Chemical Physics"
+    volume: 93
+    start: 1061
+    end: 1071
+    year: 1990
+    doi: 10.1063/1.459170
+  - type: article
+    title: "An atomic orbital-based formulation of analytical gradients and nonadiabatic coupling vector elements for the state-averaged complete active space self-consistent field method on graphical processing units"
+    authors:
+      - family-names: Snyder
+        given-names: James W.
+      - family-names: Hohenstein
+        given-names: Edward G.
+      - family-names: Luehr
+        given-names: Nathan
+      - family-names: Martínez
+        given-names: Todd J.
+    journal: "The Journal of Chemical Physics"
+    volume: 143
+    start: 154107
+    year: 2015
+    doi: 10.1063/1.4932613
+  - type: article
+    title: "Ab initio floating occupation molecular orbital-complete active space configuration interaction: An efficient approximation to CASSCF"
+    authors:
+      - family-names: Slavíček
+        given-names: Petr
+      - family-names: Martínez
+        given-names: Todd J.
+    journal: "The Journal of Chemical Physics"
+    volume: 132
+    start: 234102
+    year: 2010
+    doi: 10.1063/1.3436501
+  - type: article
+    title: "Hole–hole Tamm–Dancoff-approximated density functional theory: A highly efficient electronic structure method incorporating dynamic and static correlation"
+    authors:
+      - family-names: Bannwarth
+        given-names: Christoph
+      - family-names: Yu
+        given-names: Jimmy K.
+      - family-names: Hohenstein
+        given-names: Edward G.
+      - family-names: Martínez
+        given-names: Todd J.
+    journal: "The Journal of Chemical Physics"
+    volume: 153
+    start: "024110"
+    year: 2020
+    doi: 10.1063/5.0003985
+  - type: article
+    title: "Fewest switches surface hopping with Baeck-An couplings"
+    authors:
+      - family-names: T. do Casal
+        given-names: Mariana
+      - family-names: Toldo
+        given-names: Josene M.
+      - family-names: Pinheiro Jr
+        given-names: Max
+      - family-names: Barbatti
+        given-names: Mario
+    journal: "Open Research Europe"
+    start: 49
+    year: 2021
+    doi: 10.12688/openreseurope.13624.1

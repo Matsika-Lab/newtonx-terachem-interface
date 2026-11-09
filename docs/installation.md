@@ -81,4 +81,4 @@ A manual install skips the startup checks and the NewtonX test. The interface st
 
 ## Program key and licence
 
-`prog = 21.0` is not an official NewtonX key. The NewtonX team assigns keys to interfaces that join the official distribution. Joining requires a GPL licence; this repository is MIT-licensed.
+`prog = 21.0` is not an official NewtonX key. The NewtonX team assigns keys to interfaces that join the official distribution. Joining requires a GPL licence. This repository is licensed under GPL-3.0-or-later, so it meets that condition.

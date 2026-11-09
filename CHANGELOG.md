@@ -6,6 +6,8 @@ All notable changes to this interface. The format follows [Keep a Changelog](htt
 
 ### Changed
 
+- **Licence.** The interface is now licensed under GPL-3.0-or-later (see `LICENSE`), as NewtonX requires for interfaces in its distribution. Earlier versions were released under the MIT licence, copyright (c) 2025 Dakshitha Abeygunewardane. Each script carries an SPDX identifier, and `CITATION.cff` gives the citation and the method papers.
+- **AI use.** This revision was refactored and improved with Claude Code (Anthropic), using the Claude Opus 5.5 model. See the Credits section of the README.
 - **Couplings follow `jiri.inp`.** The interface now computes the coupling pairs NewtonX lists in `transmomin`, from `jiri.inp` and `THRES`. Earlier versions always computed the two neighbour couplings. Without a `jiri.inp`, NewtonX asks for every pair, which costs one TeraChem run per pair. Set `couplings = neighbours` in `terachem.par` for the old behaviour. See [Which couplings are computed](docs/dynamics.md#which-couplings-are-computed).
 - **Options moved to `terachem.par`.** `use_prev_wf` and `use_prev_scf_wf` are no longer edited inside the script. See [terachem-par.md](docs/terachem-par.md).
 - **Scratch handling.** Each job's scratch folder is cleared before the run, so a failed run can no longer leave last step's results to be read.

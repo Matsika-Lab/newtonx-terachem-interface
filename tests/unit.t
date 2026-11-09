@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
 # Unit tests for run-tera-cas.pl that need no GPU and no TeraChem.
 # Run from the repository root:  NX=/path/to/NX/bin prove -v tests/unit.t

@@ -1,4 +1,5 @@
 #!/bin/bash
+# SPDX-License-Identifier: GPL-3.0-or-later
 # usage: make_nxbin.sh <dest_dir> <interface_script> [record]
 # Builds a private NX bin folder: symlinks to the system NX bin, with run-tera-cas.pl
 # replaced. With "record", run-tera-cas.pl becomes snapshot_wrapper.sh, which calls

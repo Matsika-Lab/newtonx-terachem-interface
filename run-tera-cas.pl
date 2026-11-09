@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
 #====================================================================================
 #
@@ -13,6 +14,15 @@
 # Matsika Lab,
 # Temple University, USA.
 # 2025.
+#
+# The 2026-11-09 revision (version 2.0) was refactored and improved with Claude Code
+# (Anthropic), using the Claude Opus 5.5 model. See the Credits section of README.md.
+#
+# Copyright (C) 2025-2026 the authors above. This program is free software: you can
+# redistribute it and/or modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version. It is distributed WITHOUT ANY WARRANTY; see
+# the LICENSE file for details.
 #
 #====================================================================================
 #
