@@ -95,7 +95,7 @@ The supported methods, their keywords, the couplings each allows and the singlet
 ## Which couplings are computed
 
 > [!NOTE]
-> Since version 2.0 the interface computes the couplings NewtonX asks for in `jiri.inp`. Earlier versions always computed the two neighbour couplings and ignored `jiri.inp`. Set `couplings = neighbours` in `terachem.par` for the old behaviour.
+> Since version 2.0 the interface computes the couplings NewtonX asks for in `jiri.inp`. Earlier versions always computed the two neighbour couplings and ignored `jiri.inp`. To reproduce runs made with earlier versions, set `couplings = neighbours` and `phase_ref = previous` in `terachem.par`.
 
 At every step NewtonX writes the pairs it needs to `TEMP/transmomin`. The list comes from `jiri.inp`, through `KROSS`, `CASCADE`, `CURRENT`, `NEVER_STATE` and `INCLUDE_PAIR`, and from `THRES` in `control.dyn`. The interface runs one TeraChem coupling job per listed pair. To override the list, set [`couplings`](terachem-par.md#couplings) in `terachem.par`.
 
@@ -116,7 +116,7 @@ A `jiri.inp` for neighbour couplings:
  /
 ```
 
-Pairs that are not computed are written as zero vectors, as NewtonX expects. By default, a pair that was zero at the previous step keeps the sign TeraChem gives it, because NewtonX's phase fix has no previous vector to compare with. Set [`phase_ref = last`](terachem-par.md#phase_ref) to compare it with its last computed vector instead.
+Pairs that are not computed are written as zero vectors, as NewtonX expects. A pair that was zero at the previous step has no previous vector for NewtonX's phase fix. By default the interface compares it with the pair's last computed vector, so its sign stays continuous; see [`phase_ref`](terachem-par.md#phase_ref).
 
 ## Coupling methods
 

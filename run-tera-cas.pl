@@ -77,12 +77,12 @@ our %DEFAULTS = (
     couplings => "nx",
 
     # Phase reference for a coupling pair that was not computed at the previous step.
-    #   previous : compare with the previous step only (as NX's template). A pair that
-    #              returns after a gap keeps the sign TeraChem gives it.
     #   last     : compare such a pair with its last computed vector, so its sign stays
     #              continuous across the gap. Only the phase fix uses it; NX's
     #              interpolation still starts from the previous step.
-    phase_ref => "previous",
+    #   previous : compare with the previous step only (as NX's template and versions
+    #              before 2.0). A pair that returns after a gap keeps TeraChem's sign.
+    phase_ref => "last",
 
     # 1 = keep a Molden file of the gradient job's orbitals for every step.
     archive_molden => 1,

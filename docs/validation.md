@@ -57,7 +57,7 @@ Recorded systems:
 
 **Purpose.** Check that the rewrite changes nothing NewtonX sees, when the old behaviour is asked for.
 
-**Setup.** All 101 recorded calls. New script with `couplings = neighbours` and the three-template layout.
+**Setup.** All 101 recorded calls. New script with `couplings = neighbours`, the three-template layout, and `phase_ref` at both values.
 
 | System | Calls | Identical |
 |---|---|---|
@@ -222,7 +222,7 @@ The hh-TDA FOMO window was checked first. With `active 9`, the excitation energi
 
 **Setup.** `tests/harness/phase_gap_check.py` on all four recordings. For every first-run call and every pair present at the call and the step before, the pair was removed from the previous step. With `last`, the pair's vector from *g* steps earlier was given as the memory. The sign of the returning vector was compared with the recorded, gap-free trajectory. No GPU was needed; all TeraChem results came from the cache.
 
-| System | Gap | `previous` (default) | `last` |
+| System | Gap | `previous` | `last` (default) |
 |---|---|---|---|
 | CASSCF | 1 / 2 / 5 steps | 13/29, 12/28, 12/25 | 29/29, 28/28, 25/25 |
 | TDA | 1 / 2 / 5 steps | 9/19, 8/18, 8/15 | 19/19, 18/18, 15/15 |
@@ -231,7 +231,8 @@ The hh-TDA FOMO window was checked first. With `active 9`, the excitation energi
 
 - **The default is a coin flip:** with `previous`, a returning pair gets the right sign about half the time, because TeraChem's raw sign is arbitrary from run to run.
 - **`last` keeps signs continuous:** it agrees in 218 of 220 cases. The two misses were FOMO pairs after a 2.5 fs gap, where the vector had rotated by more than 90 degrees.
-- **No effect without gaps:** with `last`, the 101 recorded gap-free calls give byte-identical NewtonX files to the old version, `oldh` included.
+- **No effect without gaps:** with `last`, the 101 recorded calls give byte-identical NewtonX files to the old version, `oldh` included. They contain no pair that returns after a gap.
+- **Default:** because of these results, `last` is the default. `previous` reproduces versions before 2.0.
 
 ## TeraChem behaviour
 

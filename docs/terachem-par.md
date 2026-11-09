@@ -23,7 +23,7 @@ The format is `key = value`, one per line. `key value` without `=` also works. C
 | [`couplings`](#couplings) | `nx` | `nx`, `neighbours`, `current`, `all` | all | Which coupling vectors are computed |
 | [`use_prev_wf`](#use_prev_wf) | `0` | `0`, `1` | CASSCF | Start from the previous step's CASSCF orbitals |
 | [`use_prev_scf_wf`](#use_prev_scf_wf) | `0` | `0`, `1` | FOMO-CASCI, TDA/TDDFT, hh-TDA | Start the SCF from the previous step's orbitals |
-| [`phase_ref`](#phase_ref) | `previous` | `previous`, `last` | NAC (`vdoth = 0`) | Phase reference for a coupling pair that returns after a gap |
+| [`phase_ref`](#phase_ref) | `last` | `last`, `previous` | NAC (`vdoth = 0`) | Phase reference for a coupling pair that returns after a gap |
 | [`archive_molden`](#archive_molden) | `1` | `0`, `1` | all | Keep a Molden file of every step |
 | [`archive_wf`](#archive_wf) | `1` | `0`, `1` | CASSCF | Keep the CASSCF orbitals of every step |
 
@@ -40,7 +40,7 @@ TeraChem computes one coupling vector per run. Each extra pair of states costs o
 | `current` | The current state with every other state. `nstat − 1` runs. |
 | `all` | Every pair of states. `nstat(nstat − 1)/2` runs. |
 
-`neighbors` is accepted as well. `neighbours` reproduces the behaviour of versions before 2.0.
+`neighbors` is accepted as well. `neighbours`, together with [`phase_ref = previous`](#phase_ref), reproduces the behaviour of versions before 2.0.
 
 ## use_prev_wf
 
@@ -68,14 +68,14 @@ NewtonX fixes the sign of each coupling vector by comparing it with the previous
 
 | Value | A pair that returns after a gap |
 |---|---|
-| `previous` | Keeps the sign TeraChem gives it. This matches NewtonX's own template and versions before 2.0. |
-| `last` | Is compared with its last computed vector, so its sign stays continuous across the gap. |
+| `last` (default) | Is compared with its last computed vector, so its sign stays continuous across the gap. |
+| `previous` | Keeps the sign TeraChem gives it. This matches NewtonX's own template and versions before 2.0. Use it to reproduce runs made with those versions. |
 
 - **Where the memory lives:** with `last`, the interface keeps the last non-zero, phase-corrected vector of every pair in `INFO_RESTART/WF_OLD/nac_phase_ref`.
 - **What it is used for:** only for the sign. NewtonX's interpolation still starts from the previous step's couplings, which are zero for a returning pair.
 - **When it changes results:** only when a pair returns after a gap. Trajectories without gaps are identical with both values.
 
-In tests on recorded trajectories, TeraChem's raw sign of a returning pair agreed with the gap-free trajectory only about half the time. With `last` it agreed in 218 of 220 cases. See [validation.md](validation.md#15-phase-reference-after-a-gap).
+In tests on recorded trajectories, TeraChem's raw sign of a returning pair agreed with the gap-free trajectory only about half the time with `previous`. With `last` it agreed in 218 of 220 cases. This is why `last` is the default. See [validation.md](validation.md#15-phase-reference-after-a-gap).
 
 ## archive_molden
 
