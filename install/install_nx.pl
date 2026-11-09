@@ -205,9 +205,13 @@ sub install_text {
     backup($dest);
     print "write:  $dest\n";
     return if $dry;
-    open my $fh, '>', $dest or die "Cannot write $dest: $!\n";
+    # Write a temporary file and rename it, so a running NewtonX never reads a half-written file.
+    my $tmp = "$dest.new.$$";
+    open my $fh, '>', $tmp or die "Cannot write $tmp: $!\n";
     print $fh $content;
-    close $fh;
+    close $fh or die "Cannot write $tmp: $!\n";
+    chmod( ( stat $dest )[2] & 07777, $tmp ) if -e $dest;
+    rename $tmp, $dest or die "Cannot replace $dest: $!\n";
 }
 
 sub install_file {
@@ -221,8 +225,10 @@ sub install_file {
     backup($dest);
     print "copy:   $dest\n";
     return if $dry;
-    copy( $src, $dest ) or die "Cannot copy $src to $dest: $!\n";
-    chmod $mode, $dest;
+    my $tmp = "$dest.new.$$";
+    copy( $src, $tmp ) or die "Cannot copy $src to $tmp: $!\n";
+    chmod $mode, $tmp;
+    rename $tmp, $dest or die "Cannot replace $dest: $!\n";
 }
 
 sub copy_tree {
