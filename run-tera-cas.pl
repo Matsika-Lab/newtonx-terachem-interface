@@ -702,7 +702,7 @@ sub parse_energies {
         }
     }
 
-    tc_fail( "Could not read $nwant state energies from $file (found " . scalar(@e) . "). Check that the template asks for at least nstat states." )
+    tc_fail( "Could not read $nwant state energies from $file (found " . scalar(@e) . "). Ask TeraChem for at least $nwant states of the target multiplicity." )
       if @e < $nwant;
     return @e[ 0 .. $nwant - 1 ];
 }

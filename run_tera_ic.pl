@@ -20,14 +20,17 @@
 #
 # initcond.pl calls this script once per geometry, from TEMP/, after copying JOB_AD/*
 # there. The script
-#   1. writes ic.sp from the template (tera.sp, or start.sp) with 'run energy',
+#   1. writes ic.sp from the template (tera.sp, start.sp, or the dynamics template
+#      GRAD/start.sp) with 'run energy',
 #   2. runs TeraChem once (output in geom.out),
-#   3. writes epot.<ifs> (or epot0.<ifs> for the reference geometry, when the file
-#      'zero' exists) and oos.<ifs> for ifs = nis+1 .. nfs, as NX expects.
+#   3. writes, for every state ifs = 1 .. max(nis, nfs) other than nis, as initcond.pl
+#      expects: epot.<ifs> (epot0.<ifs> for the reference geometry, marked by a file
+#      'zero') with the energies of nis and ifs in ascending state order, and oos.<ifs>
+#      with the oscillator strength between nis and ifs.
 #
-# Oscillator strengths are from state nis to state ifs, in the length gauge. For
-# nis = 1 the values TeraChem prints are used. For nis > 1 they are computed from the
-# transition dipoles as f = 2/3 * dE * |T|^2.
+# Oscillator strengths are in the length gauge. The values TeraChem prints are used
+# where it prints them; otherwise they are computed from the transition dipole as
+# f = 2/3 * |dE| * |T|^2.
 #
 # It shares the TeraChem helpers of run-tera-cas.pl, which must be in the same folder.
 #
@@ -46,6 +49,7 @@ require( dirname( abs_path(__FILE__) ) . "/run-tera-cas.pl" ) unless defined &ma
 
 our $out_ic = "geom.out";
 our $inp_ic = "ic.sp";
+our @ic_templates = ( "tera.sp", "start.sp", "GRAD/start.sp" );
 
 main_ic() unless caller;
 
@@ -71,15 +75,27 @@ sub main_ic {
     write_xyz( [] );
 
     # Input
-    my $template = -e "tera.sp" ? "tera.sp" : "start.sp";
-    tc_fail("No TeraChem template (tera.sp or start.sp) in JOB_AD.") unless -e $template;
+    my ($template) = grep { -e $_ } @ic_templates;
+    tc_fail( "No TeraChem template in JOB_AD: looked for " . join( ", ", @ic_templates ) . "." ) unless $template;
     open my $fh, '<', $template or tc_fail("Cannot open $template: $!");
     my @lines = <$fh>;
     close $fh;
     my $info = template_info( \@lines );
-    set_keyword( \@lines, "run",    "energy" );
-    remove_keyword( \@lines, "scrdir" );                 # TeraChem lowercases paths
-    set_keyword( \@lines, "coordinates", "geom.xyz" );   # scratch goes to ./scr.geom
+    tc_fail("$template: no 'casscf yes', 'casci yes', 'cis yes', 'rpa yes' or 'hhtda yes' found.") unless $info->{cas} || $info->{cis};
+    set_keyword( \@lines, "run", "energy" );
+    remove_keyword( \@lines, $_ ) for qw(scrdir castarget cistarget nacstate1 nacstate2);    # dynamics-only
+    set_keyword( \@lines, "coordinates", "geom.xyz" );    # scratch goes to ./scr.geom
+    # A dynamics template may point 'guess' at files that only exist during dynamics.
+    if ( my ($g) = grep { /^\s*guess\s+(\S+)/i && !/^\s*#/ } @lines ) {
+        my ($path) = $g =~ /^\s*guess\s+(\S+)/i;
+        if ( $path =~ m{/} && !-e $path ) {
+            remove_keyword( \@lines, $_ ) for qw(guess maxit convthre);
+            print_STDOUT("$main::mdle guess file $path not found; using TeraChem's default guess.\n");
+        }
+    }
+    print_STDOUT( "$main::mdle version $main::VERSION, template $template, "
+          . ( $info->{cas} ? "CAS" : $info->{rpa} ? "RPA" : "TDA/hh-TDA" ) . " "
+          . mult_name( $info->{mult} ) . "s, states 1-$mxns, nis = $nis\n" );
     open $fh, '>', $inp_ic or tc_fail("Cannot write $inp_ic: $!");
     print $fh @lines;
     close $fh;
@@ -195,7 +211,7 @@ sub parse_oscillators {
             $f{$ifs} = $osc{$lo}{$hi};
         }
         elsif ( defined $tdm{$lo}{$hi} ) {
-            my $de = $e->[ $hi - 1 ] - $e->[ $lo - 1 ];
+            my $de = abs( $e->[ $hi - 1 ] - $e->[ $lo - 1 ] );
             $f{$ifs} = sprintf( "%.6f", 2.0 / 3.0 * $de * $tdm{$lo}{$hi}**2 );
         }
         else {

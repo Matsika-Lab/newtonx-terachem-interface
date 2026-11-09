@@ -216,4 +216,35 @@ subtest 'examples/ templates' => sub {
     }
 };
 
+subtest 'run_tera_ic.pl end to end with a fake TeraChem' => sub {
+    # initcond.pl layout: BASE/TEMP is the working folder, BASE/DEBUG takes stderr.
+    my %e = ( 1 => "-78.01902772", 2 => "-77.71732133", 3 => "-77.59084718" );    # casscf fixture
+    for my $case ( [ 1, { 2 => [ 1, 2, "0.3283" ], 3 => [ 1, 3, "0.0000" ] } ],
+                   [ 2, { 1 => [ 1, 2, "0.3283" ], 3 => [ 2, 3, "0.3602" ] } ] ) {
+        my ( $nis, $want ) = @$case;
+        my $base = tempdir( CLEANUP => 1 );
+        mkdir "$base/$_" for qw(TEMP DEBUG tc tc/bin);
+        open my $fh, '>', "$base/tc/bin/terachem";
+        print $fh "#!/bin/sh\nmkdir -p scr.geom\ncat '$fx/casscf.grad.tera.out'\n";
+        close $fh;
+        chmod 0755, "$base/tc/bin/terachem";
+        system( "cp", "$root/tests/nx/MD-TERA-CASSCF-NAD-VEC/geom", "$base/TEMP/geom" );
+        system( "cp", "$root/examples/casscf/tera.sp", "$base/TEMP/tera.sp" );
+        open $fh, '>', "$base/TEMP/initqp_input";
+        print $fh " &dat\n nis = $nis\n nfs = 3\n lvprt = 1\n /\n";
+        close $fh;
+        my $out = `cd "$base/TEMP" && TeraChem="$base/tc" "$^X" "$root/run_tera_ic.pl" 2>&1`;
+        is( $? >> 8, 0, "nis = $nis: exit 0" ) or diag $out;
+        for my $ifs ( sort keys %$want ) {
+            my ( $lo, $hi, $f ) = @{ $want->{$ifs} };
+            is( slurp("$base/TEMP/epot.$ifs"), "$e{$lo}\n$e{$hi}\n", "nis = $nis: epot.$ifs holds states $lo and $hi" );
+            is( slurp("$base/TEMP/oos.$ifs"), "$f\n", "nis = $nis: oos.$ifs" );
+        }
+        ok( !-e "$base/TEMP/epot.$nis", "nis = $nis: no file for nis itself" );
+        open $fh, '<', "$base/TEMP/ic.sp"; my $sp = join "", <$fh>; close $fh;
+        like( $sp, qr/^run\s+energy$/m, "input runs an energy" );
+        unlike( $sp, qr/^\s*(castarget|nacstate1|scrdir)\b/m, "no dynamics-only keywords" );
+    }
+};
+
 done_testing();
