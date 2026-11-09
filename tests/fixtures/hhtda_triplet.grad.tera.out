@@ -1,0 +1,514 @@
+| Startfile from command line: a.sp
+
+
+|       ***********************************************************
+|       *                 TeraChem v1.96H-beta-241109             *
+|       *                   Development Version                   *
+|       *           Chemistry at the Speed of Graphics!           *
+|       ***********************************************************
+|       * This program may only be used in connection with        *
+|       * a valid license from PetaChem, LLC. Use of this program *
+|       * or results thereof indicates acceptance of all terms    *
+|       * and conditions stated in the license and that a valid   *
+|       * license agreement between the user and PetaChem, LLC    *
+|       * exists. PetaChem, LLC does not warrant the correctness  *
+|       * of results or their suitability for any purpose.        *
+|       * Please email bugs, suggestions, and comments to         *
+|       *                  help@petachem.com                      *
+|       *                                                         *
+|       ***********************************************************
+
+
+|       ***********************************************************
+|       *  Compiled by toddmtz      Sat Nov  9 14:44:01 PST 2024  *
+|       *  Supported architecture SMs: 50 60 70 80 89 90          *
+|       *  Build cuda_12.1.r12.1/compiler.32415258_0              *
+|       *  Git Version: e8689e03079e5dd0feb56de7bdd73588f14c25a8  *
+|       ***********************************************************
+
+
+| Job started   Mon Nov  9 17:08:16 2026
+| On sn4622120437 (available memory: 717967 MB)
+
+| ######################################### RUNTIME INFO ##########################################
+| /software/TeraChem-1.96-beta-241109/TeraChem/bin/terachem  a.sp 
+
+|  NVRM version: NVIDIA UNIX Open Kernel Module for x86_64  565.57.01  Release Build  (dvs-builder@U16-A24-9-2)  Thu Oct 10 12:15:00 UTC 2024
+|  GCC version:  gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04.2) 
+
+|  	linux-vdso.so.1 (0x00007ffca13a1000)
+|  	libmagma.so => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libmagma.so (0x00007fdae1e00000)
+|  	libcurl.so.4 => /lib/x86_64-linux-gnu/libcurl.so.4 (0x00007fdb4992a000)
+|  	libz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x00007fdb4990e000)
+|  	libimf.so => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libimf.so (0x00007fdae1800000)
+|  	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fdae1d19000)
+|  	libmpi.so.12 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libmpi.so.12 (0x00007fdae0a00000)
+|  	libthcbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libthcbox.so.1 (0x00007fdade200000)
+|  	libOpenMM.so => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libOpenMM.so (0x00007fdadda00000)
+|  	libnvToolsExt.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libnvToolsExt.so.1 (0x00007fdadd600000)
+|  	libgpubox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libgpubox.so.1 (0x00007fdadd200000)
+|  	libcpubox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libcpubox.so.1 (0x00007fdadce00000)
+|  	libtensorbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libtensorbox.so.1 (0x00007fdadca00000)
+|  	libiobox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libiobox.so.1 (0x00007fdadc600000)
+|  	libintbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libintbox.so.1 (0x00007fda6fc00000)
+|  	libatmx2cbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libatmx2cbox.so.1 (0x00007fda6f800000)
+|  	libperiodicbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libperiodicbox.so.1 (0x00007fda4ec00000)
+|  	libsqmbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libsqmbox.so.1 (0x00007fda4e600000)
+|  	libgridbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libgridbox.so.1 (0x00007fda4b800000)
+|  	libdftbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libdftbox.so.1 (0x00007fda4b400000)
+|  	libcibox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libcibox.so.1 (0x00007fda4aa00000)
+|  	libccbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libccbox.so.1 (0x00007fda4a200000)
+|  	libsimbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libsimbox.so.1 (0x00007fda49e00000)
+|  	liboptbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/liboptbox.so.1 (0x00007fda49a00000)
+|  	libprotobuf.so.25 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libprotobuf.so.25 (0x00007fda49400000)
+|  	libcommbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libcommbox.so.1 (0x00007fda49000000)
+|  	libssl.so.10 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libssl.so.10 (0x00007fda48c00000)
+|  	libcrypto.so.10 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libcrypto.so.10 (0x00007fda48600000)
+|  	libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fdb49901000)
+|  	libcuda.so.1 => /lib/x86_64-linux-gnu/libcuda.so.1 (0x00007fda4564d000)
+|  	libcudart.so.12 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libcudart.so.12 (0x00007fda45200000)
+|  	libcublas.so.12 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libcublas.so.12 (0x00007fda3e800000)
+|  	libcufft.so.11 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libcufft.so.11 (0x00007fda32c00000)
+|  	libcusparse.so.12 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libcusparse.so.12 (0x00007fda23600000)
+|  	libcusolver.so.11 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libcusolver.so.11 (0x00007fda11000000)
+|  	libcublasLt.so.12 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libcublasLt.so.12 (0x00007fd9f0000000)
+|  	libsvml.so => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libsvml.so (0x00007fd9ef000000)
+|  	libirng.so => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libirng.so (0x00007fd9eec00000)
+|  	libstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fd9ee9d4000)
+|  	libiomp5.so => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libiomp5.so (0x00007fd9ee600000)
+|  	libcilkrts.so.5 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libcilkrts.so.5 (0x00007fd9ee200000)
+|  	libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fdae1cf9000)
+|  	libintlc.so.5 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libintlc.so.5 (0x00007fd9ede00000)
+|  	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd9edbd7000)
+|  	/lib64/ld-linux-x86-64.so.2 (0x00007fdb499eb000)
+|  	libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007fdb498f6000)
+|  	libmkl_intel_ilp64.so => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libmkl_intel_ilp64.so (0x00007fd9ed200000)
+|  	libmkl_intel_thread.so => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libmkl_intel_thread.so (0x00007fd9eb000000)
+|  	libmkl_core.so => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libmkl_core.so (0x00007fd9e8e00000)
+|  	libnghttp2.so.14 => /lib/x86_64-linux-gnu/libnghttp2.so.14 (0x00007fdae17d6000)
+|  	libidn2.so.0 => /lib/x86_64-linux-gnu/libidn2.so.0 (0x00007fdae17b5000)
+|  	librtmp.so.1 => /lib/x86_64-linux-gnu/librtmp.so.1 (0x00007fdae1796000)
+|  	libssh.so.4 => /lib/x86_64-linux-gnu/libssh.so.4 (0x00007fdae0992000)
+|  	libpsl.so.5 => /lib/x86_64-linux-gnu/libpsl.so.5 (0x00007fdae1782000)
+|  	libssl.so.3 => /lib/x86_64-linux-gnu/libssl.so.3 (0x00007fdae08ee000)
+|  	libcrypto.so.3 => /lib/x86_64-linux-gnu/libcrypto.so.3 (0x00007fd9e89bc000)
+|  	libgssapi_krb5.so.2 => /lib/x86_64-linux-gnu/libgssapi_krb5.so.2 (0x00007fdae089a000)
+|  	libldap-2.5.so.0 => /lib/x86_64-linux-gnu/libldap-2.5.so.0 (0x00007fdae083a000)
+|  	liblber-2.5.so.0 => /lib/x86_64-linux-gnu/liblber-2.5.so.0 (0x00007fdae1771000)
+|  	libzstd.so.1 => /lib/x86_64-linux-gnu/libzstd.so.1 (0x00007fdade131000)
+|  	libbrotlidec.so.1 => /lib/x86_64-linux-gnu/libbrotlidec.so.1 (0x00007fdae1763000)
+|  	librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007fdb498eb000)
+|  	libkrb5.so.3 => /lib/x86_64-linux-gnu/libkrb5.so.3 (0x00007fdade066000)
+|  	libcom_err.so.2 => /lib/x86_64-linux-gnu/libcom_err.so.2 (0x00007fdae1cf3000)
+|  	libk5crypto.so.3 => /lib/x86_64-linux-gnu/libk5crypto.so.3 (0x00007fdadd9d1000)
+|  	libnvJitLink.so.12 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libnvJitLink.so.12 (0x00007fd9e5800000)
+|  	libunistring.so.2 => /lib/x86_64-linux-gnu/libunistring.so.2 (0x00007fdadd827000)
+|  	libgnutls.so.30 => /lib/x86_64-linux-gnu/libgnutls.so.30 (0x00007fdadd415000)
+|  	libhogweed.so.6 => /lib/x86_64-linux-gnu/libhogweed.so.6 (0x00007fdadd1b8000)
+|  	libnettle.so.8 => /lib/x86_64-linux-gnu/libnettle.so.8 (0x00007fdadd172000)
+|  	libgmp.so.10 => /lib/x86_64-linux-gnu/libgmp.so.10 (0x00007fdadd0f0000)
+|  	libkrb5support.so.0 => /lib/x86_64-linux-gnu/libkrb5support.so.0 (0x00007fdae1755000)
+|  	libsasl2.so.2 => /lib/x86_64-linux-gnu/libsasl2.so.2 (0x00007fdae173a000)
+|  	libbrotlicommon.so.1 => /lib/x86_64-linux-gnu/libbrotlicommon.so.1 (0x00007fdadd0cd000)
+|  	libkeyutils.so.1 => /lib/x86_64-linux-gnu/libkeyutils.so.1 (0x00007fdae0833000)
+|  	libresolv.so.2 => /lib/x86_64-linux-gnu/libresolv.so.2 (0x00007fdae081f000)
+|  	libp11-kit.so.0 => /lib/x86_64-linux-gnu/libp11-kit.so.0 (0x00007fdadccc5000)
+|  	libtasn1.so.6 => /lib/x86_64-linux-gnu/libtasn1.so.6 (0x00007fdadd80f000)
+|  	libffi.so.8 => /lib/x86_64-linux-gnu/libffi.so.8 (0x00007fdadd408000)
+| #################################################################################################
+
+| Checking Amazon Cloud instance ID...   Not found
+| Cannot find license.dat file /software/TeraChem-1.96-beta-241109/TeraChem/license.dat
+
+
+| TRYING THE NETWORK LICENSE...
+| Cannot find license.key file /software/TeraChem-1.96-beta-241109/TeraChem/license.key 
+
+
+| *************************** WARNING ******************************
+| *                 Running in Demo mode.                          *
+| *                                                                *
+| * You are using the demo version of TeraChem. Commercial users   *
+| * may only use this software for evaluation purposes and are     *
+| * not licensed to use the results for any other business purpose.*
+| * Use of TeraChem in demo mode is only permitted for             *
+| * noncommercial purposes.                                        *
+| ******************************************************************
+
+-----------------------------------
+Processed Input file:
+              coordinates geom.xyz
+                    basis 6-31g*
+                   method bhandhlyp
+                   charge 0
+                 spinmult 1
+                     gpus 1
+                      fon yes
+               fon_method constant
+                   closed 0
+                   active 20
+                    hhtda yes
+            hhtdasinglets 0
+            hhtdatriplets 3
+             cisnumstates 3
+                  cismult 3
+                cistarget 1
+                      run gradient
+-----------------------------------
+Jobname: geom
+Scratch data will be generated
+Scratch directory: ./scr.geom
+| Random number seed: 252368696
+
+XYZ coordinates geom.xyz
+Molden File Output: ./scr.geom/geom.molden
+Using basis set: 6-31gs
+dmrgstart not found
+Spin multiplicity: 1
+DIIS will use up to 10 vectors.
+Condition number limit for the DIIS overlap matrix is            0
+WF convergence threshold: 3.00e-05
+Using DIIS algorithm to converge WF
+Maximum number of SCF iterations: 100
+Incremental fock with rebuild every 8 iterations
+Will switch to conventional Fock if diffuse functions are detected
+X-matrix tolerance: 1.00e-04
+PRECISION: DYNAMIC
+TeraChem will select linear algebra engine
+Using fractional orbital occupations
+0 occupied orbitals will have integer occupation
+20 occupied orbitals will have fractional occupation
+kT is set to  0.250 a.u.
+DFT Functional requested: bhandhlyp
+Method: BHandHLYP 
+  Becke 1988 exchange functional:       0.50 
+  Hartree-Fock exact exchange:          0.50 
+  Lee-Yang-Parr correlation functional: 1.0 
+Wavefunction: RESTRICTED
+DFT grid type: 1
+Using dynamic DFT grids.
+Initial guess generated by maximum overlap
+
+********************************************
+**** SINGLE POINT GRADIENT CALCULATIONS ****
+********************************************
+SCF:   Initial guess is taken from previous step
+CIS:   Initial guess is taken from previous step
+Z-vec: Initial guess is taken from previous step
+Starting TensorBox...
+| TeraChem will select linear algebra engine
+| Using cuSolver for matrix diagonalization
+
+| using 1 out of 1 CUDA devices
+|   Device 0: NVIDIA RTX 5000 Ada Generation, 32255MB, CC 8.9 -- CPU THREAD 0
+| -------------------------------------------------------------------
+| CPU Memory Available: 128982.25 MegaWords 
+| GPU Memory Available: 3775.94 MegaWords 
+| Maximum recommended basis set size: 23500 basis functions
+|  (limited by GPU memory)
+| -------------------------------------------------------------------
+| Initialize GPUBox with 128 MW of memory
+
+****** QM coordinates ******
+C         0.0000000000         0.0000000000         0.7255635954  
+C         0.0000000000         0.0000000000        -0.7255635954  
+H        -0.2042942523         0.9070084185         1.2704062488  
+H         0.2042942523        -0.9070084185         1.2704062488  
+H         0.2042942523         0.9070084185        -1.2704062488  
+H        -0.2042942523        -0.9070084185        -1.2704062488  
+
+Basis set:       6-31gs
+Total atoms:     6
+Total charge:    0
+Total electrons: 16 (8-alpha, 8-beta)
+Number electrons modeled by ECPs: 0
+Total orbitals:  38
+Total AO shells: 20 (14 S-shells; 4 P-shells; 2 D-shells; 0 F-shells; 0 G-shells)
+Spin multiplicity: 1
+Nuclear repulsion energy (QM atoms): 32.000849504389 a.u.
+
+Setting up the DFT grid...
+| time to set the grid = 0.00 s
+DFT grid points: 6184 (1030 points/atom)
+Setting up the DFT grid...
+| time to set the grid = 0.00 s
+DFT grid points: 17236 (2872 points/atom)
+
+                      *** Start SCF Iterations ***
+
+ Iter     DIIS Error       Energy change      Electrons        XC Energy           Energy        Time(s)
+----------------------------------------------------------------------------------------------------------
+Initial temperature is 0.250000
+| Purifying guess...
+| Trace of guess  16.00000000, trace of guess*guess  16.00000000,  electron number  16.00000000 
+| Guess is well-conditioned: purify...
+| Purification run on CPU (double precision)  using TC2 purification.
+| Density matrix purification finished after a total of 0 matrix multiplies
+| THRESPDP set to 1.00e+00
+|                 >>> SWITCHING TO GRID 1 <<<
+|    1     0.4488892143     -77.9332385031    15.9998903032    -5.9949013278     -77.9332385031     0.14  
+|                 >>> SWITCHING TO GRID 0 <<<
+|    2     0.3139192328     +35.2923516536    16.0005906055    -3.9631821199     -42.6408868495     0.02  
+|    3     0.0658991890      -0.4090985417    16.0002539713    -4.1659549210     -43.0499853912     0.02  
+|    4     0.0057897570      -0.0069237440    16.0002632465    -4.1819500532     -43.0569091352     0.02  
+|                 >>> SWITCHING TO GRID 1 <<<
+|    5     0.0003530015      -0.0003674782    15.9998378048    -4.1881385830     -43.0572766134     0.07  
+|    6     0.0000195304      -0.0000004917    15.9998369437    -4.1884270790     -43.0572771051     0.04  
+----------------------------------------------------------------------------------------------------------
+FINAL ENERGY: -43.0572771051 a.u.
+Fractional Occupation Entropy: 0.0000000000
+Mermin Free Energy:            -43.0572771051
+HOMO-LUMO GAP: 3.672 eV
+CENTER OF MASS: {0.000000, -0.000000, 0.000000} ANGS
+DIPOLE MOMENT: {-0.000002, 0.000007, 0.000086} (|D| = 0.000086) DEBYE
+
+Running Mulliken population analysis...
+
+WARNING: TDDFT gradients for triplet states work only for certain functionals!
+Always check analytical gradients against the numerical ones!
+
+  Restricted hh-TDA Parameters
+--------------------------------------------
+Number of occupied orbitals:            20
+Number of virtual orbitals:             18
+Number of molecular orbitals:           38
+Number of basis functions:              38
+Multiplicity of target state:      triplet
+
+ Generating 2nd functional diffs
+Reference energy:               27.2103476393
+Number of electrons:            39.9995956963
+XC energy:                     -13.5972509638
+
+      Davidson Diagonalization Parameters
+-----------------------------------------------
+Number of roots to find:                    3
+Number of guess vectors:                    3
+Maximum subspace size:                     30
+Number of vectors to save:                  3
+Collapse vectors per root:                  2
+Number of CSFs:                           190
+Maximum Davidson iterations:               20
+Residual convergence:                 1.0e-04
+Orthogonality tolerance:              1.0e-12
+Use incremental sigma vectors:             No
+
+  Nonsymmetric Davidson Dynamic Precision Parameters
+------------------------------------------------------
+SP Residual convergence:              1.0e-04
+Sigma vector THRESPDP:                5.2e-04
+
+Davidson memory usage: 122.00 kB
+
+Guess Vectors:
+  10 &  9 :  open  :   -20.127739
+  10 &  8 :  open  :   -19.854797
+  10 &  3 :  open  :   -19.850254
+
+  Root           Eigenvalue       Energy Change        Residual
+-------------------------------------------------------------------
+Iteration:    0   Subspace Size:    3
+Root: 1:       -19.86435378       -19.86435378         1.47792324  
+Root: 2:       -19.59102593       -19.59102593         1.55086115  
+Root: 3:       -19.58236960       -19.58236960         1.53202735  
+
+Iteration:    1   Subspace Size:    6
+Root: 1:       -20.47688949        -0.61253571         0.61294471  
+Root: 2:       -20.25407301        -0.66304708         1.16282852  
+Root: 3:       -19.59758934        -0.01521973         1.53942599  
+
+Iteration:    2   Subspace Size:    9
+Root: 1:       -20.64386524        -0.16697575         0.50229274  
+Root: 2:       -20.54363517        -0.28956217         0.14632306  
+Root: 3:       -20.33945196        -0.74186262         0.68731159  
+
+Iteration:    3   Subspace Size:   12
+Root: 1:       -20.68973603        -0.04587079         0.10621000  
+Root: 2:       -20.54839858        -0.00476341         0.06575455  
+Root: 3:       -20.42035633        -0.08090437         0.16084125  
+
+Iteration:    4   Subspace Size:   15
+Root: 1:       -20.69176141        -0.00202538         0.02494389  
+Root: 2:       -20.55027536        -0.00187678         0.06428577  
+Root: 3:       -20.42641798        -0.00606165         0.07104945  
+
+Iteration:    5   Subspace Size:   18
+Root: 1:       -20.69192664        -0.00016523         0.00969096  
+Root: 2:       -20.55161247        -0.00133711         0.02910430  
+Root: 3:       -20.42964708        -0.00322910         0.06471016  
+
+Iteration:    6   Subspace Size:   21
+Root: 1:       -20.69195447        -0.00002783         0.00412633  
+Root: 2:       -20.55193506        -0.00032260         0.01276529  
+Root: 3:       -20.43120829        -0.00156121         0.03628696  
+
+Iteration:    7   Subspace Size:   24
+Root: 1:       -20.69195737        -0.00000290         0.00082031  
+Root: 2:       -20.55199960        -0.00006454         0.00899810  
+Root: 3:       -20.43156409        -0.00035580         0.02108296  
+
+Iteration:    8   Subspace Size:   27
+Root: 1:       -20.69195747        -0.00000010         0.00018064  
+Root: 2:       -20.55203030        -0.00003070         0.00590865  
+Root: 3:       -20.43177751        -0.00021342         0.01986277  
+
+Iteration:    9   Subspace Size:   30
+Root: 1:       -20.69195747        -0.00000001         0.00007164  Converged
+Root: 2:       -20.55204057        -0.00001027         0.00314819  
+Root: 3:       -20.43188344        -0.00010593         0.00851739  
+Collapsing subspace to 5 vectors
+
+Iteration:   10   Subspace Size:    5
+Root: 1:       -20.69195747         0.00000000         0.00007164  Converged
+Root: 2:       -20.55204057        -0.00000000         0.00314819  
+Root: 3:       -20.43188344         0.00000000         0.00851739  
+
+Iteration:   11   Subspace Size:    7
+Root: 1:       -20.69195747        -0.00000000         0.00007164  Converged
+Root: 2:       -20.55204280        -0.00000222         0.00147879  
+Root: 3:       -20.43189904        -0.00001560         0.00478564  
+
+Iteration:   12   Subspace Size:    9
+Root: 1:       -20.69195747         0.00000000         0.00007164  Converged
+Root: 2:       -20.55204347        -0.00000068         0.00074859  
+Root: 3:       -20.43190692        -0.00000788         0.00290951  
+
+Iteration:   13   Subspace Size:   11
+Root: 1:       -20.69195747        -0.00000000         0.00007164  Converged
+Root: 2:       -20.55204362        -0.00000015         0.00033563  
+Root: 3:       -20.43190927        -0.00000235         0.00125647  
+
+Iteration:   14   Subspace Size:   13
+Root: 1:       -20.69195747         0.00000000         0.00007164  Converged
+Root: 2:       -20.55204365        -0.00000003         0.00023710  
+Root: 3:       -20.43190985        -0.00000058         0.00100714  
+
+Iteration:   15   Subspace Size:   15
+Root: 1:       -20.69195747        -0.00000000         0.00007164  Converged
+Root: 2:       -20.55204367        -0.00000002         0.00014052  
+Root: 3:       -20.43191015        -0.00000030         0.00069847  
+
+Iteration:   16   Subspace Size:   17
+Root: 1:       -20.69195747         0.00000000         0.00007164  Converged
+Root: 2:       -20.55204368        -0.00000001         0.00006966  Converged
+Root: 3:       -20.43191024        -0.00000009         0.00023032  
+
+Iteration:   17   Subspace Size:   18
+Root: 1:       -20.69195747         0.00000000         0.00007164  Converged
+Root: 2:       -20.55204368         0.00000000         0.00006966  Converged
+Root: 3:       -20.43191025        -0.00000001         0.00010814  
+
+Iteration:   18   Subspace Size:   19
+Root: 1:       -20.69195747        -0.00000000         0.00007164  Converged
+Root: 2:       -20.55204368         0.00000000         0.00006966  Converged
+Root: 3:       -20.43191025        -0.00000000         0.00007126  Converged
+
+Davidson has converged in single precision
+Collapsing subspace to 3 vectors
+Rebuilding sigma vectors in mixed precision
+
+Iteration:   19   Subspace Size:    3
+Root: 1:       -20.69195754        -0.00000007         0.00007165  Converged
+Root: 2:       -20.55204366         0.00000002         0.00006967  Converged
+Root: 3:       -20.43191022         0.00000003         0.00007128  Converged
+
+Davidson converged in 19 iterations
+47 sigma vectors were formed
+44 sigma vectors were formed in single precision
+3 sigma vectors were formed in mixed precision
+
+Building Xtilde...
+
+Building Z-vector RHS...
+
+ Generating 2nd functional diffs
+Solving CPSCF equations
+Using DIIS solver
+
+ Iter         Residual      
+------  --------------------
+    1     31.006446120494
+    2      6.742757619641
+    3      0.079420921937
+    4      0.007580233680
+    5      0.000343584310
+    6      0.000009358298
+
+CPSCF converged
+
+Building X...
+
+ Generating 2nd functional diffs
+ Generating 2nd functional diffs
+  Root   Mult.   Total Energy (a.u.)   Ex. Energy (a.u.)     Ex. Energy (eV)     Ex. Energy (nm)        Osc. (a.u.)  
+-------------------------------------------------------------------------------------------------------------------
+     1  triplet          6.51839010
+     2  triplet          6.65830398          0.13991389          3.80724991        325.65296101          0.00003889
+     3  triplet          6.77843741          0.26004732          7.07624640        175.21184776          0.01115072
+
+Triplet  1: Largest CI coefficients:
+   3  & 10 :  open  :   0.491149
+  10  &  3 :  open  :  -0.491149
+   5  & 10 :  open  :   0.393551
+  10  &  5 :  open  :  -0.393551
+  10  & 16 :  open  :   0.254336
+  16  & 10 :  open  :  -0.254336
+   3  & 18 :  open  :   0.107857
+  18  &  3 :  open  :  -0.107857
+
+Triplet  2: Largest CI coefficients:
+   9  & 10 :  open  :  -0.632779
+  10  &  9 :  open  :   0.632779
+  10  & 19 :  open  :  -0.231754
+  19  & 10 :  open  :   0.231754
+   9  & 18 :  open  :  -0.137557
+  18  &  9 :  open  :   0.137557
+
+Triplet  3: Largest CI coefficients:
+   8  & 10 :  open  :   0.603326
+  10  &  8 :  open  :  -0.603326
+  10  & 15 :  open  :  -0.277664
+  15  & 10 :  open  :   0.277664
+   8  & 18 :  open  :   0.131356
+  18  &  8 :  open  :  -0.131356
+  10  & 14 :  open  :   0.101047
+  14  & 10 :  open  :  -0.101047
+
+
+Triplet state dipole moments:
+
+  Root       Dx         Dy         Dz         |D|  (Debye)
+------------------------------------------------------------
+     1    -0.0000     0.0000     0.0002     0.0002
+     2    -0.0000     0.0000    -0.0001     0.0001
+     3    -0.0000     0.0000     0.0004     0.0004
+
+Transition dipole moments between triplet states:
+
+    Transition       Tx         Ty         Tz         |T| (a.u.)
+------------------------------------------------------------------
+     1 ->    2     0.0000    -0.0204    -0.0000     0.0204
+     1 ->    3    -0.2536     0.0000    -0.0000     0.2536
+     2 ->    3    -0.0000    -0.0000     1.0388     1.0388
+
+
+|FINAL Target State Energy: 6.518390096399 a.u.
+
+Gradient units are Hartree/Bohr
+---------------------------------------------------
+        dE/dX            dE/dY            dE/dZ
+   -0.0000079903     0.0000088382    -5.4908153393
+    0.0000034033    -0.0000094120     5.4908242170
+    0.0335703202    -0.2375187074    -0.4922024608
+   -0.0335656455     0.2375130230    -0.4922057221
+   -0.0335657493    -0.2375082372     0.4921944786
+    0.0335656286     0.2375150436     0.4922029253
+---------------------------------------------------
+Net gradient: -3.309617e-08  5.482074e-07 -1.901250e-06
+Net torque:   -3.923821e-06  4.103083e-07 -4.601460e-06
+
+Writing out molden info
+| Total processing time: 1.71 sec 
+
+| Job finished: Mon Nov  9 17:08:19 2026
+

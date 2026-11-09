@@ -1,0 +1,12 @@
+&input
+ nat = 6
+ nstat = 3
+ nstatdyn = 3
+ dt = 0.5
+ tmax = 2
+ prog = 21.0
+ thres = 100
+ etot_jump = 0.5
+ etot_drift = 0.5
+ lvprt = 2
+/

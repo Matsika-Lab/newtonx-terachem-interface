@@ -7,7 +7,7 @@
 #
 # Authors:
 # Dakshitha Abeygunewardane
-# Vaibhav Signh
+# Vaibhav Singh
 # Spiridoula Matsika
 #
 # Matsika Lab,
@@ -16,207 +16,417 @@
 #
 #====================================================================================
 #
+# NewtonX calls this script from TRAJ/TEMP at every time step. NewtonX has already
+# copied JOB_NAD/* and terachem.par into TEMP. The script
+#   1. writes one TeraChem input per job: a gradient for the current state and one
+#      coupling job per state pair that is needed,
+#   2. runs TeraChem for each job, one after another, on the GPU(s) it was given,
+#   3. writes epot, grad, grad.all and the phase-corrected nad_vectors/newh for NewtonX.
+#
+# Options are read from terachem.par (key = value). See README.md for the full list.
+#
 use strict;
 use warnings;
 use File::Copy qw(move copy);
 use File::Path qw(remove_tree mkpath);
-use Cwd 'abs_path';
+use Cwd qw(abs_path getcwd);
+
+BEGIN {
+    die "run-tera-cas.pl: the NX environment variable is not set.\n" unless defined $ENV{"NX"};
+}
 use lib join( '/', $ENV{"NX"}, "lib" );
 use colib_perl;
 
-#====================================================================================
-#                                 USER CONFIGURATION
-#====================================================================================
-
-# Set to 1 to use the wavefunction from the previous step as the guess.
-# Set to 0 to generate a fresh scf guess at every step.
-# NOTE: This only applies if 'casscf yes' is present in start.sp. for FOMO and TDDFT
-# this is treated as 0 by default.
-my $use_prev_wf = 0;
-
-# Set to 1 to start the SCF of FOMO, TDDFT/TDA and hh-TDA runs (no 'casscf yes') from the converged orbitals of the
-# previous step. Only a 'guess' line is added; the SCF (including FON-SCF) still runs to convergence, unlike the
-# CASSCF option above, which skips the SCF with maxit 0. The NAC jobs of a step start from that step's GRAD orbitals.
-# Set to 0 for a fresh guess at every step, as in the original runs.
-my $use_prev_scf_wf = 0;
+our $VERSION = "2.0.0";
 
 #====================================================================================
+#                                 DEFAULT OPTIONS
+#====================================================================================
+# Do not edit these to change a run. Put the keys in terachem.par instead, in the
+# trajectory folder (next to control.dyn) or in JOB_NAD/.
 
-# We are using "strict." Thus, all variables must be declared.
-my ( $mld, $mdle, $BASEDIR, $DEBUG, $JAD, $JND, $ctd, $fpar );
-my ( $old_scf_guess, $old_guess, $grad_loc, $nac10_loc, $nac12_loc, $tpp, $tpp_outfile, $e_loc, $molden_ar, $wf_ar );
-my ( $nat, $istep, $nstat, $nstatdyn, $ndamp, $kt, $dt, $t, $tmax, $nintc );
-my ( $nxrestart, $thres, $killstat, $timekill, $prog, $lvprt, $etot_jump, $etot_drift );
-my ( @symb, @zn, @x, @y, @z, @Mass, $ia );
-my ( $typeofinput, $type );
-my ( @epot, $ns );
-my ( $vdoth, $run_flag );
-my ( $ncoup, $nc );
-my ( @gx, @gy, @gz, @hx, @hy, @hz );
-my ($mem);
-my (%progconf);
+our %DEFAULTS = (
+    # CASSCF only ('casscf yes'). 1 = start from the previous step's CASSCF orbitals and
+    # skip the SCF (maxit 0). The coupling jobs then start from the same step's gradient
+    # job orbitals.
+    use_prev_wf => 0,
+
+    # FOMO-CASCI, TDA/TDDFT and hh-TDA (no 'casscf yes'). 1 = start the SCF from the
+    # previous step's converged SCF orbitals; the SCF still runs to convergence. The
+    # coupling jobs start from the same step's gradient job orbitals.
+    use_prev_scf_wf => 0,
+
+    # Which coupling vectors to compute. TeraChem gives one coupling per run.
+    #   nx         : the pairs NX lists in transmomin each step, set by jiri.inp (KROSS,
+    #                CASCADE, CURRENT, NEVER_STATE, INCLUDE_PAIR) and THRES in control.dyn.
+    #                Without jiri.inp, NX 2.4 lists every pair (like 'all' below), so
+    #                give a jiri.inp (e.g. kross = 0, current = 1 for neighbours).
+    #   neighbours : current state with the states just below and above (up to 2 runs)
+    #   current    : current state with every other state (nstat-1 runs)
+    #   all        : every pair of states (nstat*(nstat-1)/2 runs)
+    couplings => "nx",
+
+    # 1 = keep a Molden file of the gradient job's orbitals for every step.
+    archive_molden => 1,
+
+    # 1 = keep the CASSCF orbitals (c0.casscf) for every step.
+    archive_wf => 1,
+);
+
+#====================================================================================
+
+our ( $mld, $mdle, $BASEDIR, $DEBUG, $JAD, $JND, $ctd );
+our ( $tpp, $tpp_outfile, $parfile, $template_single );
+our ( $old_scf_guess, $old_guess, $molden_ar, $wf_ar );
+our ( $nat, $istep, $nstat, $nstatdyn, $ndamp, $kt, $dt, $t, $tmax, $nintc );
+our ( $nxrestart, $thres, $killstat, $timekill, $prog, $lvprt, $etot_jump, $etot_drift, $mem );
+our ( @symb, @x, @y, @z );
+our ( $typeofinput, $run_flag, $layout, %opt );
+our ( @epot, @gx, @gy, @gz, @hx, @hy, @hz, $ncoup );
+
+if ( !caller && @ARGV && $ARGV[0] eq "--check-options" ) {
+    check_options_cli( $ARGV[1] // "terachem.par" );
+    exit 0;
+}
+main() unless caller;
 
 #====================================================================================
 #                                MAIN EXECUTION BLOCK
 #====================================================================================
 
-# 1. Define global variables and load simulation status
-define_variables();
-write_debug_prologue();
+sub main {
+    define_variables();
+    %opt = read_options($parfile);
+    check_environment();
+    write_debug_prologue();
 
-# 2. Determine the type of dynamics; this interface only supports non-adiabatic (JND)
-determine_dynamics_type();
-if ( $typeofinput eq "jad" ) {
-    print_STDOUT( "This interface is designed for non-adiabatic dynamics (JND) only.\n", $istep, $kt );
-    die "Adiabatic dynamics (JAD) is not supported.";
+    determine_dynamics_type();
+    read_geom();
+    $layout = detect_layout();
+    my @jobs = plan_jobs();
+    prepare_casscf_guess();
+    write_xyz( \@jobs );
+
+    foreach my $job (@jobs) {
+        write_job_input($job);
+        run_job($job);
+        save_orbitals() if $job->{kind} eq "grad";
+    }
+
+    read_energy( $jobs[0] );
+    write_energy();
+    read_gradients( $jobs[0] );
+    write_grad();
+    treat_nacme( [ grep { $_->{kind} eq "nac" } @jobs ] ) if $typeofinput eq "jnd";
 }
 
-# 3. Read current geometry from NewtonX
-read_geom();
-
-# 4. Prepare TeraChem input files
-prepare_input();
-
-# 5. Run TeraChem for gradients and non-adiabatic couplings (NACs)
-run_terachem();
-
-# 6. Read results from TeraChem and write them for NewtonX
-read_energy();
-read_gradients();
-treat_nacme();
-
 #====================================================================================
-#                                START SUBROUTINES
+#                                SETUP
 #====================================================================================
 
 sub define_variables {
-    #
-    # Defines file paths, environment variables, and loads the simulation status.
-    #
     $mld  = $ENV{"NX"};
     $mdle = "run-tera-cas.pl:";
 
-    # TeraChem specific variables
     $tpp             = $ENV{"TeraChem"};
-    $tpp_outfile = "tera.out";
-    $e_loc       = "GRAD/tera.out";
-    $grad_loc    = "GRAD/scr.geom/grad.xyz";
-    $nac10_loc   = "NAD_N1N0/scr.geom/grad.xyz"; # NAC between current state (N1) and state below (N0)
-    $nac12_loc   = "NAD_N1N2/scr.geom/grad.xyz"; # NAC between current state (N1) and state above (N2)
+    $tpp_outfile     = "tera.out";
+    $parfile         = "terachem.par";
+    $template_single = "tera.sp";
 
-    # Variables for handling wavefunction restart
-    $old_guess = "../INFO_RESTART/WF_OLD/c0";
+    $old_guess     = "../INFO_RESTART/WF_OLD/c0";
     $old_scf_guess = "../INFO_RESTART/WF_OLD/c0_scf";
-    $molden_ar = "../INFO_RESTART/MOLDEN_ARCHIVE";
-    $wf_ar     = "../INFO_RESTART/WF_ARCHIVE";
-
-    # Create directories for archiving and restart if they don't exist
+    $molden_ar     = "../INFO_RESTART/MOLDEN_ARCHIVE";
+    $wf_ar         = "../INFO_RESTART/WF_ARCHIVE";
     mkpath( [ $molden_ar, $wf_ar, "../INFO_RESTART/WF_OLD" ], 0, 0755 );
 
-    $BASEDIR = `pwd`;
-    chomp($BASEDIR);
+    $BASEDIR = getcwd();
+    $DEBUG   = "DEBUG";
+    $JAD     = "JOB_AD";
+    $JND     = "JOB_NAD";
+    $ctd     = "control.d";
 
-    # NewtonX directories and control files
-    $DEBUG = "DEBUG";
-    $JAD   = "JOB_AD";
-    $JND   = "JOB_NAD";
-    $ctd   = "control.d";
-
-    # Load current dynamics status from control.d
     ( $nat, $istep, $nstat, $nstatdyn, $ndamp, $kt, $dt, $t, $tmax, $nintc, $mem, $nxrestart, $thres, $killstat, $timekill, $prog, $lvprt, $etot_jump, $etot_drift ) =
       load_status( $ctd, $mdle );
 
-    %progconf = prog_config($prog);
-    $fpar     = $progconf{parfile};
+    $run_flag = -s "which_run_is_that" ? read_single_value( "which_run_is_that", "" ) : "";
+    $run_flag = "" unless defined $run_flag;
+}
+
+sub read_options {
+    #
+    # Reads terachem.par. Accepted forms: "key = value", "key value", optional commas,
+    # comments after '#' or '!', and NX namelist markers (&... and /). Unknown keys and
+    # bad values stop the run, so a typo cannot be silently ignored.
+    #
+    my ($file) = @_;
+    my %o = %DEFAULTS;
+    return %o unless -e $file;
+
+    open my $fh, '<', $file or tc_fail("Cannot open $file: $!");
+    while ( my $line = <$fh> ) {
+        $line =~ s/[#!].*//;
+        $line =~ s/,/ /g;
+        next if $line =~ /^\s*$/;
+        next if $line =~ /^\s*[&\/]/;
+        my ( $key, $value ) = $line =~ /^\s*(\w+)\s*=?\s*(\S+)\s*$/
+          or tc_fail("Cannot read this line of $file: $line");
+        $key = lc $key;
+        tc_fail("Unknown option '$key' in $file. Known options: " . join( ", ", sort keys %DEFAULTS ) . ".")
+          unless exists $DEFAULTS{$key};
+        $o{$key} = $value;
+    }
+    close $fh;
+
+    foreach my $k (qw(use_prev_wf use_prev_scf_wf archive_molden archive_wf)) {
+        $o{$k} = 1 if $o{$k} =~ /^(yes|true)$/i;
+        $o{$k} = 0 if $o{$k} =~ /^(no|false)$/i;
+        tc_fail("Option $k in $file must be 0 or 1, not '$o{$k}'.") unless $o{$k} =~ /^[01]$/;
+    }
+    $o{couplings} = lc $o{couplings};
+    $o{couplings} = "neighbours" if $o{couplings} eq "neighbors";
+    tc_fail("Option couplings in $file must be nx, neighbours, current or all, not '$o{couplings}'.")
+      unless $o{couplings} =~ /^(nx|neighbours|current|all)$/;
+    return %o;
+}
+
+sub check_options_cli {
+    #
+    # 'run-tera-cas.pl --check-options [file]': validates terachem.par and prints the
+    # options in effect. Used by NX at startup (check_thirdparty in colib_perl.pm), so a
+    # typo stops the run before any TeraChem time is spent.
+    #
+    my ($file) = @_;
+    $mdle = "run-tera-cas.pl:";
+    my %o = read_options($file);
+    print "TeraChem interface $VERSION, options " . ( -e $file ? "from $file" : "(defaults; no terachem.par)" ) . ":\n";
+    printf " %-16s = %s\n", $_, $o{$_} foreach sort keys %o;
+}
+
+sub check_environment {
+    tc_fail("The TeraChem environment variable is not set.") unless defined $tpp && $tpp ne "";
+    tc_fail("TeraChem executable not found at $tpp/bin/terachem. Check the TeraChem environment variable.")
+      unless -x "$tpp/bin/terachem";
 }
 
 sub write_debug_prologue {
-    #
-    # Writes initial debug messages about the simulation state.
-    #
+    print_STDOUT( "$mdle version $VERSION, options: "
+          . join( " ", map { "$_=$opt{$_}" } sort keys %opt )
+          . ( -e $parfile ? " (from $parfile)" : " (defaults, no $parfile)" ) . "\n",
+        $istep, $kt );
     if ( $lvprt >= 3 ) {
-        print_STDOUT( "$mdle has taken over\n",                                       $istep, $kt );
-        print_STDOUT( "$mdle running in $BASEDIR\n",                                  $istep, $kt );
-        print_STDOUT( "$mdle Dynamics control: \n",                                   $istep, $kt );
-        print_STDOUT( "$nat $istep $nstat $nstatdyn $ndamp $kt $dt $t $tmax \n",      $istep, $kt );
+        print_STDOUT( "$mdle running in $BASEDIR\n", $istep, $kt );
+        print_STDOUT( "$mdle Dynamics control: \n", $istep, $kt );
+        print_STDOUT( "$nat $istep $nstat $nstatdyn $ndamp $kt $dt $t $tmax \n", $istep, $kt );
         print_STDOUT( "$nintc $mem $nxrestart $thres $killstat $timekill $prog $lvprt\n", $istep, $kt );
-        print_STDOUT( "$etot_jump $etot_drift\n\n",                                   $istep, $kt );
+        print_STDOUT( "$etot_jump $etot_drift\n\n", $istep, $kt );
     }
 }
 
 sub determine_dynamics_type {
     #
-    # Checks for JOB_AD/JOB_NAD directories to determine dynamics type.
+    # Decides whether this call needs coupling vectors ('jnd') or only energies and the
+    # gradient ('jad').
+    #   * NX writes the step type to typeofdyn.out. Type 1 is an adiabatic step: pure
+    #     adiabatic dynamics, or every energy gap above THRES (control.dyn).
+    #   * Otherwise couplings are computed here only with vdoth = 0 in sh.inp. With
+    #     vdoth = 2 (TD-BA), NX builds the couplings itself from the energies.
+    #   * vdoth = 1 or < 0 need wavefunction overlaps, which this interface cannot give.
+    # NX copies JOB_NAD to JOB_AD when JOB_AD is missing, so both folders are usually in
+    # TEMP and cannot tell the step type by themselves.
     #
-    if ( $lvprt >= 3 ) { print_STDOUT( "$mdle Checking type of dynamics.\n", $istep, $kt ); }
-
-    # Read type from type_of_dyn.out if it exists
-    my $type_from_file = 2;    # Default to non-adiabatic
-    my $typeout        = "type_of_dyn.out";
-    if ( -s $typeout ) {
-        open( my $fh, '<', $typeout ) or die "$mdle Cannot open $typeout: $!";
-        $type_from_file = <$fh>;
-        chomp $type_from_file;
+    my $type = 2;
+    if ( -s "typeofdyn.out" ) {
+        open( my $fh, '<', "typeofdyn.out" ) or tc_fail("Cannot open typeofdyn.out: $!");
+        $type = <$fh>;
         close($fh);
+        $type =~ s/\s+//g;
+    }
+    elsif ( -e $JAD && !-e $JND ) {
+        $type = 1;
+    }
+    elsif ( !-e $JAD && !-e $JND ) {
+        tc_fail("Could not determine dynamics type. Neither $JAD nor $JND found.");
     }
 
-    if ( ( -e $JAD ) && ( !-e $JND ) ) {
+    my $vdoth = getkeyword( "sh.inp", "vdoth", 0 );
+    $vdoth = 0 if !defined $vdoth || $vdoth eq "";
+    if ( $type == 1 ) {
         $typeofinput = "jad";
     }
-    elsif ( ( !-e $JAD ) && ( -e $JND ) ) {
+    elsif ( $vdoth == 0 ) {
         $typeofinput = "jnd";
+        my $getphase = getkeyword( "sh.inp", "getphase", 1 );
+        print_STDOUT( "$mdle WARNING: getphase = $getphase in sh.inp, but this interface always fixes the coupling phase by the scalar product with the previous step (getphase = 1).\n", $istep, $kt )
+          if $getphase ne "" && $getphase != 1;
     }
-    elsif ( ( -e $JAD ) && ( -e $JND ) ) {
-        $typeofinput = ( $type_from_file == 1 ) ? "jad" : "jnd";
+    elsif ( $vdoth == 2 ) {
+        $typeofinput = "jad";    # TD-BA: NX computes the couplings after this call
     }
     else {
-        die "$mdle: Could not determine dynamics type. Neither $JAD nor $JND found.";
+        tc_fail("vdoth = $vdoth in sh.inp needs wavefunction overlaps, which the TeraChem interface does not provide. Use vdoth = 0 (coupling vectors) or vdoth = 2 (TD-BA).");
+    }
+    if ( $lvprt >= 2 ) {
+        print_STDOUT( "$mdle step type $type, vdoth $vdoth: " . ( $typeofinput eq "jnd" ? "computing coupling vectors" : "energies and gradient only" ) . ".\n", $istep, $kt );
     }
 }
-
 
 sub read_geom {
-    #
-    # Reads geometry from NewtonX's 'geom' file and handles the guess wavefunction.
-    #
-    if ( $lvprt >= 3 ) { print_STDOUT( "$mdle Reading current geometry.\n", $istep, $kt ); }
-
-    open( my $gm_fh, '<', "geom" ) or die "$mdle Cannot open geom: $!";
-    $ia = 0;
-    while (<$gm_fh>) {
-        chomp;
-        ( $symb[$ia], $zn[$ia], $x[$ia], $y[$ia], $z[$ia], $Mass[$ia] ) = split;
-        $ia++;
+    open( my $gm_fh, '<', "geom" ) or tc_fail("Cannot open geom: $!");
+    @symb = @x = @y = @z = ();
+    while ( my $line = <$gm_fh> ) {
+        my @f = split ' ', $line;
+        next unless @f;
+        tc_fail("Bad line in geom: $line") unless @f >= 5;
+        push @symb, $f[0];
+        push @x,    $f[2];
+        push @y,    $f[3];
+        push @z,    $f[4];
     }
     close($gm_fh);
+    tc_fail( "geom has " . scalar(@symb) . " atoms but control.d says nat = $nat." ) unless @symb == $nat;
 }
 
-sub prepare_input {
-    #
-    # Prepares TeraChem input files (geom.xyz, start.sp) for all required calculations.
-    #
-    if ( $lvprt >= 3 ) { print_STDOUT( "$mdle Preparing input for TeraChem.\n", $istep, $kt ); }
-    my $au2ang = units("au2ang");
+#====================================================================================
+#                                JOB PLANNING AND INPUTS
+#====================================================================================
 
-    # Handles the starting guess if running casscf.
-    # Order of precedence: User povided in GRAD/scr.geom > previous timestep ($old_guess) > generate from hf
-    my $initial_casscf_guess = "GRAD/scr.geom/c0.casscf";
-
-    # Logic updated to respect $use_prev_wf toggle
-    if ( $use_prev_wf && -e $old_guess ) {
-        print "Using existing wavefunction from previous step as guess (if CASSCF is active): $old_guess\n";
+sub detect_layout {
+    #
+    # 'single': one template, JOB_NAD/tera.sp, from which every input is written.
+    # 'legacy': JOB_NAD/GRAD, NAD_N1N0 and NAD_N1N2, each with its own start.sp.
+    #
+    if ( -e $template_single ) {
+        print_STDOUT( "$mdle Both $template_single and GRAD/start.sp found; using $template_single.\n", $istep, $kt )
+          if -e "GRAD/start.sp";
+        return "single";
     }
-    elsif ( -e $initial_casscf_guess ) {
-        copy( $initial_casscf_guess, $old_guess ) or die "Failed to copy initial CASSCF guess: $!";
-        print "Using initial CASSCF wavefunction as first guess: $initial_casscf_guess\n";
+    return "legacy" if -e "GRAD/start.sp";
+    tc_fail("No TeraChem template found. Put tera.sp in JOB_NAD/ (or the old GRAD, NAD_N1N0 and NAD_N1N2 folders with start.sp).");
+}
+
+sub coupling_pairs {
+    #
+    # Returns the state pairs [i, j], i < j, NX numbering (1 = lowest state), that need a
+    # coupling run at this call.
+    #
+    my ( $mode, $n, $ns, $flag, $transmomin ) = @_;
+    return () if $ns <= 1 || $flag eq "second run";    # after a hop NX only needs the new gradient
+    my @pairs;
+    if ( $mode eq "nx" ) {
+        @pairs = read_transmomin( $transmomin // "transmomin", $ns );
+    }
+    elsif ( $mode eq "neighbours" ) {
+        push @pairs, [ $n - 1, $n ] if $n > 1;
+        push @pairs, [ $n, $n + 1 ] if $n < $ns;
+    }
+    elsif ( $mode eq "current" ) {
+        foreach my $k ( 1 .. $ns ) {
+            next if $k == $n;
+            push @pairs, $k < $n ? [ $k, $n ] : [ $n, $k ];
+        }
     }
     else {
-        print "Guess wavefunction generated by TeraChem defaults (toggle=$use_prev_wf).\n";
+        foreach my $j ( 2 .. $ns ) {
+            foreach my $i ( 1 .. $j - 1 ) { push @pairs, [ $i, $j ]; }
+        }
+    }
+    return @pairs;
+}
+
+sub read_transmomin {
+    #
+    # Reads the coupling list NX writes every step (write_pair.f90): a 'CI' line, then
+    # one line '1 i 1 j' per pair of states i, j (1 = lowest state). An empty list means
+    # NX needs no couplings at this step.
+    #
+    my ( $file, $ns ) = @_;
+    tc_fail("$file not found. NX writes it every step from jiri.inp and THRES; set couplings in terachem.par to choose the couplings without it.")
+      unless -e $file;
+    open my $fh, '<', $file or tc_fail("Cannot open $file: $!");
+    my ( @pairs, %seen );
+    while ( my $line = <$fh> ) {
+        next unless $line =~ /^\s*\d+\s+(\d+)\s+\d+\s+(\d+)\s*$/;
+        my ( $i, $j ) = $1 < $2 ? ( $1, $2 ) : ( $2, $1 );
+        tc_fail("Bad state pair ($1, $2) in $file for nstat = $ns.") if $i < 1 || $j > $ns || $i == $j;
+        push @pairs, [ $i, $j ] unless $seen{"$i-$j"}++;
+    }
+    close $fh;
+    return sort { pair_index(@$a) <=> pair_index(@$b) } @pairs;
+}
+
+sub pair_index {
+    #
+    # Position of pair (i, j), i < j, in NX's coupling list:
+    # (2,1), (3,1), (3,2), (4,1), ... -> 0, 1, 2, 3, ...
+    #
+    my ( $i, $j ) = @_;
+    return ( $j - 1 ) * ( $j - 2 ) / 2 + ( $i - 1 );
+}
+
+sub plan_jobs {
+    my @jobs = ( { kind => "grad", dir => "GRAD" } );
+    my @pairs = $typeofinput eq "jnd" ? coupling_pairs( $opt{couplings}, $nstatdyn, $nstat, $run_flag ) : ();
+
+    # Old layout: the two neighbour couplings keep their own folders and templates. Any
+    # other pair is written from the coupling template, in its own NAC_i_j folder.
+    my ($legacy_nac) = grep { -e $_ } ( "NAD_N1N0/start.sp", "NAD_N1N2/start.sp" );
+
+    foreach my $p (@pairs) {
+        my ( $i, $j ) = @$p;
+        my $job = { kind => "nac", pair => [ $i, $j ], dir => "NAC_${i}_${j}", template => $template_single };
+        if ( $layout eq "legacy" ) {
+            if    ( $j == $nstatdyn && $i == $nstatdyn - 1 ) { $job->{dir} = "NAD_N1N0"; }
+            elsif ( $i == $nstatdyn && $j == $nstatdyn + 1 ) { $job->{dir} = "NAD_N1N2"; }
+            $job->{template} = -e "$job->{dir}/start.sp" ? "$job->{dir}/start.sp" : $legacy_nac;
+            tc_fail("No coupling template (NAD_N1N0/start.sp or NAD_N1N2/start.sp) for the pair ($i, $j).")
+              unless $job->{template};
+        }
+        push @jobs, $job;
+    }
+    $jobs[0]{template} = $layout eq "single" ? $template_single : "GRAD/start.sp";
+
+    if ( $lvprt >= 2 ) {
+        print_STDOUT( "$mdle coupling pairs this step (couplings = $opt{couplings}): "
+              . ( @pairs ? join( " ", map { "$_->[1]-$_->[0]" } @pairs ) : "none" ) . "\n", $istep, $kt );
     }
 
-    # Create the new XYZ file with updated coordinates
-    my $xyz_file = "geom.xyz";
-    open my $fgeom, '>', $xyz_file or die "Could not open $xyz_file: $!";
+    foreach my $job (@jobs) {
+        tc_fail("Template input file '$job->{template}' not found.") unless -e $job->{template};
+        mkpath( $job->{dir}, 0, 0755 ) unless -d $job->{dir};
+    }
+
+    # Refuse RPA coupling jobs before any TeraChem time is spent (see write_job_input).
+    if ( @jobs > 1 ) {
+        open my $fh, '<', $jobs[1]{template} or tc_fail("Could not open '$jobs[1]{template}': $!");
+        my @l = <$fh>;
+        close $fh;
+        tc_fail("$jobs[1]{template} uses full TDDFT (rpa yes). TeraChem gives no RPA coupling vectors (it writes zeros). Use TDA (cis yes) for coupling vectors, or TD-BA (vdoth = 2 in sh.inp) with RPA.")
+          if template_info( \@l )->{rpa};
+    }
+    return @jobs;
+}
+
+sub prepare_casscf_guess {
+    #
+    # A user-supplied first CASSCF guess is used once, when no previous-step orbitals
+    # exist yet: JOB_NAD/c0.casscf, or (old layout) JOB_NAD/GRAD/scr.geom/c0.casscf.
+    # Only used with use_prev_wf = 1.
+    #
+    return unless $opt{use_prev_wf};
+    return if -e $old_guess;
+    foreach my $initial ( "c0.casscf", "GRAD/scr.geom/c0.casscf" ) {
+        if ( -e $initial ) {
+            copy( $initial, $old_guess ) or tc_fail("Failed to copy initial CASSCF guess $initial: $!");
+            print_STDOUT( "$mdle Using $initial as the first CASSCF guess.\n", $istep, $kt );
+            return;
+        }
+    }
+}
+
+sub write_xyz {
+    my ($jobs) = @_;
+    my $au2ang = units("au2ang");
+    open my $fgeom, '>', "geom.xyz" or tc_fail("Could not open geom.xyz: $!");
     print $fgeom scalar(@symb), "\n\n";
     for my $i ( 0 .. $#symb ) {
         my $x_ang = $x[$i] * $au2ang;
@@ -225,558 +435,418 @@ sub prepare_input {
         print $fgeom "$symb[$i]   $x_ang   $y_ang   $z_ang\n";
     }
     close $fgeom;
-
-    # Copy the geometry to the run folders
-    copy( $xyz_file, "GRAD/geom.xyz" )      or die "Failed to copy geom.xyz to GRAD: $!";
-    copy( $xyz_file, "NAD_N1N0/geom.xyz" )  or die "Failed to copy geom.xyz to NAD_N1N0: $!";
-    copy( $xyz_file, "NAD_N1N2/geom.xyz" )  or die "Failed to copy geom.xyz to NAD_N1N2: $!";
-
-    # Define updates for the start.sp files for each calculation type
-    my %updates = (
-        'GRAD'     => { castarget => $nstatdyn - 1, cistarget => $nstatdyn - 1 },
-        'NAD_N1N0' => { nacstate1 => $nstatdyn - 2, nacstate2 => $nstatdyn - 1 },
-        'NAD_N1N2' => { nacstate1 => $nstatdyn - 1, nacstate2 => $nstatdyn }
-    );
-
-    # Apply the updates to the start.sp files
-    foreach my $dir ( keys %updates ) {
-        process_start_sp( "$dir/start.sp", $updates{$dir} );
+    foreach my $job (@$jobs) {
+        copy( "geom.xyz", "$job->{dir}/geom.xyz" ) or tc_fail("Failed to copy geom.xyz to $job->{dir}: $!");
     }
 }
 
-sub process_start_sp {
+sub template_info {
     #
-    # Processes a start.sp file to set target states and the guess wavefunction.
-    # It intelligently handles commented lines and existing keywords.
+    # Reads the active (uncommented) keywords of a TeraChem input.
     #
-    my ( $file_path, $updates ) = @_;
-
-    unless ( -e $file_path ) {
-        print_STDOUT("Template input file '$file_path' not found!\n", $istep, $kt);
-        die;
+    my ($lines) = @_;
+    my %kw;
+    foreach my $line (@$lines) {
+        my $l = $line;
+        $l =~ s/#.*//;
+        next unless $l =~ /^\s*(\S+)(?:\s+(.*?))?\s*$/;
+        $kw{ lc $1 } = defined $2 ? $2 : "";
     }
+    my %info;
+    $info{casscf} = ( ( $kw{casscf} // "" ) =~ /^yes/i ) ? 1 : 0;
+    $info{cas}    = ( $info{casscf} || ( ( $kw{casci} // "" ) =~ /^yes/i ) ) ? 1 : 0;
+    $info{rpa}    = ( ( $kw{rpa} // "" ) =~ /^yes/i ) ? 1 : 0;
+    $info{cis}    = ( ( ( $kw{cis} // "" ) =~ /^yes/i ) || ( ( $kw{hhtda} // "" ) =~ /^yes/i ) || $info{rpa} ) ? 1 : 0;
+    # Multiplicity of the dynamics states: castargetmult for CAS methods, cismult for
+    # TDA/TDDFT and hh-TDA. One multiplicity per run.
+    $info{mult} = ( $info{cas} ? $kw{castargetmult} : $kw{cismult} ) // 1;
+    $info{mult} =~ s/\s.*//;
+    $info{kw} = \%kw;
+    return \%info;
+}
 
-    open my $fh, '<', $file_path or die "Could not open '$file_path' for reading: $!";
+sub set_keyword {
+    #
+    # Sets one keyword: replaces every active line with that keyword by one line, in
+    # place, or inserts it before 'end' (or at the bottom) if it is not there.
+    #
+    my ( $lines, $key, $value ) = @_;
+    my $done = 0;
+    my @out;
+    foreach my $line (@$lines) {
+        if ( $line !~ /^\s*#/ && $line =~ /^\s*\Q$key\E(\s|$)/i ) {
+            next if $done;
+            push @out, sprintf( "%-15s %s\n", $key, $value );
+            $done = 1;
+            next;
+        }
+        push @out, $line;
+    }
+    insert_lines( \@out, sprintf( "%-15s %s\n", $key, $value ) ) unless $done;
+    @$lines = @out;
+}
+
+sub remove_keyword {
+    my ( $lines, $key ) = @_;
+    @$lines = grep { /^\s*#/ || !/^\s*\Q$key\E(\s|$)/i } @$lines;
+}
+
+sub insert_lines {
+    #
+    # Inserts lines before the first active 'end' line, or at the bottom.
+    #
+    my ( $lines, @new ) = @_;
+    for my $i ( 0 .. $#$lines ) {
+        if ( $lines->[$i] =~ /^\s*end\s*$/i ) {
+            splice @$lines, $i, 0, @new;
+            return;
+        }
+    }
+    $lines->[-1] .= "\n" if @$lines && $lines->[-1] !~ /\n$/;
+    push @$lines, @new;
+}
+
+sub write_job_input {
+    my ($job) = @_;
+    open my $fh, '<', $job->{template} or tc_fail("Could not open '$job->{template}': $!");
     my @lines = <$fh>;
     close $fh;
 
-    # --- Keyword Checks (on uncommented lines) ---
-    my $is_casscf_run = 0;
+    my $info = template_info( \@lines );
+    $job->{info} = $info;
+    if ( $info->{cas} && !exists $info->{kw}{castargetmult} && ( $info->{kw}{cassinglets} // 1 ) =~ /^0\b/ ) {
+        tc_fail("$job->{template} asks for no singlets (cassinglets 0) but sets no castargetmult. Add 'castargetmult 3' (or the multiplicity you run).");
+    }
+    my $n = $nstatdyn;
 
-    foreach my $line (@lines) {
-        next if $line =~ /^\s*#/; # Skip commented lines
-        # Check specifically for casscf yes
-        if ($line =~ /^\s*casscf\s+yes/i) {
-             $is_casscf_run = 1;
+    # Run type and states. TeraChem counts states from 0 within the requested
+    # multiplicity; NX counts from 1.
+    if ( $job->{kind} eq "grad" ) {
+        set_keyword( \@lines, "run", "gradient" ) if $layout eq "single";
+        if ( $info->{cas} ) {
+            set_keyword( \@lines, "castarget", $n - 1 );
+        }
+        elsif ( $info->{cis} ) {
+            set_keyword( \@lines, "cistarget", $n - 1 );
+        }
+        else {
+            tc_fail("$job->{template}: no 'casscf yes', 'casci yes', 'cis yes', 'rpa yes' or 'hhtda yes' found, so the target state cannot be set.");
+        }
+        # The old templates may set both; keep them consistent.
+        foreach my $k (qw(castarget cistarget)) {
+            set_keyword( \@lines, $k, $n - 1 ) if exists $info->{kw}{$k};
         }
     }
-
-    # Strict condition:
-    # 1. Must be a CASSCF run
-    # 2. Toggle must be ON
-    # 3. Previous WF file must exist
-    my $should_inject_guess = ($is_casscf_run && $use_prev_wf && -e $old_guess);
-    my $inject_scf_guess = (!$is_casscf_run && $use_prev_scf_wf && -e $old_scf_guess);
-
-    # --- File Modifications ---
-
-    my @filtered_lines;
-    foreach my $line (@lines) {
-        # Keep comments and blank lines
-        if ($line =~ /^\s*#/) {
-            push @filtered_lines, $line;
-            next;
+    else {
+        # TeraChem 1.96 finishes RPA coupling runs normally but writes a zero vector.
+        tc_fail("$job->{template} uses full TDDFT (rpa yes). TeraChem gives no RPA coupling vectors (it writes zeros). Use TDA (cis yes) for coupling vectors, or TD-BA (vdoth = 2 in sh.inp) with RPA.")
+          if $info->{rpa};
+        my ( $i, $j ) = @{ $job->{pair} };
+        if ( $layout eq "single" ) {
+            set_keyword( \@lines, "run", "coupling" );
+            remove_keyword( \@lines, $_ ) for qw(castarget cistarget);    # gradient-only keywords
         }
+        set_keyword( \@lines, "nacstate1", $i - 1 );
+        set_keyword( \@lines, "nacstate2", $j - 1 );
+    }
 
-        # If we are injecting our own guess logic (skipping SCF),
-        # we must remove existing 'guess', 'maxit', and 'convthre' from the template
-        # to prevent duplicates or conflicts.
-        # If $should_inject_guess is FALSE, we keep the original lines.
-        if ( $should_inject_guess ) {
-             if ( $line =~ /^\s*guess\s+\S+/i ) { next; }
-             if ( $line =~ /^\s*(maxit|convthre)\s+/i ) { next; }
+    # TeraChem writes its scratch to ./scr.geom (from 'coordinates geom.xyz'); run_job
+    # clears it before the run and moves it into the job folder after. scrdir is not
+    # used: TeraChem lowercases keyword values, which breaks paths with capitals.
+    remove_keyword( \@lines, "scrdir" );
+    set_keyword( \@lines, "coordinates", "geom.xyz" );
+
+    # Wavefunction guess.
+    my $guess;
+    if ( $info->{casscf} && $opt{use_prev_wf} ) {
+        if ( $job->{kind} eq "nac" && -e "GRAD/scr.geom/c0.casscf" ) {
+            $guess = abs_path("GRAD/scr.geom/c0.casscf");    # this step's CASSCF orbitals
         }
-        if ( $inject_scf_guess && $line =~ /^\s*guess\s+\S+/i ) { next; }
-
-        push @filtered_lines, $line;
-    }
-    @lines = @filtered_lines;
-
-    # Inject the previous wavefunction and skip SCF only if all conditions met
-    if ( $should_inject_guess ) {
-        push @lines, "guess        " . abs_path($old_guess) . "\n";
-        push @lines, "maxit        0\n";
-        push @lines, "convthre     1e7\n";
-    }
-
-    # Previous-step SCF orbitals as the guess; the SCF still converges normally
-    if ( $inject_scf_guess ) {
-        push @lines, "guess        " . abs_path($old_scf_guess) . "\n";
-    }
-
-    # Handle dynamic state updates (castarget, nacstate1, etc.)
-    # This is done in-place to preserve line order and comments.
-    for my $i ( 0 .. $#lines ) {
-        foreach my $key ( keys %$updates ) {
-            # If the line contains an active keyword, replace it.
-            if ( $lines[$i] !~ /^\s*#/ && $lines[$i] =~ /^\s*$key\s+/ ) {
-                $lines[$i] = "$key        $updates->{$key}\n";
-                last; # Move to the next line once a keyword is matched and replaced
-            }
+        elsif ( -e $old_guess ) {
+            $guess = abs_path($old_guess);                   # previous step's CASSCF orbitals
+        }
+        if ($guess) {
+            remove_keyword( \@lines, $_ ) for qw(guess maxit convthre);
+            insert_lines( \@lines, "guess           $guess\n", "maxit           0\n", "convthre        1e7\n" );
         }
     }
+    elsif ( !$info->{casscf} && $opt{use_prev_scf_wf} ) {
+        if ( $job->{kind} eq "nac" && -e "GRAD/scr.geom/c0" ) {
+            $guess = abs_path("GRAD/scr.geom/c0");           # this step's SCF orbitals
+        }
+        elsif ( $job->{kind} eq "grad" && -e $old_scf_guess ) {
+            $guess = abs_path($old_scf_guess);               # previous step's SCF orbitals
+        }
+        set_keyword( \@lines, "guess", $guess ) if $guess;
+    }
 
-    open $fh, '>', $file_path or die "Could not open '$file_path' for writing: $!";
+    open $fh, '>', "$job->{dir}/start.sp" or tc_fail("Could not write '$job->{dir}/start.sp': $!");
     print $fh @lines;
     close $fh;
 }
 
-sub run_terachem {
-    #
-    # Executes TeraChem for all necessary calculations (gradient and NACs).
-    #
-    if ( $lvprt >= 3 ) { print_STDOUT( "$mdle Executing TeraChem.\n", $istep, $kt ); }
+#====================================================================================
+#                                RUNNING TERACHEM
+#====================================================================================
 
-    my @tasks;
-    push @tasks, 'GRAD';
+sub run_job {
+    my ($job) = @_;
+    my $dir = $job->{dir};
+    if ( $lvprt >= 3 ) { print_STDOUT( "$mdle Running calculation in $dir.\n", $istep, $kt ); }
 
-    # Determine which NAC calculations are needed based on the current state.
-    # State numbers are 1-based, nstat is the total number of states.
-    # We need NAC with the state below if not in the ground state.
-    if ( $nstatdyn > 1 ) {
-        push @tasks, 'NAD_N1N0';
-    }
-    # We need NAC with the state above if not in the highest state.
-    if ( $nstatdyn < $nstat ) {
-        push @tasks, 'NAD_N1N2';
-    }
+    # Remove results of earlier steps, so a failed run cannot leave old files to be read.
+    remove_tree("$dir/scr.geom") if -d "$dir/scr.geom";
+    remove_tree("scr.geom")      if -d "scr.geom";
+    unlink "$dir/$tpp_outfile";
 
-    # Execute the tasks
-    foreach my $task (@tasks) {
-        process_directory($task);
-        # Save orbitals after the gradient calculation is complete
-        if ( $task eq 'GRAD' ) {
-            save_orbitals();
-            set_nad_guess();
-        }
-    }
-}
-
-sub process_directory {
-    #
-    # Runs a TeraChem calculation in the specified directory.
-    #
-    my ($directory) = @_;
-    if ( $lvprt >= 3 ) { print_STDOUT( "$mdle Running calculation in $directory.\n", $istep, $kt ); }
-
-    # Run TeraChem. callprog executes it inside the TEMP/ directory.
-    my $retval = callprog( $tpp, "/bin/terachem $directory/start.sp > $directory/$tpp_outfile", $mdle );
+    my $retval = callprog( $tpp, "/bin/terachem $dir/start.sp > $dir/$tpp_outfile", $mdle );
     if ( $retval != 0 ) {
-        print_STDOUT( "Error in TeraChem execution for $directory! Check $directory/$tpp_outfile for details.\n", $istep, $kt );
-        die;
+        tc_fail("TeraChem failed in $dir. Check $dir/$tpp_outfile for details.");
     }
 
-    # TeraChem writes to TEMP/scr.geom. We move it to the correct calculation directory.
-    my $scratch_source = "scr.geom";
-    my $scratch_dest   = "$directory/$scratch_source";
-    if ( -d $scratch_source ) {
-        remove_tree($scratch_dest) if -d $scratch_dest; # Safely remove old scratch dir
-        move( $scratch_source, $scratch_dest ) or die "Failed to move $scratch_source to $scratch_dest: $!";
+    if ( -d "scr.geom" ) {
+        move( "scr.geom", "$dir/scr.geom" ) or tc_fail("Failed to move scr.geom to $dir/scr.geom: $!");
     }
-}
 
-sub set_nad_guess {
-    #
-    # With use_prev_scf_wf, the NAC jobs of this step start from the GRAD job's converged orbitals, so that all three
-    # jobs of a step sit on the same SCF solution.
-    #
-    return unless $use_prev_scf_wf;
-    my $c0 = "GRAD/scr.geom/c0";
-    return unless -e $c0 && !-e "GRAD/scr.geom/c0.casscf";
-    foreach my $dir ( 'NAD_N1N0', 'NAD_N1N2' ) {
-        my $f = "$dir/start.sp";
-        next unless -e $f;
-        open my $fh, '<', $f or die "Could not open '$f': $!";
-        my @lines = grep { !/^\s*guess\s+\S+/i } <$fh>;
-        close $fh;
-        push @lines, "guess        " . abs_path($c0) . "\n";
-        open $fh, '>', $f or die "Could not open '$f' for writing: $!";
-        print $fh @lines;
-        close $fh;
-    }
+    open my $fh, '<', "$dir/$tpp_outfile" or tc_fail("Cannot open $dir/$tpp_outfile: $!");
+    my $finished = grep { /Job finished/ } <$fh>;
+    close $fh;
+    tc_fail("TeraChem did not finish in $dir (no 'Job finished' line in $dir/$tpp_outfile). It may have been killed, for example by a time limit.")
+      unless $finished;
+    tc_fail("TeraChem wrote no scratch folder $dir/scr.geom.") unless -d "$dir/scr.geom";
 }
 
 sub save_orbitals {
-    #
-    # Archives the Molden file and the wavefunction/CI vectors for visualization and restart.
-    #
     my $source_dir = "GRAD/scr.geom";
 
-    # Check for casscf.molden for CASSCF
-    my $molden_src = -e "$source_dir/cas.molden" ? "$source_dir/cas.molden" : "$source_dir/geom.molden";
-    if ( -e $molden_src ) {
-        my $molden_dest = "$molden_ar/$t.molden";
-        copy( $molden_src, $molden_dest ) or die "Molden file copy from $molden_src failed: $!";
-        print "Archived molden file to $molden_dest\n";
+    if ( $opt{archive_molden} ) {
+        my $molden_src = -e "$source_dir/cas.molden" ? "$source_dir/cas.molden" : "$source_dir/geom.molden";
+        if ( -e $molden_src ) {
+            my $molden_dest = "$molden_ar/$t.molden";
+            copy( $molden_src, $molden_dest ) or tc_fail("Molden file copy from $molden_src failed: $!");
+            print "Archived molden file to $molden_dest\n";
+        }
     }
 
-   # Save the SCF orbitals of a non-CASSCF run for the next step's guess
-       if ( $use_prev_scf_wf && !-e "$source_dir/c0.casscf" && -e "$source_dir/c0" ) {
-           copy( "$source_dir/c0", $old_scf_guess ) or die "Failed to copy SCF orbitals to $old_scf_guess: $!";
-       }
+    if ( $opt{use_prev_scf_wf} && !-e "$source_dir/c0.casscf" && -e "$source_dir/c0" ) {
+        copy( "$source_dir/c0", $old_scf_guess ) or tc_fail("Failed to copy SCF orbitals to $old_scf_guess: $!");
+    }
 
-   # Save CASSCF wavefunction file
-       my $wf_file = "$source_dir/c0.casscf";
-       if ( -e $wf_file ) {
-           copy( $wf_file, $old_guess )       or die "Failed to copy WF to $old_guess: $!";
-           copy( $wf_file, "$wf_ar/c$t" ) or die "Failed to archive WF to $wf_ar/c$t: $!";
-       }
+    my $wf_file = "$source_dir/c0.casscf";
+    if ( -e $wf_file ) {
+        copy( $wf_file, $old_guess ) or tc_fail("Failed to copy WF to $old_guess: $!");
+        if ( $opt{archive_wf} ) {
+            copy( $wf_file, "$wf_ar/c$t" ) or tc_fail("Failed to archive WF to $wf_ar/c$t: $!");
+        }
+    }
+}
+
+#====================================================================================
+#                                READING RESULTS
+#====================================================================================
+
+sub mult_name {
+    my ($m) = @_;
+    my %names = ( 1 => "singlet", 2 => "doublet", 3 => "triplet", 4 => "quartet", 5 => "quintet" );
+    return $names{$m} // tc_fail("castargetmult $m is not supported.");
+}
+
+sub parse_energies {
+    #
+    # Returns the first $nwant state energies (Hartree, as strings) from a TeraChem output.
+    #   CASSCF, FOMO-CASCI and hh-TDA print a 'Root Mult. Total Energy' table that
+    #   includes the ground state; only rows of the target multiplicity are used.
+    #   TDA/TDDFT print 'Root Total Energy' for the excited states only; the ground state
+    #   comes from 'FINAL ENERGY'.
+    #
+    my ( $file, $info, $nwant ) = @_;
+    open( my $fh, '<', $file ) or tc_fail("Cannot open $file: $!");
+    my @lines = <$fh>;
+    close($fh);
+    my @e;
+
+    my @starts = grep { $lines[$_] =~ /Root\s+Mult\.\s+Total Energy/ } 0 .. $#lines;
+    if (@starts) {
+        my $want = mult_name( $info->{mult} );
+        my $i = $starts[-1] + 1;
+        $i++ while $i <= $#lines && $lines[$i] =~ /^\s*-+\s*$/;
+        while ( $i <= $#lines && $lines[$i] =~ /^\s*(\d+)\s+(\w+)\s+(-?\d+\.\d+)/ ) {
+            push @e, $3 if lc($2) eq $want;
+            $i++;
+        }
+    }
+    else {
+        my ($table) = grep { $lines[$_] =~ /Root\s+Total Energy/ } 0 .. $#lines;
+        tc_fail("No 'Root Total Energy' table in $file.") unless defined $table;
+        my ($gs_line) = grep { /FINAL ENERGY:/ } @lines;
+        tc_fail("No 'FINAL ENERGY' line in $file.") unless $gs_line;
+        my @f = split ' ', $gs_line;
+        push @e, $f[2];
+        for ( my $k = $table + 2 ; $k <= $#lines && @e < $nwant ; $k++ ) {
+            last unless $lines[$k] =~ /^\s*(\d+)\s+(-?\d+\.\d+)/;
+            push @e, $2;
+        }
+    }
+
+    tc_fail( "Could not read $nwant state energies from $file (found " . scalar(@e) . "). Check that the template asks for at least nstat states." )
+      if @e < $nwant;
+    return @e[ 0 .. $nwant - 1 ];
 }
 
 sub read_energy {
-    #
-    # Reads potential energies from the TeraChem output and writes them to 'epot'.
-    #
+    my ($grad_job) = @_;
     if ( $lvprt >= 3 ) { print_STDOUT( "$mdle Reading Epot.\n", $istep, $kt ); }
-
-    # Error check: ensure the output file exists and is not empty.
-    unless ( -s $e_loc ) {
-        print_STDOUT( "TeraChem output file '$e_loc' not found or is empty. Calculation may have failed.\n", $istep, $kt );
-        die;
-    }
-
-    open( my $fh, '<', $e_loc ) or die "Cannot open $e_loc: $!";
-    my @lines = <$fh>;
-    close($fh);
-
-    my @total_energies = ();
-
-    # Scan file for energies
-    for (my $i = 0; $i < @lines; $i++) {
-
-        # 1. CASSCF Table Match
-        # Pattern: "  Root   Mult.   Total Energy..." (Spacing flexible)
-        if ( $lines[$i] =~ /Root\s+Mult\.\s+Total Energy/ ) {
-            # Found CASSCF table.
-            # Assume table contains all requested states starting 2 lines down.
-            for (my $state = 0; $state < $nstat; $state++) {
-                my $line_idx = $i + 2 + $state; # Skip Header and Dashes
-                last if $line_idx > $#lines;
-
-                my $line = $lines[$line_idx];
-                my @fields = split(' ', $line);
-                # Expected format: "1 singlet -309.612..."
-                # split ' ' gives: [0]=Root, [1]=Mult, [2]=Energy
-                if (@fields >= 3) {
-                    push @total_energies, $fields[2];
-                }
-            }
-            last; # Stop after finding the first table
-        }
-
-        # 2. DFT/CIS Table Match
-        # Pattern: "  Root   Total Energy..."
-        elsif ( $lines[$i] =~ /Root\s+Total Energy/ ) {
-            # Found DFT/CIS table (usually Excited States).
-
-            # Step A: Find Ground State (FINAL ENERGY) if not already found
-            if (!@total_energies) {
-                my ($gs_line) = grep { /FINAL ENERGY:/ } @lines;
-                if ($gs_line) {
-                    my @f = split(' ', $gs_line);
-                    # Format: FINAL ENERGY: -123.456
-                    push @total_energies, $f[2] if @f >= 3;
-                }
-            }
-
-            # Step B: Read Excited States from table
-            my $states_needed = @total_energies ? $nstat - 1 : $nstat;
-
-            for (my $state = 0; $state < $states_needed; $state++) {
-                my $line_idx = $i + 2 + $state;
-                last if $line_idx > $#lines;
-
-                my $line = $lines[$line_idx];
-                my @fields = split(' ', $line);
-                # Expected format: "1 -309.612... ..."
-                # split ' ' gives: [0]=Root, [1]=TotalEnergy
-                if (@fields >= 2) {
-                    push @total_energies, $fields[1];
-                }
-            }
-            last;
-        }
-    }
-
-    # Check if we successfully parsed the energies
-    if ( !@total_energies || @total_energies < $nstat ) {
-        print_STDOUT( "Could not parse all $nstat state energies from '$e_loc'. Check TeraChem output.\n", $istep, $kt );
-        die;
-    }
-
-    # Save extracted Total Energy values (in Hartree)
-    @epot = @total_energies;
-
-    write_energy();
+    @epot = parse_energies( "GRAD/$tpp_outfile", $grad_job->{info}, $nstat );
 }
 
 sub write_energy {
-    #
-    # Writes the potential energies to 'epot' file for NewtonX.
-    #
-    if ( $lvprt >= 3 ) { print_STDOUT( "$mdle Writing Epot.\n", $istep, $kt ); }
-
-    # Print energies to STDOUT
     print_STDOUT( "--------------------------------------------------\n", $istep, $kt );
-    print_STDOUT( "$mdle Energies (Hartree) at time t=$t:\n",           $istep, $kt );
+    print_STDOUT( "$mdle Energies (Hartree) at time t=$t:\n", $istep, $kt );
     for my $i ( 0 .. $#epot ) {
-        my $state_num = $i + 1;
-        printf STDOUT ("State %2d: %20.10f\n", $state_num, $epot[$i]);
+        printf STDOUT ( "State %2d: %20.10f\n", $i + 1, $epot[$i] );
     }
     print_STDOUT( "--------------------------------------------------\n", $istep, $kt );
 
     my $file = "epot";
     if ( -s $file ) {
-        copy( $file, "oldepot" ) or die "Failed to copy $file to oldepot: $!";
+        copy( $file, "oldepot" ) or tc_fail("Failed to copy $file to oldepot: $!");
     }
-    open( my $out_fh, '>', $file ) or die "Cannot write to $file: $!";
-    foreach (@epot) {
-        print $out_fh "$_\n";
-    }
+    open( my $out_fh, '>', $file ) or tc_fail("Cannot write to $file: $!");
+    print $out_fh "$_\n" foreach @epot;
     close($out_fh);
-    copy( $file, "newepot" ) or die "Failed to copy $file to newepot: $!";
+    copy( $file, "newepot" ) or tc_fail("Failed to copy $file to newepot: $!");
+}
+
+sub read_xyz_vector_file {
+    #
+    # Reads a TeraChem grad.xyz (gradient or coupling): 2 header lines, then one line
+    # per atom whose last three fields are the vector. Checks the atom count.
+    #
+    my ($file_path) = @_;
+    tc_fail("Vector file '$file_path' not found or empty. The calculation may have failed.") unless -s $file_path;
+
+    open my $fh, '<', $file_path or tc_fail("Could not open vector file '$file_path': $!");
+    <$fh>;
+    <$fh>;
+    my ( @vx, @vy, @vz );
+    my $num = qr/^-?(?:\d+\.?\d*|\.\d+)(?:[eEdD][-+]?\d+)?$/;
+    while ( my $line = <$fh> ) {
+        my @f = split ' ', $line;
+        next unless @f;
+        last if @vx == $nat;
+        tc_fail("Bad line in $file_path: $line") unless @f >= 3 && $f[-3] =~ $num && $f[-2] =~ $num && $f[-1] =~ $num;
+        push @vx, $f[-3];
+        push @vy, $f[-2];
+        push @vz, $f[-1];
+    }
+    close $fh;
+    tc_fail( "$file_path has " . scalar(@vx) . " atom lines; expected $nat." ) unless @vx == $nat;
+    return ( \@vx, \@vy, \@vz );
 }
 
 sub read_gradients {
-    #
-    # Reads the energy gradient of the current state from TeraChem's output.
-    #
     if ( $lvprt >= 3 ) { print_STDOUT( "$mdle Reading Gradients.\n", $istep, $kt ); }
-
-    # Initialize gradient arrays with zeros
-    for ( $ns = 0; $ns < $nstat; $ns++ ) {
-        for ( $ia = 0; $ia < $nat; $ia++ ) {
-            $gx[$ns][$ia] = $gy[$ns][$ia] = $gz[$ns][$ia] = 0.0;
-        }
+    for my $ns ( 0 .. $nstat - 1 ) {
+        for my $ia ( 0 .. $nat - 1 ) { $gx[$ns][$ia] = $gy[$ns][$ia] = $gz[$ns][$ia] = 0.0; }
     }
-
-    # Read the gradient for the current state ($nstatdyn)
-    my ( $grad_x_ref, $grad_y_ref, $grad_z_ref ) = read_xyz_vector_file($grad_loc);
-
-    for ( $ia = 0; $ia < $nat; $ia++ ) {
-        $gx[ $nstatdyn - 1 ][$ia] = $$grad_x_ref[$ia];
-        $gy[ $nstatdyn - 1 ][$ia] = $$grad_y_ref[$ia];
-        $gz[ $nstatdyn - 1 ][$ia] = $$grad_z_ref[$ia];
+    my ( $gxr, $gyr, $gzr ) = read_xyz_vector_file("GRAD/scr.geom/grad.xyz");
+    for my $ia ( 0 .. $nat - 1 ) {
+        $gx[ $nstatdyn - 1 ][$ia] = $gxr->[$ia];
+        $gy[ $nstatdyn - 1 ][$ia] = $gyr->[$ia];
+        $gz[ $nstatdyn - 1 ][$ia] = $gzr->[$ia];
     }
-
-    write_grad();
 }
 
 sub write_grad {
-    #
-    # Writes the energy gradients to 'grad' and 'grad.all' files.
-    #
-    if ( $lvprt >= 3 ) { print_STDOUT( "$mdle Writing Gradients.\n", $istep, $kt ); }
-
-    # Print the current state's gradient to STDOUT
     print_STDOUT( "$mdle Gradient for state $nstatdyn (Hartree/Bohr):\n", $istep, $kt );
-    my $ns_idx = $nstatdyn - 1;
-    for ( $ia = 0; $ia < $nat; $ia++ ) {
-        printf STDOUT ("%-2s   %15.10f %15.10f %15.10f\n", $symb[$ia], $gx[$ns_idx][$ia], $gy[$ns_idx][$ia], $gz[$ns_idx][$ia]);
+    my $s = $nstatdyn - 1;
+    for my $ia ( 0 .. $nat - 1 ) {
+        printf STDOUT ( "%-2s   %15.10f %15.10f %15.10f\n", $symb[$ia], $gx[$s][$ia], $gy[$s][$ia], $gz[$s][$ia] );
     }
     print_STDOUT( "--------------------------------------------------\n", $istep, $kt );
 
-    open( my $out1_fh, '>', "grad.all" ) or die "Cannot write to grad.all: $!";
-    open( my $out2_fh, '>', "grad" )     or die "Cannot write to grad: $!";
-
-    for ( $ns = 0; $ns < $nstat; $ns++ ) {
-        for ( $ia = 0; $ia < $nat; $ia++ ) {
+    open( my $out1_fh, '>', "grad.all" ) or tc_fail("Cannot write to grad.all: $!");
+    open( my $out2_fh, '>', "grad" )     or tc_fail("Cannot write to grad: $!");
+    for my $ns ( 0 .. $nstat - 1 ) {
+        for my $ia ( 0 .. $nat - 1 ) {
             print $out1_fh "$gx[$ns][$ia]  $gy[$ns][$ia]  $gz[$ns][$ia]\n";
-            if ( $ns == $nstatdyn - 1 ) {
-                print $out2_fh "$gx[$ns][$ia]  $gy[$ns][$ia]  $gz[$ns][$ia]\n";
-            }
+            print $out2_fh "$gx[$ns][$ia]  $gy[$ns][$ia]  $gz[$ns][$ia]\n" if $ns == $nstatdyn - 1;
         }
     }
     close($out1_fh);
     close($out2_fh);
 }
 
+#====================================================================================
+#                                COUPLINGS
+#====================================================================================
+
 sub treat_nacme {
     #
-    # Processes the non-adiabatic coupling matrix elements (NACME).
+    # Writes nad_vectors for NX, with the phase fixed against the previous step.
+    # Order matters (fix of 2026-10-29): escalar compares oldh with the raw newh; after
+    # it, newh must hold the phase-corrected couplings, because NX's interpol.f90
+    # rebuilds the couplings from oldh and newh at every substep.
     #
+    my ($nac_jobs) = @_;
     if ( $lvprt >= 3 ) { print_STDOUT( "$mdle Treating couplings.\n", $istep, $kt ); }
-
-    # If there is only one state (or fewer), there are no couplings to process.
-    return if ($nstat <= 1);
-
-    $run_flag = read_single_value( "which_run_is_that", "" );
-    return if ( $run_flag eq "second run" );    # Skip if this is a re-run after a hop
+    return if $nstat <= 1;
+    return if $run_flag eq "second run";    # nad_vectors of this step are already written
 
     $ncoup = $nstat * ( $nstat - 1 ) / 2;
-    # Intialize coupling arrays with zeros
-    for ( $nc = 0; $nc < $ncoup; $nc++ ) {
-        for ( $ia = 0; $ia < $nat; $ia++ ) {
-            $hx[$nc][$ia] = $hy[$nc][$ia] = $hz[$nc][$ia] = 0.0;
-        }
+    for my $nc ( 0 .. $ncoup - 1 ) {
+        for my $ia ( 0 .. $nat - 1 ) { $hx[$nc][$ia] = $hy[$nc][$ia] = $hz[$nc][$ia] = 0.0; }
     }
 
-    # Create or update oldh (coupling in the previous step) for interpolation.
     if ( -s "nad_vectors" ) {
-        copy( "nad_vectors", "oldh" ) or die "Copy of nad_vectors to oldh failed: $!";
+        copy( "nad_vectors", "oldh" ) or tc_fail("Copy of nad_vectors to oldh failed: $!");
     }
     else {
         write_nacme("oldh");
     }
 
-    # Check vdoth setting in sh.inp. This interface requires explicit NAC calculation.
-    $vdoth = getkeyword( "sh.inp", "vdoth", 0 );
-    if ( $vdoth != 0 ) {
-        print_STDOUT( "The TeraChem interface requires vdoth=0 in sh.inp for NAC calculations.\n", $istep, $kt );
-        die;
+    # TeraChem's coupling for nacstate1 = i-1, nacstate2 = j-1 (i < j) has the opposite
+    # sign to NX's h(j,i); hence the minus sign.
+    foreach my $job (@$nac_jobs) {
+        my ( $i, $j ) = @{ $job->{pair} };
+        my $nc = pair_index( $i, $j );
+        my ( $vx, $vy, $vz ) = read_xyz_vector_file("$job->{dir}/scr.geom/grad.xyz");
+        unless ( grep { $_ != 0 } @$vx, @$vy, @$vz ) {
+            print_STDOUT( "$mdle WARNING: TeraChem returned an all-zero coupling vector for states $j and $i in $job->{dir}. Check that this method gives couplings.\n", $istep, $kt );
+        }
+        for my $ia ( 0 .. $nat - 1 ) {
+            $hx[$nc][$ia] = -$vx->[$ia];
+            $hy[$nc][$ia] = -$vy->[$ia];
+            $hz[$nc][$ia] = -$vz->[$ia];
+        }
     }
-
-    read_nacme();
     write_nacme("nad_vectors");
 
-    # Create newh (couplings at current step) BEFORE calling phase adjustment.
-    copy( "nad_vectors", "newh" ) or die "Copy to newh failed: $!";
-
-    adjust_phase(); # Correct nonadiabatic coupling phases
-
-    # escalar needs the raw couplings in newh (above); after it, newh must hold the phase-corrected couplings,
-    # because NX's interpol.f90 rebuilds nad_vectors from oldh/newh at every substep (fix 2026-10-29).
-    copy( "nad_vectors", "newh" ) or die "Copy of phase-corrected nad_vectors to newh failed: $!";
-}
-
-sub read_nacme {
-    #
-    # This subroutine reads nonadiabatic coupling vectors from TeraChem output.
-    # It has been reverted to the original script's logic to ensure correctness.
-    #
-    if ( $lvprt >= 3 ) { print_STDOUT( "$mdle Reading coupling vectors.\n", $istep, $kt ); }
-
-    my ( @nac01x, @nac01y, @nac01z );
-    my ( @nac12x, @nac12y, @nac12z );
-    my ( $ncc1, $ncc2 );
-
-    # Read the necessary vector files based on the current state
-    if ( $nstatdyn > 1 ) {
-          my ( $nac_x, $nac_y, $nac_z ) = read_xyz_vector_file($nac10_loc);
-          @nac01x = @$nac_x;
-          @nac01y = @$nac_y;
-          @nac01z = @$nac_z;
-    }
-    if ($nstatdyn < $nstat) {
-        my ( $nac_x, $nac_y, $nac_z ) = read_xyz_vector_file($nac12_loc);
-        @nac12x = @$nac_x;
-        @nac12y = @$nac_y;
-        @nac12z = @$nac_z;
-    }
-
-    # Calculate the indices for the coupling vectors
-    $ncc1 = ( $nstatdyn * ( $nstatdyn - 1 ) / 2 ) - 1;
-    $ncc2 = ( ( $nstatdyn * ( $nstatdyn - 1 ) / 2 ) - 1 ) + $nstatdyn;
-
-    # Populate the @h arrays using the logic from the original script
-    for ( $ia = 0; $ia < $nat; $ia++ ) {
-        if ( $nstatdyn == 1 ) {
-            $hx[$ncc2][$ia] = -$nac12x[$ia];
-            $hy[$ncc2][$ia] = -$nac12y[$ia];
-            $hz[$ncc2][$ia] = -$nac12z[$ia];
-        }
-        elsif ( $nstatdyn > 1 ) {
-            if ( $nstatdyn != $nstat ) {
-                $hx[$ncc1][$ia] = -$nac01x[$ia];
-                $hy[$ncc1][$ia] = -$nac01y[$ia];
-                $hz[$ncc1][$ia] = -$nac01z[$ia];
-                $hx[$ncc2][$ia] = -$nac12x[$ia];
-                $hy[$ncc2][$ia] = -$nac12y[$ia];
-                $hz[$ncc2][$ia] = -$nac12z[$ia];
-            }
-            elsif ( $nstatdyn == $nstat ) {
-                $hx[$ncc1][$ia] = -$nac01x[$ia];
-                $hy[$ncc1][$ia] = -$nac01y[$ia];
-                $hz[$ncc1][$ia] = -$nac01z[$ia];
-            }
-        }
-    }
-}
-
-
-sub read_xyz_vector_file {
-    #
-    # Helper subroutine to read a 3-column vector file (like grad.xyz or NACs).
-    #
-    my ($file_path) = @_;
-    my ( @vec_x, @vec_y, @vec_z );
-
-    unless ( -s $file_path ) {
-        print_STDOUT( "Vector file '$file_path' not found or is empty. Calculation may have failed.\n", $istep, $kt );
-        die;
-    }
-
-    open my $fh, '<', $file_path or die "Could not open vector file '$file_path': $!";
-    <$fh>;    # Skip header line 1 (atom count)
-    <$fh>;    # Skip header line 2 (comment)
-
-    while ( my $line = <$fh> ) {
-        my @fields = split ' ', $line;
-        # For grads: symbol, gx, gy, gz
-        # For NACs from TC: index, symbol, nx, ny, nz
-        # We need the last three columns in both cases.
-        push @vec_x, $fields[-3];
-        push @vec_y, $fields[-2];
-        push @vec_z, $fields[-1];
-    }
-    close $fh;
-
-    return ( \@vec_x, \@vec_y, \@vec_z );
+    copy( "nad_vectors", "newh" ) or tc_fail("Copy to newh failed: $!");
+    adjust_phase();
+    copy( "nad_vectors", "newh" ) or tc_fail("Copy of phase-corrected nad_vectors to newh failed: $!");
 }
 
 sub write_nacme {
-    #
-    # Writes the @hx, @hy, @hz arrays to a file for NewtonX.
-    #
     my ($file) = @_;
     if ( $lvprt >= 3 ) { print_STDOUT( "$mdle Writing coupling vectors to $file.\n", $istep, $kt ); }
 
-    # Print non-zero NAC vectors to STDOUT
     print_STDOUT( "$mdle Non-adiabatic couplings (1/Bohr):\n", $istep, $kt );
-    for ( $nc = 0; $nc < $ncoup; $nc++ ) {
-        my $is_zero = 1;
-        for ( $ia = 0; $ia < $nat; $ia++ ) {
-            if ( $hx[$nc][$ia] != 0.0 || $hy[$nc][$ia] != 0.0 || $hz[$nc][$ia] != 0.0 ) {
-                $is_zero = 0;
-                last;
-            }
-        }
-
-        # Only print vectors that have been calculated in this step
-        unless ($is_zero) {
-            # This logic is to figure out which states I,J this coupling belongs to
-            my $I = 0;
-            my $J = 0;
-            my $temp_sum = 0;
-            for my $i ( 2 .. $nstat ) {
-                $temp_sum += $i - 1;
-                if ( $nc < $temp_sum ) {
-                    $I = $i;
-                    $J = $nc - ( $temp_sum - ( $i - 1 ) ) + 1;
-                    last;
-                }
-            }
-            print_STDOUT( "Coupling between states $I and $J (Vector index $nc):\n", $istep, $kt );
-            for ( $ia = 0; $ia < $nat; $ia++ ) {
-                printf STDOUT ("  %-2s   %15.10f %15.10f %15.10f\n", $symb[$ia], $hx[$nc][$ia], $hy[$nc][$ia], $hz[$nc][$ia]);
+    foreach my $j ( 2 .. $nstat ) {
+        foreach my $i ( 1 .. $j - 1 ) {
+            my $nc = pair_index( $i, $j );
+            next unless grep { $hx[$nc][$_] != 0.0 || $hy[$nc][$_] != 0.0 || $hz[$nc][$_] != 0.0 } 0 .. $nat - 1;
+            print_STDOUT( "Coupling between states $j and $i (Vector index $nc):\n", $istep, $kt );
+            for my $ia ( 0 .. $nat - 1 ) {
+                printf STDOUT ( "  %-2s   %15.10f %15.10f %15.10f\n", $symb[$ia], $hx[$nc][$ia], $hy[$nc][$ia], $hz[$nc][$ia] );
             }
         }
     }
     print_STDOUT( "--------------------------------------------------\n", $istep, $kt );
 
-    open( my $out_fh, '>', $file ) or die "Cannot write to $file: $!";
-    for ( $nc = 0; $nc < $ncoup; $nc++ ) {
-        for ( $ia = 0; $ia < $nat; $ia++ ) {
+    open( my $out_fh, '>', $file ) or tc_fail("Cannot write to $file: $!");
+    for my $nc ( 0 .. $ncoup - 1 ) {
+        for my $ia ( 0 .. $nat - 1 ) {
             print $out_fh "$hx[$nc][$ia]  $hy[$nc][$ia]  $hz[$nc][$ia]\n";
         }
     }
@@ -784,20 +854,15 @@ sub write_nacme {
 }
 
 sub adjust_phase {
-    #
-    # Calls a NewtonX utility to ensure phase consistency of NAC vectors between steps.
-    #
     if ( $lvprt >= 3 ) { print_STDOUT( "$mdle Fixing the coupling phase.\n", $istep, $kt ); }
 
     my $retval = callprogsp( $mld, "escalar", $mdle );
-    if ( $retval != 0 ) {
-        die "$mdle died during phase adjustment (escalar)\n";
-    }
-    copy( "nadv", "nad_vectors" ) or die "Copy from nadv failed: $!";
+    tc_fail("Phase adjustment (escalar) failed.") if $retval != 0;
+    copy( "nadv", "nad_vectors" ) or tc_fail("Copy from nadv failed: $!");
 
-    if ( $lvprt >= 3 ) { copy( "escalar.log", "../$DEBUG/." ) or die "Copy failed: $!"; }
+    if ( $lvprt >= 3 ) { copy( "escalar.log", "../$DEBUG/." ) or tc_fail("Copy of escalar.log failed: $!"); }
     if ( $lvprt >= 2 ) {
-        open( my $ep_fh, '<', "escph" ) or die "Cannot open escph to read: $!";
+        open( my $ep_fh, '<', "escph" ) or tc_fail("Cannot open escph to read: $!");
         print_STDOUT( "The global phase(s) is(are):", $istep, $kt );
         while (<$ep_fh>) {
             chomp;
@@ -806,4 +871,13 @@ sub adjust_phase {
         print_STDOUT( "\n\n", $istep, $kt );
         close($ep_fh);
     }
+}
+
+#====================================================================================
+
+sub tc_fail {
+    my ($msg) = @_;
+    my $text = ( $mdle // "run-tera-cas.pl:" ) . " ERROR: $msg\n";
+    eval { print_STDOUT( $text, $istep // 0, $kt // 1 ) };
+    die $text;
 }

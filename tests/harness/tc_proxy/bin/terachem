@@ -1,0 +1,124 @@
+#!/usr/bin/env python3
+"""Caching stand-in for TeraChem, used by the replay tests.
+
+The interface calls "$TeraChem/bin/terachem <input>" from TEMP/. Point $TeraChem at
+tests/harness/tc_proxy and this script answers instead:
+
+  * The cache key is the input's active keywords plus the geometry. The keywords
+    'coordinates', 'scrdir' and 'guess' are left out, so the same physical job hits
+    the same entry even when two script versions name files differently.
+  * Hit: print the stored stdout, unpack the stored scratch folder into the scratch
+    folder this input asks for, and exit with the stored return code.
+  * Miss: in TCPROXY_MODE=record, run the real TeraChem ($TCPROXY_REAL) and store the
+    result. In TCPROXY_MODE=replay (default), exit 97 so a missing recording is loud.
+
+Environment: TCPROXY_CACHE (required), TCPROXY_MODE, TCPROXY_REAL, TCPROXY_LOG.
+"""
+import hashlib, io, os, shutil, subprocess, sys, tarfile, time
+
+IGNORED = {"coordinates", "scrdir", "guess"}
+
+
+def parse_input(path):
+    keys = {}
+    with open(path) as fh:
+        for raw in fh:
+            line = raw.split("#", 1)[0].strip()
+            if not line:
+                continue
+            parts = line.split(None, 1)
+            k = parts[0].lower()
+            v = " ".join(parts[1].split()).lower() if len(parts) > 1 else ""
+            keys[k] = v  # TeraChem keeps the last value of a repeated keyword
+    return keys
+
+
+def norm_geometry(path):
+    out = []
+    with open(path) as fh:
+        lines = fh.read().splitlines()
+    for line in lines[2:]:
+        f = line.split()
+        if len(f) < 4:
+            continue
+        out.append(f[0] + " " + " ".join("%.10e" % float(x) for x in f[1:4]))
+    return "\n".join(out)
+
+
+def main():
+    if len(sys.argv) < 2:
+        sys.exit("tc_proxy: usage: terachem <input>")
+    inp = sys.argv[1]
+    keys = parse_input(inp)
+    coord = keys.get("coordinates")
+    if not coord:
+        sys.exit("tc_proxy: no coordinates keyword in %s" % inp)
+    coord_path = coord if os.path.exists(coord) else os.path.join(os.path.dirname(inp), coord)
+    scrdir = keys.get("scrdir") or "scr." + os.path.splitext(os.path.basename(coord))[0]
+    # keep the case of the scrdir path as written
+    for raw in open(inp):
+        p = raw.split("#", 1)[0].split()
+        if len(p) >= 2 and p[0].lower() == "scrdir":
+            scrdir = p[1]
+
+    material = "\n".join("%s=%s" % (k, keys[k]) for k in sorted(keys) if k not in IGNORED)
+    material += "\n--geom--\n" + norm_geometry(coord_path)
+    h = hashlib.sha256(material.encode()).hexdigest()[:20]
+
+    cache = os.environ["TCPROXY_CACHE"]
+    entry = os.path.join(cache, h)
+    mode = os.environ.get("TCPROXY_MODE", "replay")
+    log = os.environ.get("TCPROXY_LOG")
+
+    def note(what):
+        if log:
+            with open(log, "a") as fh:
+                fh.write("%s %s %s %s run=%s target=%s nac=%s,%s\n" % (
+                    time.strftime("%F %T"), what, h, inp, keys.get("run"),
+                    keys.get("castarget", keys.get("cistarget")),
+                    keys.get("nacstate1"), keys.get("nacstate2")))
+
+    if os.path.isdir(entry) and os.path.exists(os.path.join(entry, "rc")):
+        note("HIT ")
+        sys.stdout.write(open(os.path.join(entry, "stdout")).read())
+        sys.stdout.flush()
+        os.makedirs(scrdir, exist_ok=True)
+        with tarfile.open(os.path.join(entry, "scr.tar")) as tf:
+            tf.extractall(scrdir, filter="data")
+        sys.exit(int(open(os.path.join(entry, "rc")).read()))
+
+    if mode != "record":
+        note("MISS")
+        sys.stderr.write("tc_proxy: cache miss %s for %s\n" % (h, inp))
+        sys.exit(97)
+
+    note("RUN ")
+    real = os.environ["TCPROXY_REAL"]
+    env = dict(os.environ)
+    env["TeraChem"] = os.path.dirname(os.path.dirname(os.path.abspath(real)))  # basis sets live here
+    proc = subprocess.run([real, inp], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env)
+    out = proc.stdout.decode(errors="replace")
+    sys.stdout.write(out)
+    sys.stdout.flush()
+    if proc.returncode != 0:  # failures are not cached, so a rerun tries again
+        note("FAIL")
+        sys.exit(proc.returncode)
+    tmp = entry + ".tmp%d" % os.getpid()
+    os.makedirs(tmp)
+    open(os.path.join(tmp, "stdout"), "w").write(out)
+    open(os.path.join(tmp, "input"), "w").write(open(inp).read())
+    open(os.path.join(tmp, "key"), "w").write(material)
+    with tarfile.open(os.path.join(tmp, "scr.tar"), "w") as tf:
+        if os.path.isdir(scrdir):
+            for name in sorted(os.listdir(scrdir)):
+                tf.add(os.path.join(scrdir, name), arcname=name)
+    open(os.path.join(tmp, "rc"), "w").write(str(proc.returncode))
+    if os.path.isdir(entry):
+        shutil.rmtree(tmp)
+    else:
+        os.rename(tmp, entry)
+    sys.exit(proc.returncode)
+
+
+if __name__ == "__main__":
+    main()

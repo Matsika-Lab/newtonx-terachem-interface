@@ -1,0 +1,425 @@
+| Startfile from command line: a.sp
+
+
+|       ***********************************************************
+|       *                 TeraChem v1.96H-beta-241109             *
+|       *                   Development Version                   *
+|       *           Chemistry at the Speed of Graphics!           *
+|       ***********************************************************
+|       * This program may only be used in connection with        *
+|       * a valid license from PetaChem, LLC. Use of this program *
+|       * or results thereof indicates acceptance of all terms    *
+|       * and conditions stated in the license and that a valid   *
+|       * license agreement between the user and PetaChem, LLC    *
+|       * exists. PetaChem, LLC does not warrant the correctness  *
+|       * of results or their suitability for any purpose.        *
+|       * Please email bugs, suggestions, and comments to         *
+|       *                  help@petachem.com                      *
+|       *                                                         *
+|       ***********************************************************
+
+
+|       ***********************************************************
+|       *  Compiled by toddmtz      Sat Nov  9 14:44:01 PST 2024  *
+|       *  Supported architecture SMs: 50 60 70 80 89 90          *
+|       *  Build cuda_12.1.r12.1/compiler.32415258_0              *
+|       *  Git Version: e8689e03079e5dd0feb56de7bdd73588f14c25a8  *
+|       ***********************************************************
+
+
+| Job started   Mon Nov  9 17:08:42 2026
+| On sn4622120437 (available memory: 717304 MB)
+
+| ######################################### RUNTIME INFO ##########################################
+| /software/TeraChem-1.96-beta-241109/TeraChem/bin/terachem  a.sp 
+
+|  NVRM version: NVIDIA UNIX Open Kernel Module for x86_64  565.57.01  Release Build  (dvs-builder@U16-A24-9-2)  Thu Oct 10 12:15:00 UTC 2024
+|  GCC version:  gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04.2) 
+
+|  	linux-vdso.so.1 (0x00007ffea1485000)
+|  	libmagma.so => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libmagma.so (0x00007f4308a00000)
+|  	libcurl.so.4 => /lib/x86_64-linux-gnu/libcurl.so.4 (0x00007f43705f8000)
+|  	libz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x00007f43705dc000)
+|  	libimf.so => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libimf.so (0x00007f4308400000)
+|  	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f43704f3000)
+|  	libmpi.so.12 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libmpi.so.12 (0x00007f4307600000)
+|  	libthcbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libthcbox.so.1 (0x00007f4304e00000)
+|  	libOpenMM.so => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libOpenMM.so (0x00007f4304600000)
+|  	libnvToolsExt.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libnvToolsExt.so.1 (0x00007f4304200000)
+|  	libgpubox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libgpubox.so.1 (0x00007f4303e00000)
+|  	libcpubox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libcpubox.so.1 (0x00007f4303a00000)
+|  	libtensorbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libtensorbox.so.1 (0x00007f4303600000)
+|  	libiobox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libiobox.so.1 (0x00007f4303200000)
+|  	libintbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libintbox.so.1 (0x00007f4296800000)
+|  	libatmx2cbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libatmx2cbox.so.1 (0x00007f4296400000)
+|  	libperiodicbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libperiodicbox.so.1 (0x00007f4275800000)
+|  	libsqmbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libsqmbox.so.1 (0x00007f4275200000)
+|  	libgridbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libgridbox.so.1 (0x00007f4272400000)
+|  	libdftbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libdftbox.so.1 (0x00007f4272000000)
+|  	libcibox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libcibox.so.1 (0x00007f4271600000)
+|  	libccbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libccbox.so.1 (0x00007f4270e00000)
+|  	libsimbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libsimbox.so.1 (0x00007f4270a00000)
+|  	liboptbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/liboptbox.so.1 (0x00007f4270600000)
+|  	libprotobuf.so.25 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libprotobuf.so.25 (0x00007f4270000000)
+|  	libcommbox.so.1 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libcommbox.so.1 (0x00007f426fc00000)
+|  	libssl.so.10 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libssl.so.10 (0x00007f426f800000)
+|  	libcrypto.so.10 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libcrypto.so.10 (0x00007f426f200000)
+|  	libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f43089fb000)
+|  	libcuda.so.1 => /lib/x86_64-linux-gnu/libcuda.so.1 (0x00007f426c24d000)
+|  	libcudart.so.12 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libcudart.so.12 (0x00007f426be00000)
+|  	libcublas.so.12 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libcublas.so.12 (0x00007f4265400000)
+|  	libcufft.so.11 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libcufft.so.11 (0x00007f4259800000)
+|  	libcusparse.so.12 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libcusparse.so.12 (0x00007f424a200000)
+|  	libcusolver.so.11 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libcusolver.so.11 (0x00007f4237c00000)
+|  	libcublasLt.so.12 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libcublasLt.so.12 (0x00007f4216c00000)
+|  	libsvml.so => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libsvml.so (0x00007f4215c00000)
+|  	libirng.so => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libirng.so (0x00007f4215800000)
+|  	libstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f42155d4000)
+|  	libiomp5.so => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libiomp5.so (0x00007f4215200000)
+|  	libcilkrts.so.5 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libcilkrts.so.5 (0x00007f4214e00000)
+|  	libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f43089d9000)
+|  	libintlc.so.5 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libintlc.so.5 (0x00007f4214a00000)
+|  	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f42147d7000)
+|  	/lib64/ld-linux-x86-64.so.2 (0x00007f43706b9000)
+|  	libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f43089d4000)
+|  	libmkl_intel_ilp64.so => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libmkl_intel_ilp64.so (0x00007f4213e00000)
+|  	libmkl_intel_thread.so => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libmkl_intel_thread.so (0x00007f4211c00000)
+|  	libmkl_core.so => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libmkl_core.so (0x00007f420fa00000)
+|  	libnghttp2.so.14 => /lib/x86_64-linux-gnu/libnghttp2.so.14 (0x00007f43089a8000)
+|  	libidn2.so.0 => /lib/x86_64-linux-gnu/libidn2.so.0 (0x00007f4308987000)
+|  	librtmp.so.1 => /lib/x86_64-linux-gnu/librtmp.so.1 (0x00007f4308968000)
+|  	libssh.so.4 => /lib/x86_64-linux-gnu/libssh.so.4 (0x00007f43088fa000)
+|  	libpsl.so.5 => /lib/x86_64-linux-gnu/libpsl.so.5 (0x00007f43083ec000)
+|  	libssl.so.3 => /lib/x86_64-linux-gnu/libssl.so.3 (0x00007f4308348000)
+|  	libcrypto.so.3 => /lib/x86_64-linux-gnu/libcrypto.so.3 (0x00007f420f5bc000)
+|  	libgssapi_krb5.so.2 => /lib/x86_64-linux-gnu/libgssapi_krb5.so.2 (0x00007f43075ac000)
+|  	libldap-2.5.so.0 => /lib/x86_64-linux-gnu/libldap-2.5.so.0 (0x00007f430754c000)
+|  	liblber-2.5.so.0 => /lib/x86_64-linux-gnu/liblber-2.5.so.0 (0x00007f4308337000)
+|  	libzstd.so.1 => /lib/x86_64-linux-gnu/libzstd.so.1 (0x00007f430747d000)
+|  	libbrotlidec.so.1 => /lib/x86_64-linux-gnu/libbrotlidec.so.1 (0x00007f430746f000)
+|  	librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007f43088f1000)
+|  	libkrb5.so.3 => /lib/x86_64-linux-gnu/libkrb5.so.3 (0x00007f4304d35000)
+|  	libcom_err.so.2 => /lib/x86_64-linux-gnu/libcom_err.so.2 (0x00007f4307469000)
+|  	libk5crypto.so.3 => /lib/x86_64-linux-gnu/libk5crypto.so.3 (0x00007f430743a000)
+|  	libnvJitLink.so.12 => /software/TeraChem-1.96-beta-241109/TeraChem/lib/libnvJitLink.so.12 (0x00007f420c400000)
+|  	libunistring.so.2 => /lib/x86_64-linux-gnu/libunistring.so.2 (0x00007f4304456000)
+|  	libgnutls.so.30 => /lib/x86_64-linux-gnu/libgnutls.so.30 (0x00007f4304015000)
+|  	libhogweed.so.6 => /lib/x86_64-linux-gnu/libhogweed.so.6 (0x00007f4304ced000)
+|  	libnettle.so.8 => /lib/x86_64-linux-gnu/libnettle.so.8 (0x00007f4304ca7000)
+|  	libgmp.so.10 => /lib/x86_64-linux-gnu/libgmp.so.10 (0x00007f4303d7e000)
+|  	libkrb5support.so.0 => /lib/x86_64-linux-gnu/libkrb5support.so.0 (0x00007f430742a000)
+|  	libsasl2.so.2 => /lib/x86_64-linux-gnu/libsasl2.so.2 (0x00007f4304c8c000)
+|  	libbrotlicommon.so.1 => /lib/x86_64-linux-gnu/libbrotlicommon.so.1 (0x00007f4304c69000)
+|  	libkeyutils.so.1 => /lib/x86_64-linux-gnu/libkeyutils.so.1 (0x00007f4307423000)
+|  	libresolv.so.2 => /lib/x86_64-linux-gnu/libresolv.so.2 (0x00007f4304442000)
+|  	libp11-kit.so.0 => /lib/x86_64-linux-gnu/libp11-kit.so.0 (0x00007f4303c43000)
+|  	libtasn1.so.6 => /lib/x86_64-linux-gnu/libtasn1.so.6 (0x00007f430442a000)
+|  	libffi.so.8 => /lib/x86_64-linux-gnu/libffi.so.8 (0x00007f430441d000)
+| #################################################################################################
+
+| Checking Amazon Cloud instance ID...   Not found
+| Cannot find license.dat file /software/TeraChem-1.96-beta-241109/TeraChem/license.dat
+
+
+| TRYING THE NETWORK LICENSE...
+| Cannot find license.key file /software/TeraChem-1.96-beta-241109/TeraChem/license.key 
+
+
+| *************************** WARNING ******************************
+| *                 Running in Demo mode.                          *
+| *                                                                *
+| * You are using the demo version of TeraChem. Commercial users   *
+| * may only use this software for evaluation purposes and are     *
+| * not licensed to use the results for any other business purpose.*
+| * Use of TeraChem in demo mode is only permitted for             *
+| * noncommercial purposes.                                        *
+| ******************************************************************
+
+-----------------------------------
+Processed Input file:
+              coordinates geom.xyz
+                    basis 6-31g*
+                   method rhf
+                   charge 0
+                 spinmult 1
+                     gpus 1
+                      fon yes
+               fon_method gaussian
+          fon_temperature 0.2
+                    casci yes
+                   closed 6
+                   active 4
+              cassinglets 0
+              castriplets 3
+            castargetmult 3
+                castarget 1
+                      run gradient
+-----------------------------------
+Jobname: geom
+Scratch data will be generated
+Scratch directory: ./scr.geom
+| Random number seed: 1897200107
+
+XYZ coordinates geom.xyz
+Molden File Output: ./scr.geom/geom.molden
+Using basis set: 6-31gs
+dmrgstart not found
+Spin multiplicity: 1
+DIIS will use up to 10 vectors.
+Condition number limit for the DIIS overlap matrix is            0
+WF convergence threshold: 1.00e-06
+Using DIIS algorithm to converge WF
+Maximum number of SCF iterations: 100
+Incremental fock with rebuild every 8 iterations
+Will switch to conventional Fock if diffuse functions are detected
+X-matrix tolerance: 1.00e-04
+PRECISION: DYNAMIC
+TeraChem will select linear algebra engine
+Using fractional orbital occupations
+Fractional occupations determined by gaussian broadening
+6 occupied orbitals will have integer occupation
+4 occupied orbitals will have fractional occupation
+kT is set to  0.200 a.u.
+DFT Functional requested: hf
+Method: Hartree-Fock 
+Wavefunction: RESTRICTED
+Initial guess generated by maximum overlap
+
+********************************************
+**** SINGLE POINT GRADIENT CALCULATIONS ****
+********************************************
+SCF:   Initial guess is taken from previous step
+Starting TensorBox...
+| TeraChem will select linear algebra engine
+| Using cuSolver for matrix diagonalization
+
+| using 1 out of 1 CUDA devices
+|   Device 0: NVIDIA RTX 5000 Ada Generation, 32255MB, CC 8.9 -- CPU THREAD 0
+| -------------------------------------------------------------------
+| CPU Memory Available: 128982.25 MegaWords 
+| GPU Memory Available: 3775.94 MegaWords 
+| Maximum recommended basis set size: 23500 basis functions
+|  (limited by GPU memory)
+| -------------------------------------------------------------------
+| Initialize GPUBox with 128 MW of memory
+
+****** QM coordinates ******
+C         0.0000000000         0.0000000000         0.7255635954  
+C         0.0000000000         0.0000000000        -0.7255635954  
+H        -0.2042942523         0.9070084185         1.2704062488  
+H         0.2042942523        -0.9070084185         1.2704062488  
+H         0.2042942523         0.9070084185        -1.2704062488  
+H        -0.2042942523        -0.9070084185        -1.2704062488  
+
+Basis set:       6-31gs
+Total atoms:     6
+Total charge:    0
+Total electrons: 16 (8-alpha, 8-beta)
+Number electrons modeled by ECPs: 0
+Total orbitals:  38
+Total AO shells: 20 (14 S-shells; 4 P-shells; 2 D-shells; 0 F-shells; 0 G-shells)
+Spin multiplicity: 1
+Nuclear repulsion energy (QM atoms): 32.000849504389 a.u.
+
+
+                      *** Start SCF Iterations ***
+
+ Iter     DIIS Error       Energy change         Energy        Time(s)
+------------------------------------------------------------------------
+Initial temperature is 0.200000
+| Purifying guess...
+| Trace of guess  16.00000000, trace of guess*guess  16.00000000,  electron number  16.00000000 
+| Guess is well-conditioned: purify...
+| Purification run on CPU (double precision)  using TC2 purification.
+| Density matrix purification finished after a total of 0 matrix multiplies
+| THRESPDP set to 1.00e+00
+|    1     0.4412031974     -77.4667252320     -77.4667252320     0.12  
+|    2     0.1699625151      -0.3396349480     -77.8063601801     0.01  
+|    3     0.0418931857      -0.0201627034     -77.8265228835     0.01  
+|    4     0.0060321990      +0.0083822826     -77.8181406009     0.01  
+|    5     0.0017233233      +0.0040040734     -77.8141365275     0.01  
+|    6     0.0005503074      +0.0008642678     -77.8132722597     0.01  
+|    7     0.0001711479      +0.0001716510     -77.8131006087     0.01  
+|    8     0.0000425776      +0.0000424863     -77.8130581224     0.01  
+| THRESPDP set to 5.75e-04
+|    9     0.0000125785      -0.0000008990     -77.8130590214     0.01  
+|   10     0.0000040894      -0.0000015320     -77.8130605534     0.01  
+|   11     0.0000004945      -0.0000015422     -77.8130620956     0.01  
+------------------------------------------------------------------------
+FINAL ENERGY: -77.8130620956 a.u.
+| WARNING: Final energy is higher than the lowest energy by     0.013461.
+Fractional Occupation Entropy: 1.2572912612
+Mermin Free Energy:            -78.0645203479
+HOMO-LUMO GAP: 10.283 eV
+CENTER OF MASS: {0.000000, -0.000000, 0.000000} ANGS
+DIPOLE MOMENT: {0.000000, -0.000000, 0.000000} (|D| = 0.000000) DEBYE
+
+Running Mulliken population analysis...
+
+
+  Active Space Parameters
+--------------------------------------------
+Number of closed orbitals:               6
+Number of active orbitals:               4
+Number of virtual orbitals:             28
+Number of molecular orbitals:           38
+Number of basis functions:              38
+Number of active electrons:              4
+Number of alpha electrons:               2
+Number of beta electrons:                2
+
+  Orbital      Energy        Occupation
+-----------------------------------------
+      5       -0.634664        1.000000
+      6       -0.567509        1.000000
+      7       -0.533656        0.983970
+      8       -0.286297        0.817758
+      9        0.091583        0.162916
+     10        0.256536        0.035357
+     11        0.292702        0.000000
+     12        0.302151        0.000000
+
+  CAS Parameters
+--------------------------------------------
+Number of determinants:                 36
+Number of singlet CSFs:                 20
+Number of doublet CSFs:                  0
+Number of triplet CSFs:                 15
+Number of quartet CSFs:                  0
+Number of quintet CSFs:                  1
+Number of sextet CSFs:                   0
+Number of septet CSFs:                   0
+Number of singlet states:                0
+Number of doublet states:                0
+Number of triplet states:                3
+Number of quartet states:                0
+Number of quintet states:                0
+Number of sextet states:                 0
+Number of septet states:                 0
+Using the hard-coded solver
+
+Triplet state  1 energy:        -77.92020105761593
+
+|         0.70598292304192  X7 B8 A9
+|        -0.70598292304192  X7 A8 B9
+|         0.03883886977006  B7 X8 A9
+|        -0.03883886977006  A7 X8 B9
+
+Triplet state  2 energy:        -77.67251229780531
+
+|         0.70626072062504  X7 B8 A10
+|        -0.70626072062504  X7 A8 B10
+|        -0.02671174151503  A7 X9 B10
+|         0.02671174151503  B7 X9 A10
+
+Triplet state  3 energy:        -77.66894132662939
+
+|         0.70600479308130  A7 X8 B9
+|        -0.70600479308130  B7 X8 A9
+|         0.03886757607475  X7 B8 A9
+|        -0.03886757607475  X7 A8 B9
+
+  Root   Mult.   Total Energy (a.u.)   Ex. Energy (a.u.)     Ex. Energy (eV)
+-------------------------------------------------------------------------------
+     1  triplet        -77.92020106
+     2  triplet        -77.67251230          0.24768876          6.73995296
+     3  triplet        -77.66894133          0.25125973          6.83712402
+
+|  Root   Mult.      Ex. Wavelength (nm)
+|-----------------------------------------
+|     2  triplet        183.95413342
+|     3  triplet        181.33972758
+
+Triplet state dipole moments:
+
+  Root       Dx         Dy         Dz         |D|  (Debye)
+------------------------------------------------------------
+     1    -0.0000    -0.0000     0.0000     0.0000
+     2    -0.0000    -0.0000     0.0000     0.0000
+     3    -0.0000     0.0000     0.0000     0.0000
+
+Triplet state electronic transitions:
+
+ Transition      Tx        Ty        Tz       |T|    Osc. (a.u.) 
+-----------------------------------------------------------------
+   1 ->  2    -0.0000    0.1863   -0.0000    0.1863    0.0057
+   1 ->  3     0.0000   -0.0000   -0.0000    0.0000    0.0000
+   2 ->  3    -0.0000    0.0143    0.0000    0.0143    0.0000
+
+Triplet state velocity transition dipole moments:
+
+ Transition      Px        Py        Pz       |P|    Osc. (a.u.) 
+-----------------------------------------------------------------
+   1 ->  2    -0.0000   -0.0145    0.0000    0.0145    0.0006
+   1 ->  3     0.0000   -0.0000    0.0000    0.0000    0.0000
+   2 ->  3     0.0000    0.0011    0.0000    0.0011    0.0002
+
+Triplet state magnetic transition dipole moments and rotational strengths:
+
+ Transition      Lx        Ly        Lz        |L|    R(vel) (a.u.)
+--------------------------------------------------------------------
+   1 ->  2    -0.0000    0.2268   -0.0000    0.2268   -0.0133
+   1 ->  3     0.0000    0.0000    0.0000    0.0000    0.0000
+   2 ->  3     0.0000   -0.0176    0.0000    0.0176   -0.0055
+
+Triplet state electric quadrupole moments (Cartesian):
+Operator origin (a.u.):     0.000000,    -0.000000,     0.000000 
+
+ Root     Qxy        Qxz        Qyz        Qxx        Qyy        Qzz       R^2
+--------------------------------------------------------------------------------------------
+    1     0.0000    -0.0000    -0.0000   -11.8407    -9.1711   -10.2479   -31.2597
+    2    -0.0000    -0.0000     0.0000   -11.0389   -16.1096   -13.4621   -40.6106
+    3    -0.0000    -0.0000     0.0000   -13.4621    -7.4143    -7.8080   -28.6844
+
+Triplet state electric transition quadrupole moments (Cartesian):
+
+ Transition     Qxy        Qxz        Qyz        Qxx        Qyy        Qzz       norm (a.u.)
+--------------------------------------------------------------------------------------------
+   1 ->  2     0.0000    -0.1820    -0.0000     0.0000     0.0000     0.0000     0.1820
+   1 ->  3     0.0000    -0.0000     0.0000    -0.4224     0.4838     0.5322     0.8341
+   2 ->  3     0.0000    -0.0140     0.0000     0.0000    -0.0000    -0.0000     0.0140
+
+|  Print Orbital Molden.
+Building Xtilde...
+
+Pointer addr of Xpq_, Zpq_: 0x34ea0a40, 0x35e4baa0
+Building Z-vector RHS...
+
+Solving CPSCF equations
+Using DIIS solver
+
+ Iter         Residual      
+------  --------------------
+    1      0.256305761055
+    2      0.602244594061
+    3      0.055644648319
+    4      0.046322931197
+    5      0.022372422081
+    6      0.001028126735
+    7      0.000312427752
+    8      0.000053128409
+
+CPSCF converged
+
+Building X...
+
+|FINAL Target State Energy: -77.672512297805 a.u.
+
+Gradient units are Hartree/Bohr
+---------------------------------------------------
+        dE/dX            dE/dY            dE/dZ
+   -0.0000000027     0.0000000036     0.0461909480
+   -0.0000000001    -0.0000000019    -0.0461915794
+    0.0001364003    -0.0387573980     0.0068706884
+   -0.0001363986     0.0387573953     0.0068706881
+   -0.0001366362    -0.0387584535    -0.0068703717
+    0.0001366374     0.0387584546    -0.0068703736
+---------------------------------------------------
+Net gradient: -4.205509e-12  4.433777e-12 -2.097944e-10
+Net torque:    5.319755e-09 -3.045695e-09 -2.890687e-09
+
+Writing out molden info
+| Total processing time: 1.29 sec 
+
+| Job finished: Mon Nov  9 17:08:45 2026
+
