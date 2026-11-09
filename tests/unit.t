@@ -167,6 +167,7 @@ subtest 'run_tera_ic.pl oscillator strengths' => sub {
         hhtda  => [ "hhtda yes\n", { 2 => "0.00222222", 3 => "0.78597363" } ],
         tda    => [ "cis yes\n",   { 2 => "0.0003",     3 => "0.2244" } ],
         fomo_triplet => [ "casci yes\ncastargetmult 3\n", { 2 => "0.0057" } ],
+        rpa          => [ "rpa yes\n",   { 2 => "0.1600" } ],
     );
     for my $m ( sort keys %want ) {
         my ( $tpl, $f ) = @{ $want{$m} };

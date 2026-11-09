@@ -19,7 +19,7 @@ The template describes the method in the same way as for [dynamics](dynamics.md#
 - **Dynamics-only keywords:** `castarget`, `cistarget`, `nacstate1`, `nacstate2` and `scrdir` are removed. A `guess` line whose file does not exist, for example a path into `INFO_RESTART`, is removed too.
 - **Log line:** `moldyn.log` shows the interface version, the template used, the method, the multiplicity and the states.
 
-All four methods work: CASSCF, FOMO-CASCI, TDA/TDDFT and hh-TDA. The multiplicity rules are the same as for dynamics.
+All five methods work: CASSCF, FOMO-CASCI, TDA, hh-TDA and full TDDFT (RPA). Couplings are not needed here, so RPA has no restriction. The multiplicity rules are the same as for dynamics.
 
 ## Outputs
 
