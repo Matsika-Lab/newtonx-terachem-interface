@@ -49,7 +49,9 @@ sub main_ic {
     my $nfs   = getkeyword( "initqp_input", "nfs",   2 );
     my $lvprt = getkeyword( "initqp_input", "lvprt", 1 );
     $main::lvprt = $lvprt;
-    tc_fail("nfs ($nfs) must be larger than nis ($nis) in initqp_input.") unless $nfs > $nis && $nis >= 1;
+    tc_fail("nis ($nis) and nfs ($nfs) in initqp_input must be different states, both 1 or more.")
+      unless $nis >= 1 && $nfs >= 1 && $nfs != $nis;
+    my $mxns = $nis > $nfs ? $nis : $nfs;
     my $epotf = -e "zero" ? "epot0" : "epot";
 
     # Geometry
@@ -85,12 +87,16 @@ sub main_ic {
       unless $finished;
 
     # Energies and oscillator strengths
-    my @e = parse_energies( $out_ic, $info, $nfs );
-    my %f = parse_oscillators( $out_ic, $info, $nis, $nfs, \@e );
+    # As initcond.pl expects (and run_bagel_initcond.pl writes): one file pair per state
+    # ifs = 1 .. max(nis, nfs), ifs != nis; epot.<ifs> holds the two energies in
+    # ascending state order, oos.<ifs> the oscillator strength between nis and ifs.
+    my @e = parse_energies( $out_ic, $info, $mxns );
+    my %f = parse_oscillators( $out_ic, $info, $nis, $mxns, \@e );
 
-    for my $ifs ( $nis + 1 .. $nfs ) {
+    for my $ifs ( grep { $_ != $nis } 1 .. $mxns ) {
+        my ( $lo, $hi ) = $ifs < $nis ? ( $ifs, $nis ) : ( $nis, $ifs );
         open my $o, '>', "$epotf.$ifs" or tc_fail("Cannot write $epotf.$ifs: $!");
-        print $o "$e[$nis-1]\n$e[$ifs-1]\n";
+        print $o "$e[$lo-1]\n$e[$hi-1]\n";
         close $o;
         open $o, '>', "oos.$ifs" or tc_fail("Cannot write oos.$ifs: $!");
         print $o "$f{$ifs}\n";
@@ -99,8 +105,8 @@ sub main_ic {
 
     if ( $lvprt >= 2 ) {
         my $au2ev = units("au2ev");
-        print_STDOUT( "$main::mdle state   energy (a.u.)    dE from $nis (eV)   f($nis->state)\n" );
-        for my $ifs ( $nis + 1 .. $nfs ) {
+        print_STDOUT( "$main::mdle state   energy (a.u.)    dE from $nis (eV)   f($nis<->state)\n" );
+        for my $ifs ( grep { $_ != $nis } 1 .. $mxns ) {
             print_STDOUT( sprintf( "%s %5d %16.8f %14.4f %14.6f\n", $main::mdle, $ifs, $e[ $ifs - 1 ], ( $e[ $ifs - 1 ] - $e[ $nis - 1 ] ) * $au2ev, $f{$ifs} ) );
         }
     }
@@ -108,7 +114,8 @@ sub main_ic {
 
 sub parse_oscillators {
     #
-    # Returns { ifs => f(nis -> ifs) } for ifs = nis+1 .. nfs.
+    # Returns { ifs => f } for every ifs = 1 .. $mxns other than nis, where f is the
+    # oscillator strength between states nis and ifs (the lower to the higher).
     #
     # TeraChem prints, by method:
     #   CASSCF/FOMO-CASCI: '<Mult> state electronic transitions:' blocks with a
@@ -118,7 +125,7 @@ sub parse_oscillators {
     #   TDA/TDDFT: an Osc. column in the second 'Root Total Energy' table (ground to
     #     root); the 'Transition' table is between excited roots only (root r = state r+1).
     #
-    my ( $file, $info, $nis, $nfs, $e ) = @_;
+    my ( $file, $info, $nis, $mxns, $e ) = @_;
     open my $fh, '<', $file or tc_fail("Cannot open $file: $!");
     my @lines = <$fh>;
     close $fh;
@@ -131,7 +138,8 @@ sub parse_oscillators {
     # Transition-dipole tables (length gauge only).
     my ( $in_table, $block_ok ) = ( 0, 1 );
     foreach my $l (@lines) {
-        if ( $l =~ /^\s*(\w+) state electronic transitions/ ) { $block_ok = ( lc($1) eq $want ); next; }
+        if ( $l =~ /^\s*(\w+) state electronic transitions/ )            { $block_ok = ( lc($1) eq $want ); next; }    # CAS
+        if ( $l =~ /Transition dipole moments between (\w+) states/ ) { $block_ok = ( lc($1) eq $want || lc($1) eq "excited" ); next; }
         if ( $l =~ /^\s*Transition\s+Tx\s+Ty\s+Tz/ ) { $in_table = 1; next; }
         if ( $l =~ /^\s*Transition\s+Px/ )          { $in_table = 0; next; }
         next unless $in_table;
@@ -148,7 +156,7 @@ sub parse_oscillators {
     }
 
     # Ground-state oscillator strengths printed in the energy tables.
-    if ( $nis == 1 ) {
+    {
         for my $k ( 0 .. $#lines ) {
             if ( $lines[$k] =~ /Root\s+Mult\.\s+Total Energy.*Osc\./ ) {    # hh-TDA
                 my $state = 0;
@@ -172,16 +180,17 @@ sub parse_oscillators {
     }
 
     my %f;
-    for my $ifs ( $nis + 1 .. $nfs ) {
-        if ( defined $osc{$nis}{$ifs} ) {
-            $f{$ifs} = $osc{$nis}{$ifs};
+    for my $ifs ( grep { $_ != $nis } 1 .. $mxns ) {
+        my ( $lo, $hi ) = $ifs < $nis ? ( $ifs, $nis ) : ( $nis, $ifs );
+        if ( defined $osc{$lo}{$hi} ) {
+            $f{$ifs} = $osc{$lo}{$hi};
         }
-        elsif ( defined $tdm{$nis}{$ifs} ) {
-            my $de = $e->[ $ifs - 1 ] - $e->[ $nis - 1 ];
-            $f{$ifs} = sprintf( "%.6f", 2.0 / 3.0 * $de * $tdm{$nis}{$ifs}**2 );
+        elsif ( defined $tdm{$lo}{$hi} ) {
+            my $de = $e->[ $hi - 1 ] - $e->[ $lo - 1 ];
+            $f{$ifs} = sprintf( "%.6f", 2.0 / 3.0 * $de * $tdm{$lo}{$hi}**2 );
         }
         else {
-            tc_fail("No oscillator strength or transition dipole for $nis -> $ifs in $file. For TDA/TDDFT with nis > 1, or more states, raise cisnumstates; for CAS, check the multiplicity.");
+            tc_fail("No oscillator strength or transition dipole between states $lo and $hi in $file. Ask TeraChem for more states, and check the multiplicity.");
         }
     }
     return %f;

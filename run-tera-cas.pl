@@ -81,7 +81,7 @@ our ( $old_scf_guess, $old_guess, $molden_ar, $wf_ar );
 our ( $nat, $istep, $nstat, $nstatdyn, $ndamp, $kt, $dt, $t, $tmax, $nintc );
 our ( $nxrestart, $thres, $killstat, $timekill, $prog, $lvprt, $etot_jump, $etot_drift, $mem );
 our ( @symb, @x, @y, @z );
-our ( $typeofinput, $run_flag, $layout, %opt );
+our ( $typeofinput, $run_flag, $layout, %opt, $vdoth_nx );
 our ( @epot, @gx, @gy, @gz, @hx, @hy, @hz, $ncoup );
 
 if ( !caller && @ARGV && $ARGV[0] eq "--check-options" ) {
@@ -117,7 +117,10 @@ sub main {
     write_energy();
     read_gradients( $jobs[0] );
     write_grad();
-    treat_nacme( [ grep { $_->{kind} eq "nac" } @jobs ] ) if $typeofinput eq "jnd";
+    # Coupling vectors: written on every step. On an adiabatic step (typeofdyn 1) no
+    # pair is computed, so zero couplings are written instead of keeping the last
+    # step's. With TD-BA (vdoth = 2) NX writes the couplings itself.
+    treat_nacme( [ grep { $_->{kind} eq "nac" } @jobs ] ) if $vdoth_nx == 0;
 }
 
 #====================================================================================
@@ -248,8 +251,10 @@ sub determine_dynamics_type {
         tc_fail("Could not determine dynamics type. Neither $JAD nor $JND found.");
     }
 
-    my $vdoth = getkeyword( "sh.inp", "vdoth", 0 );
-    $vdoth = 0 if !defined $vdoth || $vdoth eq "";
+    # moldyn.pl treats a missing vdoth as 2 (TD-BA); do the same.
+    my $vdoth = getkeyword( "sh.inp", "vdoth", 2 );
+    $vdoth = 2 if !defined $vdoth || $vdoth eq "";
+    $vdoth_nx = $vdoth;
     if ( $type == 1 ) {
         $typeofinput = "jad";
     }
@@ -377,7 +382,7 @@ sub plan_jobs {
         if ( $layout eq "legacy" ) {
             if    ( $j == $nstatdyn && $i == $nstatdyn - 1 ) { $job->{dir} = "NAD_N1N0"; }
             elsif ( $i == $nstatdyn && $j == $nstatdyn + 1 ) { $job->{dir} = "NAD_N1N2"; }
-            $job->{template} = -e "$job->{dir}/start.sp" ? "$job->{dir}/start.sp" : $legacy_nac;
+            $job->{template} = $job->{dir} =~ /^NAD_N1N[02]$/ ? "$job->{dir}/start.sp" : $legacy_nac;
             tc_fail("No coupling template (NAD_N1N0/start.sp or NAD_N1N2/start.sp) for the pair ($i, $j).")
               unless $job->{template};
         }
@@ -390,18 +395,20 @@ sub plan_jobs {
               . ( @pairs ? join( " ", map { "$_->[1]-$_->[0]" } @pairs ) : "none" ) . "\n", $istep, $kt );
     }
 
+    # Read every template now, before any input is written, so a job never starts from
+    # an input this script wrote earlier.
     foreach my $job (@jobs) {
         tc_fail("Template input file '$job->{template}' not found.") unless -e $job->{template};
+        open my $tfh, '<', $job->{template} or tc_fail("Could not open '$job->{template}': $!");
+        $job->{lines} = [<$tfh>];
+        close $tfh;
         mkpath( $job->{dir}, 0, 0755 ) unless -d $job->{dir};
     }
 
     # Refuse RPA coupling jobs before any TeraChem time is spent (see write_job_input).
     if ( @jobs > 1 ) {
-        open my $fh, '<', $jobs[1]{template} or tc_fail("Could not open '$jobs[1]{template}': $!");
-        my @l = <$fh>;
-        close $fh;
         tc_fail("$jobs[1]{template} uses full TDDFT (rpa yes). TeraChem gives no RPA coupling vectors (it writes zeros). Use TDA (cis yes) for coupling vectors, or TD-BA (vdoth = 2 in sh.inp) with RPA.")
-          if template_info( \@l )->{rpa};
+          if template_info( $jobs[1]{lines} )->{rpa};
     }
     return @jobs;
 }
@@ -508,11 +515,8 @@ sub insert_lines {
 
 sub write_job_input {
     my ($job) = @_;
-    open my $fh, '<', $job->{template} or tc_fail("Could not open '$job->{template}': $!");
-    my @lines = <$fh>;
-    close $fh;
-
-    my $info = template_info( \@lines );
+    my @lines = @{ $job->{lines} };
+    my $info  = template_info( \@lines );
     $job->{info} = $info;
     if ( $info->{cas} && !exists $info->{kw}{castargetmult} && ( $info->{kw}{cassinglets} // 1 ) =~ /^0\b/ ) {
         tc_fail("$job->{template} asks for no singlets (cassinglets 0) but sets no castargetmult. Add 'castargetmult 3' (or the multiplicity you run).");
@@ -580,7 +584,7 @@ sub write_job_input {
         set_keyword( \@lines, "guess", $guess ) if $guess;
     }
 
-    open $fh, '>', "$job->{dir}/start.sp" or tc_fail("Could not write '$job->{dir}/start.sp': $!");
+    open my $fh, '>', "$job->{dir}/start.sp" or tc_fail("Could not write '$job->{dir}/start.sp': $!");
     print $fh @lines;
     close $fh;
 }

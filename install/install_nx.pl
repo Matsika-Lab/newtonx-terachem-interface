@@ -81,7 +81,7 @@ $block{check_thirdparty} = <<'EOT';
          }
        }
        if ($type eq "dyn"){
-         my $vd = getkeyword("$BASEDIR/sh.inp","vdoth",0);
+         my $vd = getkeyword("$BASEDIR/sh.inp","vdoth",2);   # NX's own default is 2
          if (($vd == 1) or ($vd < 0)){
            exit_error("vdoth = $vd needs wavefunction overlaps, which the TeraChem interface does not provide. Use vdoth = 0 (coupling vectors) or 2 (TD-BA).",$mdle);
          }
@@ -140,8 +140,22 @@ foreach my $name (qw(prog_config check_thirdparty read_credits test_list)) {
 if ( $text =~ s/^[ \t]*if \(\(\$prog >= 20\.95\) and \(\$prog < 21\.05\)\)\s*\{\s*\n\s*%progconf\s*=\s*\(\s*progname\s*=>?\s*"terachem".*?progdyn[^\n]*\n\s*\}[ \t]*\n//ms ) {
     print "colib: removed an older TeraChem prog_config block (prog 21.0)\n";
 }
-if ( $text =~ s/^[ \t]*## Terachem ##[ \t]*\n.*?(?=^[ \t]*## HYBRID ##)//ms ) {
+# Older hand-made check_thirdparty block: the '## Terachem ##' header, its dashed line
+# and the 'if ($progname eq "terachem") { ... }' block, found by brace matching so
+# that nothing after it is touched.
+while ( $text =~ /^[ \t]*## *terachem *##[ \t]*\n(?:[ \t]*#-*[ \t]*\n)?[ \t]*if *\(\$progname eq "terachem"\) *\{/img ) {
+    my ( $start, $pos, $depth ) = ( $-[0], $+[0], 1 );
+    while ( $depth > 0 && $pos < length $text ) {
+        my $c = substr( $text, $pos++, 1 );
+        $depth++ if $c eq "{";
+        $depth-- if $c eq "}";
+    }
+    die "colib: unbalanced braces in the old TeraChem check_thirdparty block; fix it by hand.\n" if $depth;
+    $pos++ while $pos < length($text) && substr( $text, $pos, 1 ) =~ /[ \t]/;
+    $pos++ if substr( $text, $pos, 1 ) eq "\n";
+    substr( $text, $start, $pos - $start ) = "";
     print "colib: removed an older TeraChem check_thirdparty block\n";
+    pos($text) = $start;
 }
 
 foreach my $name (qw(prog_config check_thirdparty read_credits test_list)) {
@@ -235,8 +249,13 @@ sub copy_tree {
     my ( $src, $dest ) = @_;
     die "$src not found\n" unless -d $src;
     if ( -e $dest ) {
-        print "keep:   $dest (already there)\n";
-        return;
+        if ( system( "diff", "-rq", $src, $dest ) == 0 ) {
+            print "same:   $dest\n";
+            return;
+        }
+        my $b = "$dest.bak.$stamp";
+        print "backup: $b\n";
+        rename $dest, $b or die "Cannot back up $dest: $!\n" unless $dry;
     }
     print "copy:   $dest\n";
     return if $dry;
