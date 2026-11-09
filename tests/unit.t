@@ -202,4 +202,17 @@ subtest 'run-tera-cas.pl --check-options (used by NX at startup)' => sub {
     like( $out, qr/defaults; no terachem.par/, "missing file: defaults" );
 };
 
+subtest 'examples/ templates' => sub {
+    my %want = ( casscf => "cas", "fomo-casci" => "cas", tda => "cis", "hh-tda" => "cis", "rpa-tdba" => "rpa" );
+    for my $m ( sort keys %want ) {
+        my $f = "$root/examples/$m/tera.sp";
+        ok( -e $f, "$m: template exists" ) or next;
+        open my $fh, '<', $f; my @l = <$fh>; close $fh;
+        my $i = main::template_info( \@l );
+        ok( $i->{ $want{$m} }, "$m: recognised as $want{$m}" );
+        my @managed = grep { exists $i->{kw}{$_} } qw(run castarget cistarget nacstate1 nacstate2 scrdir);
+        is_deeply( \@managed, [], "$m: no keywords the interface manages" );
+    }
+};
+
 done_testing();

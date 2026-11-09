@@ -21,7 +21,7 @@ These tests were run for version 2.0 before release. The reference is the previo
 | 1 | [Byte-identity replay](#1-byte-identity-replay) | New script gives the same NewtonX files as the old one | 101 of 101 calls identical | pass |
 | 2 | [Second run after a hop](#2-second-run-after-a-hop) | Coupling jobs skipped, results unchanged | 6 instead of 12 TeraChem runs | pass |
 | 3 | [SCF guess option](#3-scf-guess-option) | `use_prev_scf_wf` matches the old version | 38 of 38 calls identical | pass |
-| 4 | [Adiabatic step](#4-adiabatic-step) | Gradient only, coupling files untouched | 1 TeraChem run | pass |
+| 4 | [Adiabatic step](#4-adiabatic-step) | Gradient only, zero couplings written | 1 TeraChem run | pass |
 | 5 | [Single template](#5-single-template) | One template gives the same results as three | max \|Δh\| = 7.6e-5 a.u. after step 1 | pass |
 | 6 | [Couplings from jiri.inp](#6-couplings-from-jiriinp) | Pairs follow `transmomin`; shared pairs unchanged | shared pair \|Δh\| = 0 | pass |
 | 7 | [CASSCF guess option](#7-casscf-guess-option) | `use_prev_wf` with real runs | identical files | pass |
@@ -30,8 +30,9 @@ These tests were run for version 2.0 before release. The reference is the previo
 | 10 | [Initial conditions](#10-initial-conditions) | `run_tera_ic.pl` for all methods | 4 of 4 methods | pass |
 | 11 | [NewtonX trajectories](#11-newtonx-trajectories) | Full runs with real TeraChem | energies match the old version to 1e-9 a.u. | pass |
 | 12 | [Installer](#12-installer) | colib edits, reruns, other programs kept | 2 NewtonX trees | pass |
-| 13 | [Unit tests](#13-unit-tests) | Parsing and logic without GPU | 11 groups | pass |
-| – | [TeraChem behaviour](#terachem-behaviour) | Facts the interface relies on | 9 checks | – |
+| 13 | [Unit tests](#13-unit-tests) | Parsing and logic without GPU | 12 groups | pass |
+| 14 | [Example templates](#14-example-templates) | Each `examples/` template runs in NewtonX | 5 of 5 templates | pass |
+| – | [TeraChem behaviour](#terachem-behaviour) | Facts the interface relies on | 10 checks | – |
 
 ## How the comparisons work
 
@@ -89,7 +90,7 @@ Recorded systems:
 
 ## 4. Adiabatic step
 
-**Purpose.** When NewtonX marks a step adiabatic (`typeofdyn.out` = 1), only the gradient is computed.
+**Purpose.** When NewtonX marks a step adiabatic (`typeofdyn.out` = 1), only the gradient is computed, and the couplings are written as zeros instead of being kept from the last coupled step.
 
 **Setup.** One TDA call replayed as an adiabatic step.
 
@@ -97,7 +98,7 @@ Recorded systems:
 |---|---|
 | `epot`, `grad`, `grad.all` | identical to the old script |
 | TeraChem runs | 1 |
-| `nad_vectors` | unchanged from the previous step |
+| `nad_vectors`, `newh` | all zero |
 
 ## 5. Single template
 
@@ -180,7 +181,7 @@ Oscillator strengths computed from transition dipoles (used for `nis > 1` when T
 | Ethylene CASSCF | single `tera.sp` | NewtonX default (all 3 pairs) | 8 fs | Energies identical to the old script's trajectory at 8 fs (to 1e-9 a.u.). No hop. |
 | Uracil FOMO-CASCI | three `start.sp` | `jiri.inp` with `current = 1`: S2–S1 and S2–S0 | 5 fs | Energies identical to the old script's trajectory at 5 fs (to 1e-9 a.u.). The S2–S0 pair was built from the coupling template. |
 | Ethylene CASSCF | single `tera.sp` | TD-BA, `vdoth = 2` | 8 fs | Ran with one TeraChem job per step; one hop, S2 → S1. |
-| Ethylene CASSCF | single `tera.sp` | `THRES = 1` eV | 8 fs | 2 nonadiabatic steps, then 15 adiabatic steps with the gradient job only. |
+| Ethylene CASSCF | single `tera.sp` | `THRES = 1` eV | 8 fs | 2 nonadiabatic steps, then 15 adiabatic steps with the gradient job only and zero couplings. Worst energy deviation 0.17 mEh. |
 
 Energy conservation over 8 fs was the same as with the old script: worst deviation 1.0 mEh for the strained ethylene start, 0.3 mEh for uracil.
 
@@ -196,7 +197,23 @@ Energy conservation over 8 fs was the same as with the old script: worst deviati
 
 ## 13. Unit tests
 
-`tests/unit.t` has 11 groups. They need no GPU. All pass. They use the real TeraChem outputs in `tests/fixtures/`, among them a triplet FOMO run, a triplet hh-TDA run and an RPA run.
+`tests/unit.t` has 12 groups. They need no GPU. All pass. They use the real TeraChem outputs in `tests/fixtures/`, among them a triplet FOMO run, a triplet hh-TDA run and an RPA run.
+
+## 14. Example templates
+
+**Purpose.** Every template in `examples/` must run as published.
+
+**Setup.** Twisted ethylene, 6-31G*, 3 singlets, starting on S1, 1 fs (2 steps). Neighbour couplings from `jiri.inp`. Each template was used unchanged as `JOB_NAD/tera.sp`, with the installed interface.
+
+| Template | Couplings | Pairs per step | Result |
+|---|---|---|---|
+| `casscf` | NAC | S1–S0, S2–S1 | 2 steps, no warnings |
+| `fomo-casci` | NAC | S1–S0, S2–S1 | 2 steps, no warnings |
+| `tda` | NAC | S1–S0, S2–S1 | 2 steps, no warnings |
+| `hh-tda` | NAC | S1–S0, S2–S1 | 2 steps, no warnings |
+| `rpa-tdba` | TD-BA | none (NewtonX computes TD-BA) | 2 steps, no warnings |
+
+The hh-TDA FOMO window was checked first. With `active 9`, the excitation energies were 6.5 and 7.9 eV, consistent with TDA (6.9 and 8.6 eV). With `active 8` TeraChem stopped, and with `active 10` the states came out wrong.
 
 ## TeraChem behaviour
 
@@ -213,3 +230,4 @@ Facts about TeraChem 1.96 that the interface depends on, each checked with a sma
 | `cis yes` with `rpa yes` | Refused: "Can not run both CIS and RPA" | Documented: use `rpa yes` alone |
 | TDA/TDDFT triplet gradients | Not implemented | Documented as not supported |
 | Triplet CAS couplings | Need `castargetmult 3` | Template check with a clear message |
+| hh-TDA `cistarget` | `cistarget k` gives the gradient of root k + 1, counting the ground state as root 1 (finite differences on two coordinates agree to 1e-4). The `FINAL Target State Energy` line shows root k instead. | `cistarget` = state − 1 is right; that output line is not used |

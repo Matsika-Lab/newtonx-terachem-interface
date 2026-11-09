@@ -6,7 +6,7 @@
 
 1. Install the interface. See [installation.md](installation.md).
 2. Set `prog = 21.0` in `control.dyn`.
-3. Write the TeraChem template, `JOB_NAD/tera.sp`. See [Templates](#templates).
+3. Copy the template for your method from [`examples/`](../examples) to `JOB_NAD/tera.sp` and adapt it. See [Method tutorials](methods.md) and [Templates](#templates).
 4. Choose the couplings with `jiri.inp`. See [Which couplings are computed](#which-couplings-are-computed).
 5. Optionally, add `terachem.par`. See [terachem-par.md](terachem-par.md).
 6. Give the trajectory one GPU and run NewtonX:
@@ -87,24 +87,10 @@ TeraChem numbers states from 0 within one multiplicity. NewtonX numbers them fro
 
 ## Methods and multiplicity
 
-| Method | Template keywords | Gradients | Couplings |
-|---|---|---|---|
-| CASSCF | `casscf yes` | yes | yes |
-| FOMO-CASCI | `fon yes`, `casci yes` | yes | yes |
-| TDA (TDDFT) | `cis yes` | yes | yes |
-| Full TDDFT (RPA) | `rpa yes` (without `cis yes`) | yes | **no**: use TD-BA (`vdoth = 2`) |
-| hh-TDA | `hhtda yes` | yes | yes |
+The supported methods, their keywords, the couplings each allows and the singlet/triplet rules are in [Method tutorials](methods.md), with a tested template per method in [`examples/`](../examples).
 
-> [!WARNING]
-> TeraChem finishes an RPA coupling run normally but writes a coupling vector of zeros. The interface therefore refuses RPA with coupling vectors. RPA gradients are correct, so RPA can run with TD-BA couplings (`vdoth = 2`), which NewtonX builds from the energies. The interface also warns in `moldyn.log` whenever any coupling vector comes back as all zeros.
-
-**Singlets or triplets, one multiplicity per run.** The interface takes only the states of the target multiplicity from TeraChem's output.
-
-- **CAS methods:** the multiplicity is `castargetmult`. A triplet run needs `castargetmult 3`, also in the coupling jobs. A template with `cassinglets 0` and no `castargetmult` stops with a message.
-- **hh-TDA:** the multiplicity is `cismult`, with `hhtdatriplets` for the number of states.
-- **TDA/TDDFT triplets:** not supported. TeraChem has no triplet gradients or couplings for restricted TDDFT.
-
-State 1 is the lowest state of the chosen multiplicity. In a singlet run that is S0. In a triplet run it is T1.
+- **One multiplicity per run:** the interface takes only the states of the target multiplicity from TeraChem's output, `castargetmult` for CAS methods and `cismult` for hh-TDA.
+- **State numbering:** state 1 is the lowest state of that multiplicity, S0 in a singlet run and T1 in a triplet run.
 
 ## Which couplings are computed
 
@@ -134,6 +120,8 @@ Pairs that are not computed are written as zero vectors, as NewtonX expects. A p
 
 ## Coupling methods
 
+What these couplings are, and which methods allow them: [Couplings: NAC and TD-BA](methods.md#couplings-nac-and-td-ba).
+
 | `vdoth` in `sh.inp` | Meaning | Supported |
 |---|---|---|
 | `0` | Coupling vectors from TeraChem | yes |
@@ -142,7 +130,7 @@ Pairs that are not computed are written as zero vectors, as NewtonX expects. A p
 
 ## Adiabatic steps and hops
 
-- **Adiabatic steps:** NewtonX can mark a step as adiabatic, for pure adiabatic dynamics or when every energy gap is larger than `THRES`. The interface then runs only the gradient job and leaves the coupling files alone.
+- **Adiabatic steps:** NewtonX can mark a step as adiabatic, for pure adiabatic dynamics or when every energy gap is larger than `THRES`. The interface then runs only the gradient job and writes zero couplings, so no hop can come from the couplings of an earlier step. With TD-BA, NewtonX writes the couplings itself.
 - **Hops:** after a hop, NewtonX calls the interface a second time at the same geometry for the new state's gradient. Coupling jobs are skipped in this second call, because NewtonX already has the couplings of that step.
 
 ## Output files
