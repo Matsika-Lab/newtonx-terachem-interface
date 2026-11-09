@@ -68,6 +68,10 @@ subtest 'read_options' => sub {
     dies_like( sub { main::read_options("$d/b.par") }, qr/Unknown option 'use_prev_scf'/, "typo stops the run" );
     open $fh, '>', "$d/c.par"; print $fh "couplings = some\n"; close $fh;
     dies_like( sub { main::read_options("$d/c.par") }, qr/neighbours, current or all/, "bad coupling mode" );
+    open $fh, '>', "$d/f.par"; print $fh "phase_ref = last\n"; close $fh;
+    is( { main::read_options("$d/f.par") }->{phase_ref}, "last", "phase_ref = last" );
+    open $fh, '>', "$d/g.par"; print $fh "phase_ref = memory\n"; close $fh;
+    dies_like( sub { main::read_options("$d/g.par") }, qr/previous or last/, "bad phase_ref" );
     open $fh, '>', "$d/e.par"; print $fh "couplings = neighbors\n"; close $fh;
     is( { main::read_options("$d/e.par") }->{couplings}, "neighbours", "US spelling accepted" );
 };
@@ -246,6 +250,26 @@ subtest 'run_tera_ic.pl end to end with a fake TeraChem' => sub {
         like( $sp, qr/^run\s+energy$/m, "input runs an energy" );
         unlike( $sp, qr/^\s*(castarget|nacstate1|scrdir)\b/m, "no dynamics-only keywords" );
     }
+};
+
+subtest 'phase_ref = last: phase memory' => sub {
+    my $d = tempdir( CLEANUP => 1 );
+    local ( $main::nat, $main::ncoup ) = ( 2, 3 );
+    local $main::phase_mem = "$d/mem";
+    local $main::opt{phase_ref} = "last";
+    chdir $d;
+    # pair 0 present now and before; pair 1 missing in oldh but remembered; pair 2 absent
+    main::write_lines( "oldh", [ "1 0 0\n", "0 1 0\n", "0 0 0\n", "0 0 0\n", "0 0 0\n", "0 0 0\n" ] );
+    main::write_lines( $main::phase_mem, [ "9 9 9\n", "9 9 9\n", "-2 0 0\n", "0 -2 0\n", "0 0 0\n", "0 0 0\n" ] );
+    my $true = main::phase_memory_into_oldh();
+    is_deeply( main::read_lines("oldh"), [ "1 0 0\n", "0 1 0\n", "-2 0 0\n", "0 -2 0\n", "0 0 0\n", "0 0 0\n" ],
+        "only the missing pair is taken from memory" );
+    is( $true->[2], "0 0 0\n", "the real oldh is returned for restoring" );
+    main::write_lines( "nad_vectors", [ "3 0 0\n", "0 3 0\n", "0 0 0\n", "0 0 0\n", "0 0 5\n", "0 0 5\n" ] );
+    main::update_phase_memory();
+    is_deeply( main::read_lines($main::phase_mem), [ "3 0 0\n", "0 3 0\n", "-2 0 0\n", "0 -2 0\n", "0 0 5\n", "0 0 5\n" ],
+        "memory keeps the last non-zero vector of each pair" );
+    chdir $root;
 };
 
 done_testing();

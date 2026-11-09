@@ -12,7 +12,8 @@ tests/
 │   ├── tc_proxy/bin/terachem  # caching stand-in for TeraChem
 │   ├── record_wrapper.sh      # snapshots TEMP before and after each interface call
 │   ├── make_nxbin.sh          # builds a private NewtonX bin folder
-│   └── replay.py              # replays recorded calls with several script versions
+│   ├── replay.py              # replays recorded calls with several script versions
+│   └── phase_gap_check.py     # tests phase_ref on simulated coupling gaps
 └── nx/                        # NewtonX-style test and its reference results
     ├── MD-TERA-CASSCF-NAD-VEC/
     └── STANDARD-RESULTS/MD-TERA-CASSCF-NAD-VEC/
@@ -68,6 +69,15 @@ Add `--record` to let `tc_proxy` run real TeraChem for jobs that are not in the 
 
 > [!IMPORTANT]
 > The cache key leaves out `guess`, `scrdir` and `coordinates`. A replay therefore cannot show how real TeraChem reacts to those keywords. Check changes to them with real runs, using `cache=DIR` or a full trajectory.
+
+## Phase-gap check
+
+`tests/harness/phase_gap_check.py` tests [`phase_ref`](terachem-par.md#phase_ref) on a recorded trajectory without a GPU. It replays each call with one coupling pair removed from the previous step, as if the pair had not been computed. Then it checks whether the returning vector has the same sign as in the recorded, gap-free trajectory, for both values of `phase_ref` and several gap lengths.
+
+```bash
+python3 tests/harness/phase_gap_check.py --snapshots TRAJ1/SNAPSHOTS --cache ~/tc_cache \
+    --work ~/gapcheck --script run-tera-cas.pl --gaps 1,2,5
+```
 
 ## NewtonX test
 

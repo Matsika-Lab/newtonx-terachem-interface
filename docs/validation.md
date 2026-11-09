@@ -30,8 +30,9 @@ These tests were run for version 2.0 before release. The reference is the previo
 | 10 | [Initial conditions](#10-initial-conditions) | `run_tera_ic.pl` for all methods | 4 of 4 methods | pass |
 | 11 | [NewtonX trajectories](#11-newtonx-trajectories) | Full runs with real TeraChem | energies match the old version to 1e-9 a.u. | pass |
 | 12 | [Installer](#12-installer) | colib edits, reruns, other programs kept | 2 NewtonX trees | pass |
-| 13 | [Unit tests](#13-unit-tests) | Parsing and logic without GPU | 12 groups | pass |
+| 13 | [Unit tests](#13-unit-tests) | Parsing and logic without GPU | 14 groups | pass |
 | 14 | [Example templates](#14-example-templates) | Each `examples/` template runs in NewtonX | 5 of 5 templates | pass |
+| 15 | [Phase reference after a gap](#15-phase-reference-after-a-gap) | `phase_ref = last` keeps signs continuous | 218 of 220 vs about half | pass |
 | – | [TeraChem behaviour](#terachem-behaviour) | Facts the interface relies on | 10 checks | – |
 
 ## How the comparisons work
@@ -197,7 +198,7 @@ Energy conservation over 8 fs was the same as with the old script: worst deviati
 
 ## 13. Unit tests
 
-`tests/unit.t` has 12 groups. They need no GPU. All pass. They use the real TeraChem outputs in `tests/fixtures/`, among them a triplet FOMO run, a triplet hh-TDA run and an RPA run.
+`tests/unit.t` has 14 groups. They need no GPU. All pass. They use the real TeraChem outputs in `tests/fixtures/`, among them a triplet FOMO run, a triplet hh-TDA run and an RPA run.
 
 ## 14. Example templates
 
@@ -214,6 +215,23 @@ Energy conservation over 8 fs was the same as with the old script: worst deviati
 | `rpa-tdba` | TD-BA | none (NewtonX computes TD-BA) | 2 steps, no warnings |
 
 The hh-TDA FOMO window was checked first. With `active 9`, the excitation energies were 6.5 and 7.9 eV, consistent with TDA (6.9 and 8.6 eV). With `active 8` TeraChem stopped, and with `active 10` the states came out wrong.
+
+## 15. Phase reference after a gap
+
+**Purpose.** Check [`phase_ref`](terachem-par.md#phase_ref). It decides how a coupling pair that was missing at the previous step gets its sign.
+
+**Setup.** `tests/harness/phase_gap_check.py` on all four recordings. For every first-run call and every pair present at the call and the step before, the pair was removed from the previous step. With `last`, the pair's vector from *g* steps earlier was given as the memory. The sign of the returning vector was compared with the recorded, gap-free trajectory. No GPU was needed; all TeraChem results came from the cache.
+
+| System | Gap | `previous` (default) | `last` |
+|---|---|---|---|
+| CASSCF | 1 / 2 / 5 steps | 13/29, 12/28, 12/25 | 29/29, 28/28, 25/25 |
+| TDA | 1 / 2 / 5 steps | 9/19, 8/18, 8/15 | 19/19, 18/18, 15/15 |
+| hh-TDA | 1 / 2 / 5 steps | 9/15, 8/14, 7/11 | 15/15, 14/14, 11/11 |
+| FOMO-CASCI | 1 / 2 / 5 steps | 27/45, 25/43, 21/37 | 45/45, 43/43, 35/37 |
+
+- **The default is a coin flip:** with `previous`, a returning pair gets the right sign about half the time, because TeraChem's raw sign is arbitrary from run to run.
+- **`last` keeps signs continuous:** it agrees in 218 of 220 cases. The two misses were FOMO pairs after a 2.5 fs gap, where the vector had rotated by more than 90 degrees.
+- **No effect without gaps:** with `last`, the 101 recorded gap-free calls give byte-identical NewtonX files to the old version, `oldh` included.
 
 ## TeraChem behaviour
 

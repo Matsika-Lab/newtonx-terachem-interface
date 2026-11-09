@@ -76,6 +76,14 @@ our %DEFAULTS = (
     #   all        : every pair of states (nstat*(nstat-1)/2 runs)
     couplings => "nx",
 
+    # Phase reference for a coupling pair that was not computed at the previous step.
+    #   previous : compare with the previous step only (as NX's template). A pair that
+    #              returns after a gap keeps the sign TeraChem gives it.
+    #   last     : compare such a pair with its last computed vector, so its sign stays
+    #              continuous across the gap. Only the phase fix uses it; NX's
+    #              interpolation still starts from the previous step.
+    phase_ref => "previous",
+
     # 1 = keep a Molden file of the gradient job's orbitals for every step.
     archive_molden => 1,
 
@@ -87,7 +95,7 @@ our %DEFAULTS = (
 
 our ( $mld, $mdle, $BASEDIR, $DEBUG, $JAD, $JND, $ctd );
 our ( $tpp, $tpp_outfile, $parfile, $template_single );
-our ( $old_scf_guess, $old_guess, $molden_ar, $wf_ar );
+our ( $old_scf_guess, $old_guess, $molden_ar, $wf_ar, $phase_mem );
 our ( $nat, $istep, $nstat, $nstatdyn, $ndamp, $kt, $dt, $t, $tmax, $nintc );
 our ( $nxrestart, $thres, $killstat, $timekill, $prog, $lvprt, $etot_jump, $etot_drift, $mem );
 our ( @symb, @x, @y, @z );
@@ -150,6 +158,7 @@ sub define_variables {
     $old_scf_guess = "../INFO_RESTART/WF_OLD/c0_scf";
     $molden_ar     = "../INFO_RESTART/MOLDEN_ARCHIVE";
     $wf_ar         = "../INFO_RESTART/WF_ARCHIVE";
+    $phase_mem     = "../INFO_RESTART/WF_OLD/nac_phase_ref";
     mkpath( [ $molden_ar, $wf_ar, "../INFO_RESTART/WF_OLD" ], 0, 0755 );
 
     $BASEDIR = getcwd();
@@ -199,6 +208,9 @@ sub read_options {
     $o{couplings} = "neighbours" if $o{couplings} eq "neighbors";
     tc_fail("Option couplings in $file must be nx, neighbours, current or all, not '$o{couplings}'.")
       unless $o{couplings} =~ /^(nx|neighbours|current|all)$/;
+    $o{phase_ref} = lc $o{phase_ref};
+    tc_fail("Option phase_ref in $file must be previous or last, not '$o{phase_ref}'.")
+      unless $o{phase_ref} =~ /^(previous|last)$/;
     return %o;
 }
 
@@ -837,8 +849,73 @@ sub treat_nacme {
     write_nacme("nad_vectors");
 
     copy( "nad_vectors", "newh" ) or tc_fail("Copy to newh failed: $!");
+    my $true_oldh = $opt{phase_ref} eq "last" ? phase_memory_into_oldh() : undef;
     adjust_phase();
+    if ($true_oldh) {    # NX's interpolation must see the real previous step
+        write_lines( "oldh", $true_oldh );
+    }
+    update_phase_memory() if $opt{phase_ref} eq "last";
     copy( "nad_vectors", "newh" ) or tc_fail("Copy of phase-corrected nad_vectors to newh failed: $!");
+}
+
+sub read_lines {
+    my ($f) = @_;
+    open my $fh, '<', $f or tc_fail("Cannot open $f: $!");
+    my @l = <$fh>;
+    close $fh;
+    return \@l;
+}
+
+sub write_lines {
+    my ( $f, $l ) = @_;
+    open my $fh, '>', $f or tc_fail("Cannot write $f: $!");
+    print $fh @$l;
+    close $fh;
+}
+
+sub block_is_zero {
+    my ( $l, $nc ) = @_;
+    for my $ia ( 0 .. $nat - 1 ) {
+        return 0 if grep { $_ != 0 } split ' ', $l->[ $nc * $nat + $ia ];
+    }
+    return 1;
+}
+
+sub phase_memory_into_oldh {
+    #
+    # phase_ref = last: for every pair that is zero in oldh but has a remembered vector,
+    # put the remembered vector into oldh for escalar. Returns the real oldh, which the
+    # caller restores after escalar, or undef if nothing was changed.
+    #
+    return undef unless -s $phase_mem;
+    my $old = read_lines("oldh");
+    my $mem = read_lines($phase_mem);
+    return undef unless @$mem == @$old && @$old == $ncoup * $nat;
+    my @ref = @$old;
+    my @used;
+    for my $nc ( 0 .. $ncoup - 1 ) {
+        next unless block_is_zero( $old, $nc ) && !block_is_zero( $mem, $nc );
+        @ref[ $nc * $nat .. ( $nc + 1 ) * $nat - 1 ] = @$mem[ $nc * $nat .. ( $nc + 1 ) * $nat - 1 ];
+        push @used, $nc;
+    }
+    return undef unless @used;
+    write_lines( "oldh", \@ref );
+    print_STDOUT( "$mdle phase_ref = last: phase of coupling(s) " . join( ", ", @used ) . " fixed against their last computed vector.\n", $istep, $kt );
+    return $old;
+}
+
+sub update_phase_memory {
+    #
+    # Remembers the last phase-corrected, non-zero vector of every pair.
+    #
+    my $new = read_lines("nad_vectors");
+    my $mem = -s $phase_mem ? read_lines($phase_mem) : [];
+    $mem = [ ("0.0  0.0  0.0\n") x ( $ncoup * $nat ) ] unless @$mem == $ncoup * $nat;
+    for my $nc ( 0 .. $ncoup - 1 ) {
+        next if block_is_zero( $new, $nc );
+        @$mem[ $nc * $nat .. ( $nc + 1 ) * $nat - 1 ] = @$new[ $nc * $nat .. ( $nc + 1 ) * $nat - 1 ];
+    }
+    write_lines( $phase_mem, $mem );
 }
 
 sub write_nacme {

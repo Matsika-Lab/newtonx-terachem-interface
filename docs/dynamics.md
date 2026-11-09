@@ -116,7 +116,7 @@ A `jiri.inp` for neighbour couplings:
  /
 ```
 
-Pairs that are not computed are written as zero vectors, as NewtonX expects. A pair that was zero at the previous step gets its sign from TeraChem, because NewtonX's phase fix has no previous vector to compare with.
+Pairs that are not computed are written as zero vectors, as NewtonX expects. By default, a pair that was zero at the previous step keeps the sign TeraChem gives it, because NewtonX's phase fix has no previous vector to compare with. Set [`phase_ref = last`](terachem-par.md#phase_ref) to compare it with its last computed vector instead.
 
 ## Coupling methods
 

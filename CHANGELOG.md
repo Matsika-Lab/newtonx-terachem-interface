@@ -23,6 +23,7 @@ All notable changes to this interface. The format follows [Keep a Changelog](htt
 - **Checks.** The interface stops with a clear message when TeraChem fails or does not finish, when a vector file has the wrong number of atoms, when energies are missing, or when `terachem.par` has an unknown key.
 - **Full TDDFT (RPA).** `rpa yes` templates work for gradients, adiabatic steps and TD-BA. Coupling-vector runs with RPA are refused, because TeraChem writes zero vectors for them. Any all-zero coupling vector now triggers a warning in `moldyn.log`.
 - **Initial conditions.** `run_tera_ic.pl` is now part of the repository. It supports CASSCF, FOMO-CASCI, TDA/TDDFT and hh-TDA, and `nis > 1`.
+- **`phase_ref` option.** With `phase_ref = last`, a coupling pair that returns after a gap gets its sign from its last computed vector. The default, `previous`, keeps the old behaviour.
 - **Method tutorials and templates.** [methods.md](docs/methods.md) explains each method and the NAC and TD-BA couplings. Tested templates are in `examples/`.
 - **Installer.** `install/install_nx.pl` registers TeraChem in NewtonX, copies the scripts and adds a NewtonX test.
 - **Tests.** Unit tests, a record-and-replay harness and a NewtonX test case. See [development.md](docs/development.md) and [validation.md](docs/validation.md).

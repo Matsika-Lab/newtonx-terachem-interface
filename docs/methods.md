@@ -44,7 +44,7 @@ in 1/Bohr, one 3-vector per atom. The time-derivative coupling follows from the 
 
 - **Source:** TeraChem computes $`\mathbf{h}_{ij}`$ analytically, one pair per run (`run coupling`).
 - **Cost:** one gradient run plus one run per pair at each step. NewtonX chooses the pairs; see [Which couplings are computed](dynamics.md#which-couplings-are-computed).
-- **Phase:** the sign of each vector is made continuous from step to step by NewtonX's phase fix.
+- **Phase:** the sign of each vector is made continuous from step to step by NewtonX's phase fix. For a pair that returns after a gap, see [`phase_ref`](terachem-par.md#phase_ref).
 - **Methods:** CASSCF, FOMO-CASCI, TDA and hh-TDA.
 
 ### Time-dependent Baeck-An couplings (TD-BA, `vdoth = 2`)
