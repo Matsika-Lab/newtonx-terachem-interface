@@ -388,6 +388,8 @@ The NewtonX 2.4 replays (sections 1–7 and 15) give the same results with the N
 - **Energy.** TRAJ16 loses a hydrogen atom in all three runs, as in the original trajectory. On S0 after 31 fs the control and overlap runs gain 0.36 eV of total energy and the reference 0.06 eV; single points at those geometries reproduce the run's energies to 0.2 meV. TRAJ35 and TRAJ37 stay within 0.13 eV in all runs.
 - **NewtonX 2.6.** The first 10 fs of TRAJ16 give couplings identical to NewtonX 2.4 to 10⁻⁸ a.u. NewtonX 2.6's phase factors were +1 at all 60 values, and the hop at 8.5 fs is the same.
 
+- **`adjmom` check.** Ethylene CASSCF with `vdoth = 1`, 1 fs. With `adjmom = 0`, NewtonX 2.4 and 2.6 stop before the first step with "cannot be used with vdoth = 1" from the registration. Without the registration, `run-tera-cas.pl` stops at step 0 with the same message, before any TeraChem job. Without `adjmom` in `sh.inp`, both versions run with `adjmom = -1`.
+
 **Time per step.** About 17 s with overlaps against about 30 s with coupling vectors, with 6 runs sharing the node. The gradient run takes about 14 s in both. Each coupling-vector run adds about 14 s. The overlap run and NewtonX's own work add about 3 s.
 
 **Conclusion.** With the same velocity rescaling, overlap couplings reproduce the coupling-vector trajectories of three uracil FOMO runs; the remaining differences come from the rescaling direction that `vdoth = 1` requires.

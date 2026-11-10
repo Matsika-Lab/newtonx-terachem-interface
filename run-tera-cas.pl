@@ -317,6 +317,17 @@ sub determine_dynamics_type {
     # Overlaps are computed at every step, also on adiabatic steps, because the next step
     # needs this step's wavefunction.
     $tdc = $vdoth == 1 ? 1 : 0;
+    # Overlap couplings give no coupling vector, so NX can rescale the momentum only
+    # along the velocity (adjmom < 0). moldyn.pl would only warn and change adjmom
+    # itself; stop instead, so the setting in sh.inp says what the run does.
+    # moldyn.pl writes its corrected value into TEMP/sh.inp, so read the user's file
+    # in the trajectory folder.
+    if ( $tdc && -e "../sh.inp" ) {
+        my $adjmom = getkeyword( "../sh.inp", "adjmom", -1 );
+        $adjmom = -1 if !defined $adjmom || $adjmom eq "";
+        tc_fail("adjmom = $adjmom in sh.inp cannot be used with vdoth = 1. Time-derivative couplings give no coupling vector, so the momentum after a hop can only be rescaled along the velocity. Set adjmom = -1 in sh.inp, or leave it out.")
+          if $adjmom >= 0;
+    }
     if ( $lvprt >= 2 ) {
         print_STDOUT( "$mdle step type $type, vdoth $vdoth: " . ( $typeofinput eq "jnd" ? "computing coupling vectors" : "energies and gradient only" ) . ".\n", $istep, $kt );
     }

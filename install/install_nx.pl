@@ -86,6 +86,12 @@ $block{check_thirdparty} = <<'EOT';
          if ($vd < 0){
            exit_error("vdoth = $vd is not supported by the TeraChem interface. Use vdoth = 0 (coupling vectors), 1 (overlaps, CAS methods only) or 2 (TD-BA).",$mdle);
          }
+         if ($vd == 1){
+           my $am = getkeyword("$BASEDIR/sh.inp","adjmom",-1);   # NX's default with vdoth = 1 is -1
+           if ($am ne "" and $am >= 0){
+             exit_error("adjmom = $am in sh.inp cannot be used with vdoth = 1. Time-derivative couplings give no coupling vector, so the momentum after a hop can only be rescaled along the velocity. Set adjmom = -1 in sh.inp, or leave it out.",$mdle);
+           }
+         }
          # Validate and show terachem.par with the interface's own reader.
          my $chk = `$ENV{"NX"}/run-tera-cas.pl --check-options $BASEDIR/$progpar 2>&1`;
          if ($? != 0){exit_error("Problem in $progpar: $chk",$mdle);}

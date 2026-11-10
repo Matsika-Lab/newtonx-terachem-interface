@@ -19,6 +19,7 @@ These checks come from the NewtonX registration that the installer adds. A manua
 | Message contains | Cause | What to do |
 |---|---|---|
 | `TeraChem not found. Set the TeraChem variable to the TeraChem folder` | `$TeraChem` is not set, or `$TeraChem/bin/terachem` is not executable | Set `TeraChem` to the folder that contains `bin/terachem` |
+| `cannot be used with vdoth = 1. Time-derivative couplings give no coupling vector` | `adjmom` in `sh.inp` is 0 or more with `vdoth = 1` | Set `adjmom = -1` in `sh.inp`, or leave it out |
 | `is not supported by the TeraChem interface. Use vdoth = 0` | `vdoth` in `sh.inp` is negative | Use `vdoth = 0` for coupling vectors, `vdoth = 1` for time-derivative couplings from overlaps (CAS methods only), or `vdoth = 2` for time-dependent Baeck-An (TD-BA) |
 | `Problem in` | `terachem.par` has an error; the message reads `Problem in terachem.par:`, and the rest of the line is one of the [settings file](#settings-file) messages | Fix the key or value it names |
 
@@ -56,6 +57,7 @@ These checks come from the NewtonX registration that the installer adds. A manua
 | `not found. NX writes it every step from jiri.inp and THRES` | `TEMP/transmomin` is missing | Check `jiri.inp`, or set [`couplings`](terachem-par.md#couplings) to a fixed scheme |
 | `Bad state pair (` | `transmomin` lists a state outside 1 to `nstat` | Check `nstat` in `control.dyn` and `jiri.inp` |
 | `uses full TDDFT (rpa yes). TeraChem gives no RPA coupling vectors` | `rpa yes` with coupling vectors (`vdoth = 0`) | Use TD-BA (`vdoth = 2`) with RPA, or TDA (`cis yes`) for coupling vectors |
+| `cannot be used with vdoth = 1. Time-derivative couplings give no coupling vector` | `adjmom` in `sh.inp` is 0 or more with `vdoth = 1`. Without the NewtonX registration this is caught here, at the first step | Set `adjmom = -1` in `sh.inp`, or leave it out |
 | `vdoth = 1 needs a CAS method` | The template is TDA, hh-TDA or RPA, and TeraChem computes overlaps only for CAS wavefunctions | Use CASSCF, CASCI or FOMO-CASCI, or set `vdoth = 0` or `2` |
 | `asks for no singlets (cassinglets 0) but sets no castargetmult.` | A triplet CAS template without `castargetmult` | Add `castargetmult 3` |
 | `found, so the target state cannot be set.` | The template has none of `casscf yes`, `casci yes`, `cis yes`, `rpa yes`, `hhtda yes` | Add the method keyword; see [Method tutorials](methods.md) |
@@ -97,7 +99,6 @@ These messages end with the system's error text, for example "No space left on d
 |---|---|---|
 | `TeraChem returned an all-zero coupling vector for states` | TeraChem wrote a zero coupling vector, as it does for RPA | Check that the method gives coupling vectors |
 | `overlap less than 0.5 with themselves at the previous step` | With `vdoth = 1`, a state's overlap with itself fell below 0.5, so states may have changed order and signs may be unreliable | Check `DEBUG/tdc_overlaps.log`, and use a smaller time step; see [FOMO-CASCI pitfalls](methods.md#pitfalls-1) |
-| `With vdoth = 1 adjmom cannot be >= 0` | NewtonX warning: `adjmom` is forced to -1, so the momentum is rescaled along the velocity after a hop | Nothing |
 | `in sh.inp, but this interface always fixes the coupling phase` | `getphase` is not 1 under NewtonX 2.4; the interface still corrects the signs | Nothing, or set `getphase = 1` |
 
 ## Initial conditions (initcond.pl output, DEBUG/runnx.error)

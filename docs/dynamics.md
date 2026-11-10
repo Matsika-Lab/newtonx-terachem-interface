@@ -132,7 +132,7 @@ What these couplings are, and which methods allow them, is explained in [Couplin
 | `vdoth` in `sh.inp` | Meaning | Supported |
 |---|---|---|
 | `0` | Coupling vectors from TeraChem | yes |
-| `1` | Time-derivative couplings from overlaps of the CAS wavefunctions of consecutive steps. Each step needs one gradient run and one overlap run. CASSCF, CASCI and FOMO-CASCI only; see [Time-derivative couplings from overlaps](methods.md#time-derivative-couplings-from-overlaps-vdoth--1). | yes |
+| `1` | Time-derivative couplings from overlaps of the CAS wavefunctions of consecutive steps. Each step needs one gradient run and one overlap run. CASSCF, CASCI and FOMO-CASCI only. Needs `adjmom = -1` in `sh.inp`, NewtonX's default for this `vdoth`, so the momentum is rescaled along the velocity after a hop. See [Time-derivative couplings from overlaps](methods.md#time-derivative-couplings-from-overlaps-vdoth--1). | yes |
 | `2` | Time-dependent Baeck-An (TD-BA). NewtonX builds the couplings from the energies, so each step needs one TeraChem run. | yes |
 | `< 0` | Local diabatization from wavefunction overlaps | no |
 
