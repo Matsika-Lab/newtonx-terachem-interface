@@ -94,6 +94,6 @@ To update the reference after an intended change, run the test folder with Newto
 
 ## See also
 
-- [Validation](validation.md): the results of these tests for version 2.0.0
+- [Validation](validation.md): the results of these tests for versions 2.0.0 and 2.1.0
 - [Installation](installation.md): how the NewtonX test case is installed
 - [Changelog](../CHANGELOG.md): record each change there

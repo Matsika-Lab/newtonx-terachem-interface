@@ -2,7 +2,7 @@
 
 # Validation
 
-This page holds every benchmark, timing and validation run of interface version 2.0.0. Read it when you want the evidence behind a statement on another page, or when you change the interface and need to repeat a test. The reference for the comparisons is the previous version of `run-tera-cas.pl`, at commit `35c7390`, which includes the coupling phase correction of October 2026.
+This page holds every benchmark, timing and validation run of interface versions 2.0.0 and 2.1.0. Sections 1–17 test 2.0.0; section 18 tests the overlap couplings of 2.1.0. Read it when you want the evidence behind a statement on another page, or when you change the interface and need to repeat a test. The reference for the comparisons is the previous version of `run-tera-cas.pl`, at commit `35c7390`, which includes the coupling phase correction of October 2026.
 
 ## Summary
 
@@ -349,7 +349,7 @@ The NewtonX 2.4 replays (sections 1–7 and 15) give the same results with the N
 
 **Purpose.** Check `vdoth = 1`, where the interface computes the couplings from wavefunction overlaps between steps, against the coupling vectors of `vdoth = 0`.
 
-**Setup.** Interface on branch `tdc-overlaps`, commit `c2498d0`; the reference used the released `run-tera-cas.pl` at `706084c`. NewtonX 2.4 (build 06) for the full runs, NewtonX 2.6 (build 01) for a 10 fs check. TeraChem 1.96 beta, one RTX 5000 Ada per run, 2 OpenMP threads, with up to 7 runs on the node at once. Uracil, FOMO-CASCI(14,10)/cc-pVDZ, T = 0.2, 3 singlets, dt = 0.5 fs, `ms = 20`, seed 10, 120 fs. Three trajectories that start on S2 and reach S0 within 70 fs: TRAJ16, TRAJ35 and TRAJ37 of the November 2026 FOMO set, with their initial conditions. Three runs per trajectory:
+**Setup.** Interface on branch `tdc-overlaps`, commit `c2498d0`; the reference used the released `run-tera-cas.pl` at `706084c`. NewtonX 2.4 (build 06) for all runs, and NewtonX 2.6 (build 01) for the overlap runs. TeraChem 1.96 beta, one RTX 5000 Ada per run, 2 OpenMP threads, with up to 7 runs on the node at once. Uracil, FOMO-CASCI(14,10)/cc-pVDZ, T = 0.2, 3 singlets, dt = 0.5 fs, `ms = 20`, seed 10, 120 fs. Three trajectories that start on S2 and reach S0 within 70 fs: TRAJ16, TRAJ35 and TRAJ37 of the November 2026 FOMO set, with their initial conditions. Three runs per trajectory:
 
 | Run | Couplings | `adjmom` | `terachem.par` |
 |---|---|---|---|
@@ -386,7 +386,7 @@ The NewtonX 2.4 replays (sections 1–7 and 15) give the same results with the N
 - **One pair more.** The overlap runs couple all three pairs, including S3–S1. The reference and control compute only the active state's neighbours. The S3–S1 coupling stays below 1.4×10⁻³ a.u. in the overlap runs. The control and overlap runs agree, so it does not change these results.
 - **The rescaling direction does.** The reference and the control are identical until the first hop and then separate, by 0.11 Å RMS at 60 fs in TRAJ16 and 0.07 Å in TRAJ35. In TRAJ37 they separate by 0.5–1.0 Å; on the control's path the S1–S0 gap stays at 3–4 eV and no second hop happens.
 - **Energy.** TRAJ16 loses a hydrogen atom in all three runs, as in the original trajectory. On S0 after 31 fs the control and overlap runs gain 0.36 eV of total energy and the reference 0.06 eV; single points at those geometries reproduce the run's energies to 0.2 meV. TRAJ35 and TRAJ37 stay within 0.13 eV in all runs.
-- **NewtonX 2.6.** The first 10 fs of TRAJ16 give couplings identical to NewtonX 2.4 to 10⁻⁸ a.u. NewtonX 2.6's phase factors were +1 at all 60 values, and the hop at 8.5 fs is the same.
+- **NewtonX 2.6.** The three overlap runs were repeated with NewtonX 2.6 (build 01). Hops are the same, and the geometries agree with NewtonX 2.4 within 0.003 Å RMS over 120 fs; TRAJ35 and TRAJ37 agree to 0.0000 Å. NewtonX 2.6's phase factors were +1 at all 2160 values, so its own sign correction changed nothing.
 
 - **`adjmom` check.** Ethylene CASSCF with `vdoth = 1`, 1 fs. With `adjmom = 0`, NewtonX 2.4 and 2.6 stop before the first step with "cannot be used with vdoth = 1" from the registration. Without the registration, `run-tera-cas.pl` stops at step 0 with the same message, before any TeraChem job. Without `adjmom` in `sh.inp`, both versions run with `adjmom = -1`.
 

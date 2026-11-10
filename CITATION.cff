@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this interface, please cite it as below, together with NewtonX and TeraChem (see references)."
 title: "NewtonX-TeraChem interface for nonadiabatic dynamics"
 type: software
-version: "2.0.0"
+version: "2.1.0"
 license: GPL-3.0-or-later
 repository-code: "https://github.com/Matsika-Lab/newtonx-terachem-interface"
 url: "https://github.com/Matsika-Lab/newtonx-terachem-interface"
@@ -10,7 +10,8 @@ abstract: >-
   Perl interface between the NewtonX surface-hopping program and the TeraChem
   electronic-structure package. It provides energies, gradients and nonadiabatic
   coupling vectors for CASSCF, FOMO-CASCI, TDA/TDDFT and hh-TDA, supports
-  time-dependent Baeck-An couplings, and computes vertical excitations for
+  time-derivative couplings from wavefunction overlaps for CASSCF and FOMO-CASCI
+  and time-dependent Baeck-An couplings, and computes vertical excitations for
   initial conditions and absorption spectra.
 keywords:
   - nonadiabatic dynamics

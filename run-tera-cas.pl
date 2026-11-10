@@ -50,7 +50,7 @@ BEGIN {
 use lib join( '/', $ENV{"NX"}, "lib" );
 use colib_perl;
 
-our $VERSION = "2.0.0";
+our $VERSION = "2.1.0";
 
 #====================================================================================
 #                                 DEFAULT OPTIONS

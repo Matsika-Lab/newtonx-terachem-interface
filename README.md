@@ -46,7 +46,7 @@ For your own molecule, copy a template from [`examples/`](examples/README.md) to
 | hh-TDA | `hhtda yes` | coupling vectors, TD-BA | [hh-TDA](docs/methods.md#hh-tda) |
 | Full TDDFT | `rpa yes` | TD-BA | [Full TDDFT](docs/methods.md#full-tddft-rpa) |
 
-Overlap couplings (`vdoth = 1`) need a CAS method. Triplets: FOMO-CASCI and hh-TDA are tested; CASSCF triplets are untested. Full TDDFT works with TD-BA couplings only.
+Overlap couplings (`vdoth = 1`) work with CASSCF and FOMO-CASCI only, and need `adjmom = -1` in `sh.inp`. Triplets: FOMO-CASCI and hh-TDA are tested; CASSCF triplets are untested. Full TDDFT works with TD-BA couplings only.
 
 ## Where to go next
 
@@ -73,13 +73,14 @@ Overlap couplings (`vdoth = 1`) need a CAS method. Triplets: FOMO-CASCI and hh-T
 ## Credits, citation and license
 
 - **Authors:** Dakshitha Abeygunewardane, Vaibhav Singh and Spiridoula Matsika, Matsika Lab, Department of Chemistry, Temple University. The interface was built from the NewtonX interface template by Mario Barbatti (2021).
-- **AI use:** The 2026-11-09 revision (version 2.0.0) was refactored and improved with Claude Code (Anthropic), using the Claude Opus 5.5 model.
+- **AI use:** The 2026-11-09 revision (version 2.0.0) was refactored and improved with Claude Code (Anthropic), using the Claude Opus 5.5 model. Version 2.1.0, of 2026-11-10, was made the same way.
   - **What it covered:**
     - the rewrite of `run-tera-cas.pl`: couplings chosen by NewtonX, one template, `terachem.par`, adiabatic steps and TD-BA, triplets and safety checks;
     - the rewrite of `run_tera_ic.pl`;
     - the NewtonX installer;
     - the unit tests and the replay harness;
     - the validation runs;
+    - the time-derivative couplings from overlaps of version 2.1.0;
     - the method tutorials, the example inputs and the documentation.
   - **Decisions:** the authors made the design decisions.
   - **Commits:** the commits of this revision carry `Co-Authored-By: Claude` lines.
