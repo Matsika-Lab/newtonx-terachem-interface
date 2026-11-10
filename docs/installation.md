@@ -16,7 +16,7 @@ perl install/install_nx.pl $NX             # installs
 | Flag | Effect |
 |---|---|
 | `--dry-run` | Show every change, write nothing |
-| `--no-tests` | Do not add the NewtonX test case |
+| `--no-tests` | Do not add the NewtonX test case or its `test_list` entry |
 
 You can run the installer again after an update. It replaces its own earlier changes instead of adding a second copy.
 
@@ -27,8 +27,8 @@ You can run the installer again after an update. It replaces its own earlier cha
   - **`prog_config`:** the program entry, which points NewtonX to both scripts and to `terachem.par`.
   - **`check_thirdparty`:** checks `$TeraChem` and `vdoth` when a run starts, then validates and prints `terachem.par`.
   - **`read_credits`:** the credit line printed in NewtonX output.
-  - **`test_list`:** the test `MD-TERA-CASSCF-NAD-VEC`.
-- **Test:** copies the test inputs and reference results into `$NX/../test-nx/`.
+  - **`test_list`:** the test `MD-TERA-CASSCF-NAD-VEC`, when the test is added.
+- **Test:** copies the test inputs and reference results into `$NX/../test-nx/`. If that folder does not exist, the test is not added.
 - **Backups:** every file it replaces is first saved as `<file>.bak.<date-time>`.
 - **Older entries:** removes older hand-made TeraChem blocks for `prog = 21.0`. Blocks for other programs are not touched.
 
@@ -57,7 +57,7 @@ If you cannot run the installer, do the minimum by hand.
                     ip         => "n",
                     key        => sprintf("%4.1f",21.0),
                     label      => "TeraChem",
-                    method     => "CASSCF/FOMO-CASCI/TDA/hh-TDA",
+                    method     => "CASSCF/FOMO-CASCI/TDA/hh-TDA/RPA",
                     parfile    => "terachem.par",
                     nad_exec   => "y",
                     lvprt_d    => 1,
@@ -71,12 +71,12 @@ If you cannot run the installer, do the minimum by hand.
        }
    ```
 
-A manual install skips the startup checks and the NewtonX test. The interface still checks everything itself at the first step.
+A manual install skips the startup checks and the NewtonX test. The interface still checks `terachem.par` and the TeraChem path at every call, and `vdoth` at every nonadiabatic step.
 
 ## Check the install
 
-- **Options reader:** `$NX/run-tera-cas.pl --check-options` should print the default options.
-- **NewtonX test:** run `MD-TERA-CASSCF-NAD-VEC` with NewtonX's test tool. It needs a GPU and about one minute.
+- **Options reader:** in a folder without `terachem.par`, `$NX/run-tera-cas.pl --check-options` should print the default options.
+- **NewtonX test:** run `$NX/test-nx.pl` and pick `MD-TERA-CASSCF-NAD-VEC`. It needs a GPU and about one minute.
 - **Unit tests:** see [development.md](development.md). They need no GPU.
 
 ## Program key and licence

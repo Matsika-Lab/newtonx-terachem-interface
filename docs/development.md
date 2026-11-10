@@ -54,6 +54,10 @@ python3 $H/replay.py --snapshots TRAJ1/SNAPSHOTS --cache ~/tc_cache --work ~/rep
     --variant new=run-tera-cas.pl,par=neighbours.par
 ```
 
+Here `neighbours.par` is a `terachem.par` with the line `couplings = neighbours`.
+
+The harness needs Python 3.12 or newer, and NumPy for `phase_gap_check.py`. It uses `/software/NX-2.4-B06/bin` and this host's TeraChem by default. Set `SYS_NX` for `make_nxbin.sh`, `--nx` for the Python scripts and `TCPROXY_REAL` for the real TeraChem.
+
 Variant options, after the script path:
 
 | Option | Effect |

@@ -53,7 +53,7 @@ our $VERSION = "2.0.0";
 #                                 DEFAULT OPTIONS
 #====================================================================================
 # Do not edit these to change a run. Put the keys in terachem.par instead, in the
-# trajectory folder (next to control.dyn) or in JOB_NAD/.
+# trajectory folder (next to control.dyn).
 
 our %DEFAULTS = (
     # CASSCF only ('casscf yes'). 1 = start from the previous step's CASSCF orbitals and
@@ -101,6 +101,8 @@ our ( $nxrestart, $thres, $killstat, $timekill, $prog, $lvprt, $etot_jump, $etot
 our ( @symb, @x, @y, @z );
 our ( $typeofinput, $run_flag, $layout, %opt, $vdoth_nx );
 our ( @epot, @gx, @gy, @gz, @hx, @hy, @hz, $ncoup );
+our $CLI = 0;
+$mdle = "run-tera-cas.pl:";
 
 if ( !caller && @ARGV && $ARGV[0] eq "--check-options" ) {
     check_options_cli( $ARGV[1] // "terachem.par" );
@@ -221,8 +223,9 @@ sub check_options_cli {
     # typo stops the run before any TeraChem time is spent.
     #
     my ($file) = @_;
-    $mdle = "run-tera-cas.pl:";
-    my %o = read_options($file);
+    $CLI = 1;
+    my %o = eval { read_options($file) };
+    if ($@) { print STDERR $@; exit 2; }
     print "TeraChem interface $VERSION, options " . ( -e $file ? "from $file" : "(defaults; no terachem.par)" ) . ":\n";
     printf " %-16s = %s\n", $_, $o{$_} foreach sort keys %o;
 }
@@ -323,8 +326,10 @@ sub detect_layout {
     # 'legacy': JOB_NAD/GRAD, NAD_N1N0 and NAD_N1N2, each with its own start.sp.
     #
     if ( -e $template_single ) {
+        # GRAD/start.sp in TEMP is normally the input this script wrote at the last step;
+        # warn only when the user's template folder has one too.
         print_STDOUT( "$mdle Both $template_single and GRAD/start.sp found; using $template_single.\n", $istep, $kt )
-          if -e "GRAD/start.sp";
+          if grep { -e "$_/GRAD/start.sp" } ( $JND, $JAD );
         return "single";
     }
     return "legacy" if -e "GRAD/start.sp";
@@ -969,6 +974,6 @@ sub adjust_phase {
 sub tc_fail {
     my ($msg) = @_;
     my $text = ( $mdle // "run-tera-cas.pl:" ) . " ERROR: $msg\n";
-    eval { print_STDOUT( $text, $istep // 0, $kt // 1 ) };
+    eval { print_STDOUT( $text, $istep // 0, $kt // 1 ) } unless $CLI;
     die $text;
 }

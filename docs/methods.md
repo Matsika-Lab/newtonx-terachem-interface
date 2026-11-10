@@ -10,13 +10,13 @@ The templates in [`examples/`](../examples) are for twisted ethylene with 6-31G*
 
 | Method | Gradients | NAC vectors (`vdoth = 0`) | TD-BA (`vdoth = 2`) | Triplets | Template |
 |---|---|---|---|---|---|
-| [CASSCF](#casscf) | yes | yes | yes | yes | [`examples/casscf`](../examples/casscf/tera.sp) |
+| [CASSCF](#casscf) | yes | yes | yes | yes, untested | [`examples/casscf`](../examples/casscf/tera.sp) |
 | [FOMO-CASCI](#fomo-casci) | yes | yes | yes | yes | [`examples/fomo-casci`](../examples/fomo-casci/tera.sp) |
 | [TDA (TDDFT)](#tda-tddft) | yes | yes | yes | no | [`examples/tda`](../examples/tda/tera.sp) |
 | [hh-TDA](#hh-tda) | yes | yes | yes | yes | [`examples/hh-tda`](../examples/hh-tda/tera.sp) |
 | [Full TDDFT (RPA)](#full-tddft-rpa) | yes | **no** | yes | no | [`examples/rpa-tdba`](../examples/rpa-tdba/tera.sp) |
 
-Every template is a single `JOB_NAD/tera.sp`. Leave out `run`, `castarget`, `cistarget`, `nacstate1`, `nacstate2` and `scrdir`; the interface sets them at each step (see [Keywords the interface manages](dynamics.md#keywords-the-interface-manages)).
+Every template is a single `JOB_NAD/tera.sp`. Leave out `run`, `castarget`, `cistarget`, `nacstate1`, `nacstate2`, `coordinates` and `scrdir`; the interface sets them at each step (see [Keywords the interface manages](dynamics.md#keywords-the-interface-manages)).
 
 ## Couplings: NAC and TD-BA
 
@@ -181,8 +181,8 @@ Overlap-based couplings (`vdoth = 1` or negative) are not supported, because Ter
 
 **Pitfalls**
 - **FOMO window:** too few active orbitals stops TeraChem, and too many smear the occupations and give wrong energies. Check the ground-state energy against a plain DFT run.
-- **Energy jumps:** near-degenerate FOMO solutions can switch between steps. `use_prev_scf_wf` did not prevent this in our tests.
-- **Misleading output line:** TeraChem's `FINAL Target State Energy` line shows the wrong root for hh-TDA. The gradient itself is for the right state (checked by finite differences).
+- **Energy jumps:** near-degenerate FOMO solutions can switch between steps. `use_prev_scf_wf` does not prevent this.
+- **Misleading output line:** TeraChem's `FINAL Target State Energy` line shows the wrong root for hh-TDA. The gradient itself is for the right state; see [validation.md](validation.md#terachem-behaviour).
 
 ## Full TDDFT (RPA)
 
@@ -201,7 +201,8 @@ Overlap-based couplings (`vdoth = 1` or negative) are not supported, because Ter
 
 **Singlets and triplets:** singlets only.
 
-**terachem.par:** no method-specific settings.
+**terachem.par**
+- **[`use_prev_scf_wf`](terachem-par.md#use_prev_scf_wf) = 1:** optional.
 
 **Template:** [`examples/rpa-tdba/tera.sp`](../examples/rpa-tdba/tera.sp)
 

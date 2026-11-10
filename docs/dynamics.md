@@ -7,9 +7,10 @@
 1. Install the interface. See [installation.md](installation.md).
 2. Set `prog = 21.0` in `control.dyn`.
 3. Copy the template for your method from [`examples/`](../examples) to `JOB_NAD/tera.sp` and adapt it. See [Method tutorials](methods.md) and [Templates](#templates).
-4. Choose the couplings with `jiri.inp`. See [Which couplings are computed](#which-couplings-are-computed).
-5. Optionally, add `terachem.par`. See [terachem-par.md](terachem-par.md).
-6. Give the trajectory one GPU and run NewtonX:
+4. Set `vdoth` in `sh.inp`: `0` for coupling vectors or `2` for TD-BA. If `sh.inp` has no `vdoth`, NewtonX uses 2. See [Coupling methods](#coupling-methods).
+5. Choose the couplings with `jiri.inp`. See [Which couplings are computed](#which-couplings-are-computed).
+6. Optionally, add `terachem.par`. See [terachem-par.md](terachem-par.md).
+7. Give the trajectory one GPU and run NewtonX:
 
    ```bash
    export CUDA_VISIBLE_DEVICES=0
@@ -32,6 +33,9 @@ TRAJ1/
     └── tera.sp      # TeraChem template
 ```
 
+> [!WARNING]
+> On adiabatic steps and with TD-BA, NewtonX takes the template from `JOB_AD/`, not `JOB_NAD/`. If the trajectory folder has no `JOB_AD/`, NewtonX makes one as a copy of `JOB_NAD/` when the run starts. Do not keep an old `JOB_AD/` next to `JOB_NAD/`, or it will be used for those steps.
+
 ## Templates
 
 ### Single template (recommended)
@@ -41,7 +45,7 @@ JOB_NAD/
 └── tera.sp
 ```
 
-`tera.sp` is an ordinary TeraChem input that describes the method, basis, active space and so on. The interface writes the gradient input and every coupling input from it at each step. Leave out the keywords in the table below, or leave them at any value; the interface sets them.
+`tera.sp` is an ordinary TeraChem input that describes the method, basis, active space and so on. The interface writes the gradient input and every coupling input from it at each step. Leave out the keywords in the table below; the interface sets them. `guess` is the exception: the interface changes it only when a guess option is on.
 
 Example, FOMO-CASCI:
 
@@ -61,7 +65,7 @@ gpus            1
 coordinates     geom.xyz
 ```
 
-### Three templates (older layout, still supported)
+### Three templates
 
 ```text
 JOB_NAD/
@@ -70,16 +74,16 @@ JOB_NAD/
 └── NAD_N1N2/start.sp   # coupling with the state above
 ```
 
-Coupling pairs other than these two neighbours are written from the coupling template, in their own folders.
+The sample trajectories use this layout. Each `start.sp` must contain its own `run gradient` or `run coupling` line. Coupling pairs other than these two neighbours are written from `NAD_N1N0/start.sp`, or from `NAD_N1N2/start.sp` if the first is missing, each in its own `NAC_i_j` folder.
 
 ### Keywords the interface manages
 
 | Keyword | Gradient job | Coupling job |
 |---|---|---|
-| `run` | `gradient` | `coupling` |
+| `run` | `gradient` (single template only) | `coupling` (single template only) |
 | `castarget` / `cistarget` | current state − 1 | removed (single template only) |
 | `nacstate1`, `nacstate2` | — | lower state − 1, upper state − 1 |
-| `guess` (`maxit`, `convthre` with `use_prev_wf`) | see [guess options](terachem-par.md#use_prev_wf) | see [guess options](terachem-par.md#use_prev_scf_wf) |
+| `guess`, and `maxit` and `convthre` with `use_prev_wf` | set only when [`use_prev_wf`](terachem-par.md#use_prev_wf) or [`use_prev_scf_wf`](terachem-par.md#use_prev_scf_wf) is on | same as the gradient job |
 | `coordinates` | `geom.xyz` | `geom.xyz` |
 | `scrdir` | removed | removed |
 
@@ -94,10 +98,7 @@ The supported methods, their keywords, the couplings each allows and the singlet
 
 ## Which couplings are computed
 
-> [!NOTE]
-> Since version 2.0 the interface computes the couplings NewtonX asks for in `jiri.inp`. Earlier versions always computed the two neighbour couplings and ignored `jiri.inp`. To reproduce runs made with earlier versions, set `couplings = neighbours` and `phase_ref = previous` in `terachem.par`.
-
-At every step NewtonX writes the pairs it needs to `TEMP/transmomin`. The list comes from `jiri.inp`, through `KROSS`, `CASCADE`, `CURRENT`, `NEVER_STATE` and `INCLUDE_PAIR`, and from `THRES` in `control.dyn`. The interface runs one TeraChem coupling job per listed pair. To override the list, set [`couplings`](terachem-par.md#couplings) in `terachem.par`.
+At every step NewtonX writes the pairs it needs to `TEMP/transmomin`. The list comes from `jiri.inp`, through `KROSS`, `CASCADE`, `CURRENT`, `NEVER_STATE` and `INCLUDE_PAIR`, and from `THRES` in `control.dyn`. The NewtonX manual explains these keywords. The interface runs one TeraChem coupling job per listed pair. To override the list, set [`couplings`](terachem-par.md#couplings) in `terachem.par`.
 
 TeraChem computes one coupling per run, so the cost per step is one gradient run plus one run per pair:
 
@@ -130,7 +131,7 @@ What these couplings are, and which methods allow them: [Couplings: NAC and TD-B
 
 ## Adiabatic steps and hops
 
-- **Adiabatic steps:** NewtonX can mark a step as adiabatic, for pure adiabatic dynamics or when every energy gap is larger than `THRES`. The interface then runs only the gradient job and writes zero couplings, so no hop can come from the couplings of an earlier step. With TD-BA, NewtonX writes the couplings itself.
+- **Adiabatic steps:** NewtonX can mark a step as adiabatic, for pure adiabatic dynamics or when the gaps from the current state to the states just below and just above are both larger than `THRES`. The interface then runs only the gradient job and writes zero couplings, so no hop can come from the couplings of an earlier step. With TD-BA, NewtonX writes the couplings itself.
 - **Hops:** after a hop, NewtonX calls the interface a second time at the same geometry for the new state's gradient. Coupling jobs are skipped in this second call, because NewtonX already has the couplings of that step.
 
 ## Output files
@@ -138,8 +139,8 @@ What these couplings are, and which methods allow them: [Couplings: NAC and TD-B
 | File | Content |
 |---|---|
 | `TEMP/GRAD/tera.out` | TeraChem output of the gradient job |
-| `TEMP/NAC_i_j/tera.out` | Coupling job between states i and j (single template) |
-| `TEMP/NAD_N1N0/`, `TEMP/NAD_N1N2/` | Neighbour coupling jobs (three-template layout) |
+| `TEMP/NAC_i_j/tera.out` | Coupling job between states i and j |
+| `TEMP/NAD_N1N0/`, `TEMP/NAD_N1N2/` | Neighbour coupling jobs in the three-template layout, instead of `NAC_i_j` |
 | `TEMP/<job>/scr.geom/` | TeraChem scratch of that job, cleared before each run |
 | `INFO_RESTART/MOLDEN_ARCHIVE/<time>.molden` | Orbitals of each step ([`archive_molden`](terachem-par.md#archive_molden)) |
 | `INFO_RESTART/WF_ARCHIVE/c<time>` | CASSCF orbitals of each step ([`archive_wf`](terachem-par.md#archive_wf)) |
@@ -154,7 +155,7 @@ The interface stops the trajectory with a message that starts with `run-tera-cas
 | Message contains | Cause | What to do |
 |---|---|---|
 | `TeraChem failed in <job>` | TeraChem returned an error | Read `TEMP/<job>/tera.out` |
-| `TeraChem did not finish in <job>` | The run was killed, for example by a licence time limit or the queue | Check the time limit; restart from `INFO_RESTART` |
+| `TeraChem did not finish in <job>` | The run was killed, for example by a licence time limit or the queue | Check the time limit. To continue, set `nxrestart = 1` in `control.dyn` and run `moldyn.pl` again |
 | `Could not read N state energies` | Fewer states in the output than `nstat`, or the wrong multiplicity | Raise the number of states in the template; check `castargetmult` or `cismult` |
 | `... atom lines; expected N` | A gradient or coupling file is incomplete | Read the job's `tera.out` |
 | `Unknown option` | A typo in `terachem.par` | See [terachem-par.md](terachem-par.md) |

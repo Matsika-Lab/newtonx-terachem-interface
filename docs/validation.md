@@ -8,7 +8,7 @@ These tests were run for version 2.0 before release. The reference is the previo
 
 | Item | Version |
 |---|---|
-| NewtonX | 2.4 (build B06) |
+| NewtonX | 2.4 (build 06) |
 | TeraChem | 1.96 beta (build 2024-11-09) |
 | GPU | NVIDIA RTX 5000 Ada, one per job |
 | Perl | 5.34 |
@@ -27,12 +27,12 @@ These tests were run for version 2.0 before release. The reference is the previo
 | 7 | [CASSCF guess option](#7-casscf-guess-option) | `use_prev_wf` with real runs | identical files | pass |
 | 8 | [Triplets](#8-triplets) | Energies and couplings for one multiplicity | 3 methods | pass, with limits |
 | 9 | [Full TDDFT (RPA)](#9-full-tddft-rpa) | RPA gradients and couplings | couplings are zero; gradient error 1.8e-6 | guarded |
-| 10 | [Initial conditions](#10-initial-conditions) | `run_tera_ic.pl` for all methods | 4 of 4 methods | pass |
+| 10 | [Initial conditions](#10-initial-conditions) | `run_tera_ic.pl` for all methods | 4 of 5 methods with TeraChem; RPA by unit test | pass |
 | 11 | [NewtonX trajectories](#11-newtonx-trajectories) | Full runs with real TeraChem | energies match the old version to 1e-9 a.u. | pass |
 | 12 | [Installer](#12-installer) | colib edits, reruns, other programs kept | 2 NewtonX trees | pass |
 | 13 | [Unit tests](#13-unit-tests) | Parsing and logic without GPU | 14 groups | pass |
 | 14 | [Example templates](#14-example-templates) | Each `examples/` template runs in NewtonX | 5 of 5 templates | pass |
-| 15 | [Phase reference after a gap](#15-phase-reference-after-a-gap) | `phase_ref = last` keeps signs continuous | 218 of 220 vs about half | pass |
+| 15 | [Phase reference after a gap](#15-phase-reference-after-a-gap) | `phase_ref = last` keeps signs continuous | 297 of 299 vs 159 of 299 | pass |
 | – | [TeraChem behaviour](#terachem-behaviour) | Facts the interface relies on | 10 checks | – |
 
 ## How the comparisons work
@@ -184,7 +184,7 @@ Oscillator strengths computed from transition dipoles (used for `nis > 1` when T
 | Ethylene CASSCF | single `tera.sp` | TD-BA, `vdoth = 2` | 8 fs | Ran with one TeraChem job per step; one hop, S2 → S1. |
 | Ethylene CASSCF | single `tera.sp` | `THRES = 1` eV | 8 fs | 2 nonadiabatic steps, then 15 adiabatic steps with the gradient job only and zero couplings. Worst energy deviation 0.17 mEh. |
 
-Energy conservation over 8 fs was the same as with the old script: worst deviation 1.0 mEh for the strained ethylene start, 0.3 mEh for uracil.
+Energy conservation over each run was the same as with the old script: worst deviation 1.0 mEh for the strained ethylene start, 0.3 mEh for uracil.
 
 ## 12. Installer
 
@@ -229,10 +229,10 @@ The hh-TDA FOMO window was checked first. With `active 9`, the excitation energi
 | hh-TDA | 1 / 2 / 5 steps | 9/15, 8/14, 7/11 | 15/15, 14/14, 11/11 |
 | FOMO-CASCI | 1 / 2 / 5 steps | 27/45, 25/43, 21/37 | 45/45, 43/43, 35/37 |
 
-- **The default is a coin flip:** with `previous`, a returning pair gets the right sign about half the time, because TeraChem's raw sign is arbitrary from run to run.
-- **`last` keeps signs continuous:** it agrees in 218 of 220 cases. The two misses were FOMO pairs after a 2.5 fs gap, where the vector had rotated by more than 90 degrees.
+- **`previous` is a coin flip:** a returning pair gets the right sign in 159 of 299 cases, 53%, because TeraChem's raw sign is arbitrary from run to run.
+- **`last` keeps signs continuous:** it agrees in 297 of 299 cases. The two misses were FOMO pairs after a 2.5 fs gap, where the vector had rotated by more than 90 degrees.
 - **No effect without gaps:** with `last`, the 101 recorded calls give byte-identical NewtonX files to the old version, `oldh` included. They contain no pair that returns after a gap.
-- **Default:** because of these results, `last` is the default. `previous` reproduces versions before 2.0.
+- **Default:** because of these results, `last` is the default.
 
 ## TeraChem behaviour
 

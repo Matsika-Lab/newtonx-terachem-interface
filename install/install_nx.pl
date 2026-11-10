@@ -57,7 +57,7 @@ $block{prog_config} = <<'EOT';
                  ip         => "n",
                  key        => sprintf("%4.1f",21.0),
                  label      => "TeraChem",
-                 method     => "CASSCF/FOMO-CASCI/TDA/hh-TDA",
+                 method     => "CASSCF/FOMO-CASCI/TDA/hh-TDA/RPA",
                  parfile    => "terachem.par",
                  nad_exec   => "y",
                  lvprt_d    => 1,
@@ -159,7 +159,12 @@ while ( $text =~ /^[ \t]*## *terachem *##[ \t]*\n(?:[ \t]*#-*[ \t]*\n)?[ \t]*if 
     pos($text) = $start;
 }
 
+# The test is listed in test_list only if its folder is installed below.
+my $tests_dir = abs_path("$nx/..") . "/test-nx";
+my $add_test  = !$notests && -d $tests_dir;
+
 foreach my $name (qw(prog_config check_thirdparty read_credits test_list)) {
+    next if $name eq "test_list" && !$add_test;
     my $start = index( $text, "sub $name" );
     die "colib: sub $name not found; this does not look like NewtonX 2.4.\n" if $start < 0;
     pos($text) = $start;
@@ -190,7 +195,7 @@ foreach my $script (qw(run-tera-cas.pl run_tera_ic.pl)) {
 }
 
 unless ($notests) {
-    my $tests = abs_path("$nx/..") . "/test-nx";
+    my $tests = $tests_dir;
     if ( -d $tests ) {
         my $name = "MD-TERA-CASSCF-NAD-VEC";
         copy_tree( "$repo/tests/nx/$name",                  "$tests/$name" );
@@ -260,5 +265,6 @@ sub copy_tree {
     }
     print "copy:   $dest\n";
     return if $dry;
+    mkpath( dirname($dest) );
     system( "cp", "-r", $src, $dest ) == 0 or die "Cannot copy $src to $dest\n";
 }

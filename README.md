@@ -22,8 +22,10 @@ perl install/install_nx.pl $NX
 Then, in a trajectory folder:
 
 1. Set `prog = 21.0` in `control.dyn`.
-2. Copy a template from [`examples/`](examples) to `JOB_NAD/tera.sp` and adapt it.
-3. Give the trajectory one GPU and start NewtonX:
+2. Set `vdoth = 0` in `sh.inp` for coupling vectors, or `vdoth = 2` for time-dependent Baeck-An (TD-BA) couplings. If `sh.inp` has no `vdoth`, NewtonX uses 2.
+3. Choose the couplings in `jiri.inp`. Without it, NewtonX asks for every pair of states, at one TeraChem run per pair. See [Which couplings are computed](docs/dynamics.md#which-couplings-are-computed).
+4. Copy a template from [`examples/`](examples) to `JOB_NAD/tera.sp` and adapt it.
+5. Give the trajectory one GPU and start NewtonX:
 
    ```bash
    export CUDA_VISIBLE_DEVICES=0
@@ -32,7 +34,7 @@ Then, in a trajectory folder:
 
 ## Methods
 
-CASSCF, FOMO-CASCI, TDA/TDDFT, hh-TDA and full TDDFT (RPA, with TD-BA couplings only), for singlets and triplets. See [Method tutorials](docs/methods.md).
+Five TeraChem methods are supported: CASSCF, FOMO-CASCI, TDA/TDDFT, hole-hole TDA (hh-TDA) and full TDDFT (RPA). Full TDDFT works with TD-BA couplings only. Triplets work with CASSCF, FOMO-CASCI and hh-TDA. See [Method tutorials](docs/methods.md).
 
 ## Documentation
 
