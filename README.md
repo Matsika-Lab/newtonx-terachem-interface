@@ -2,16 +2,6 @@
 
 Runs nonadiabatic surface-hopping dynamics in [NewtonX](https://newtonx.org/) with energies, gradients and couplings from [TeraChem](https://www.petachem.com/).
 
-> [!IMPORTANT]
-> In version 2.0, NewtonX chooses the couplings, through `jiri.inp` and `THRES`. Versions before 2.0 always computed the couplings of the current state with its neighbours. To reproduce runs made with those versions, put this `terachem.par` in the trajectory folder:
->
-> ```text
-> couplings = neighbours
-> phase_ref = previous
-> ```
->
-> See [terachem.par options](docs/terachem-par.md) and the [changelog](CHANGELOG.md).
-
 ## Requirements
 
 | Software | Version |
