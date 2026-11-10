@@ -37,3 +37,9 @@ The test run's output is not part of this folder. These numbers come from it.
 | `sh.inp` | Surface-hopping settings |
 | `jiri.inp` | Coupling pairs NewtonX asks for |
 | [`JOB_NAD/tera.sp`](JOB_NAD/tera.sp) | TeraChem template |
+
+## See also
+
+- [Method tutorial](../../docs/methods.md#casscf): keywords, settings and pitfalls
+- [Your first trajectory](../../docs/first-trajectory.md): how to run an example
+- [Validation](../../docs/validation.md#14-example-inputs): the test run of this input

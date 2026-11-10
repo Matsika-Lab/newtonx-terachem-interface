@@ -2,7 +2,7 @@
 
 All notable changes to this interface. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [2.0.0] – unreleased
+## [2.0.0] - 2026-11-09
 
 ### Changed
 
@@ -18,13 +18,13 @@ All notable changes to this interface. The format follows [Keep a Changelog](htt
 
 - **One template.** A single `JOB_NAD/tera.sp` replaces the three `start.sp` files. The three-file layout still works.
 - **`couplings` option:** `nx`, `neighbours`, `current` or `all`.
-- **Adiabatic steps and TD-BA.** Steps that NewtonX marks adiabatic, through `THRES` or pure adiabatic dynamics, run the gradient job only and write zero couplings. `vdoth = 2` (TD-BA) is supported.
+- **Adiabatic steps and time-dependent Baeck-An (TD-BA).** Steps that NewtonX marks adiabatic, through `THRES` or pure adiabatic dynamics, run the gradient job only and write zero couplings. `vdoth = 2` (TD-BA) is supported.
 - **No coupling jobs after a hop.** In NewtonX's second call after a hop, coupling jobs are skipped.
 - **Checks.** The interface stops with a clear message when TeraChem fails or does not finish, when a vector file has the wrong number of atoms, when energies are missing, or when `terachem.par` has an unknown key.
 - **Full TDDFT (RPA).** `rpa yes` templates work for gradients, adiabatic steps and TD-BA. Coupling-vector runs with RPA are refused, because TeraChem writes zero vectors for them. Any all-zero coupling vector now triggers a warning in `moldyn.log`.
 - **Initial conditions.** `run_tera_ic.pl` is now part of the repository. It supports CASSCF, FOMO-CASCI, TDA/TDDFT, hh-TDA and full TDDFT, and `nis > 1`.
 - **`phase_ref` option.** A coupling pair that returns after a gap now gets its sign from its last computed vector (`phase_ref = last`, the default). Before, its sign was TeraChem's. `phase_ref = previous` keeps the old behavior.
-- **Method tutorials and templates.** [Method tutorials](docs/methods.md) explains each method and the NAC and TD-BA couplings. Tested templates are in `examples/`.
+- **Method tutorials and templates.** [Method tutorials](docs/methods.md) explains each method and coupling vectors and TD-BA couplings. Tested templates are in `examples/`.
 - **Documentation.** A first-trajectory tutorial, a troubleshooting page and an output-files page. Each `examples/` folder is a complete 1 fs input with its own README, and each sample trajectory has a README.
 - **NewtonX 2.6.** The interface works with NewtonX 2.6 as well as 2.4. NewtonX 2.6 corrects coupling signs again by extrapolation, which flips couplings that shrink quickly after a crossing. The interface sets NewtonX's reference so that 2.6 keeps the interface's signs, as 2.4 does. See [NewtonX 2.6](docs/terachem-par.md#newtonx-26).
 - **Installer.** `install/install_nx.pl` registers TeraChem in NewtonX, copies the scripts and adds a NewtonX test.

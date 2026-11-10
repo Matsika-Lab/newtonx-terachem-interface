@@ -10,7 +10,7 @@ Each folder here is a complete NewtonX input for a 1 fs trajectory of twisted et
 | [`fomo-casci`](fomo-casci/README.md) | ethylene | FOMO-CASCI(4,4)/6-31G* | 3, start in S1 | coupling vectors | 10 s |
 | [`tda`](tda/README.md) | ethylene | TDA CAM-B3LYP/6-31G* | 3, start in S1 | coupling vectors | 13 s |
 | [`hh-tda`](hh-tda/README.md) | ethylene | hh-TDA BH&HLYP/6-31G* | 3, start in S1 | coupling vectors | 17–19 s |
-| [`rpa-tdba`](rpa-tdba/README.md) | ethylene | RPA CAM-B3LYP/6-31G* | 3, start in S1 | TD-BA | 12–13 s |
+| [`rpa-tdba`](rpa-tdba/README.md) | ethylene | RPA CAM-B3LYP/6-31G* | 3, start in S1 | time-dependent Baeck-An (TD-BA) | 12–13 s |
 
 The time per step is the wall time of the second and third interface calls on one NVIDIA RTX 5000 Ada GPU.
 
@@ -38,3 +38,9 @@ $NX/moldyn.pl > moldyn.log
 ```
 
 For two complete, longer trajectories with their output, see [Sample trajectories](../sample_trajectories/README.md).
+
+## See also
+
+- [Your first trajectory](../docs/first-trajectory.md): run the CASSCF example step by step
+- [Method tutorials](../docs/methods.md): what each template's keywords mean
+- [Validation](../docs/validation.md#14-example-inputs): the test runs of these inputs

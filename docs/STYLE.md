@@ -61,7 +61,7 @@ Every method has the same parts, in this order. They are `##` headings on a page
 
 1. **When to use it:** one or two sentences, as a `>` blockquote, with a "Couplings:" line.
 2. **Keywords:** table `Keyword | Example value | Meaning`, including the reference and the states.
-3. **Couplings allowed:** coupling vectors, Baeck-An, or both.
+3. **Couplings allowed:** coupling vectors, TD-BA couplings, or both.
 4. **Template:** the method block, with a link to the full template file.
 5. **Settings:** the settings file keys that matter for this method.
 6. **Pitfalls:** what goes wrong, and how you notice it.
@@ -97,6 +97,18 @@ H1 with the molecule and method, one paragraph saying what the run shows, a sett
 - Use tables for settings, requirements, files and error messages, and prose for explanations.
 - Say why a step matters when it is not obvious, in one sentence.
 
+## Terms
+
+| Use | For | Not |
+|---|---|---|
+| active state | The state the trajectory moves on (`nstatdyn`) | current state, running state |
+| coupling vectors | Nonadiabatic coupling vectors from the electronic-structure program (`vdoth = 0`); "NAC" only in keywords and file names | NACs, NACMEs |
+| TD-BA couplings | Time-dependent Baeck-An couplings that NewtonX computes from energies (`vdoth = 2`); spell out "time-dependent Baeck-An (TD-BA)" at first use on each page | Baeck-An alone, BA |
+| hop | A surface hop | jump, except when quoting NewtonX |
+| step | One NewtonX time step | iteration |
+| interface call | One call of the run script by NewtonX; a step with a hop has two | |
+| version | Semantic version, for example 2.0.0 | |
+
 ## Formatting
 
 - **Code:** keywords, file names, paths, commands and values in backticks. Code blocks always name a language (`bash`, `text`, `perl`, `python`). Comments in commands are short and follow `#`.
@@ -116,7 +128,7 @@ The README credits section has these bullets:
   - **Decisions:** "the authors made the design decisions".
   - **Commits:** "the commits of this revision carry `Co-Authored-By: Claude` lines".
 - **Citation:** link to `CITATION.cff`, and ask users to also cite NewtonX and the electronic-structure program.
-- **License:** "GPL-3.0-or-later, see [`LICENSE`](LICENSE)."
+- **License:** "GPL-3.0-or-later, see `LICENSE`", with `LICENSE` linked to the license file.
 
 Every script has `# SPDX-License-Identifier: GPL-3.0-or-later` on line 2.
 

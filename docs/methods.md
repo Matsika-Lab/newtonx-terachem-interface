@@ -2,13 +2,13 @@
 
 # Method tutorials
 
-This page shows how to run NewtonX dynamics with each TeraChem method, and explains the two kinds of couplings the interface offers. Read the section of your method before you write its template. Every method section has the same parts: when to use it, keywords, couplings allowed, template, settings, pitfalls and cost.
+This page shows how to run NewtonX dynamics with each TeraChem method, and explains the two kinds of couplings the interface offers: coupling vectors from TeraChem and time-dependent Baeck-An (TD-BA) couplings from NewtonX. Read the section of your method before you write its template. Every method section has the same parts: when to use it, keywords, couplings allowed, template, settings, pitfalls and cost.
 
 The inputs in [`examples/`](../examples/README.md) are for twisted ethylene with 6-31G* and three singlet states. Each one completed a 1 fs NewtonX trajectory with this interface; see [Validation](validation.md#14-example-inputs). For your molecule, change the basis, active space and number of states.
 
 ## Methods at a glance
 
-| Method | Gradients | NAC vectors (`vdoth = 0`) | TD-BA (`vdoth = 2`) | Triplets | Template |
+| Method | Gradients | Coupling vectors (`vdoth = 0`) | TD-BA couplings (`vdoth = 2`) | Triplets | Template |
 |---|---|---|---|---|---|
 | [CASSCF](#casscf) | yes | yes | yes | yes, untested | [`examples/casscf`](../examples/casscf/JOB_NAD/tera.sp) |
 | [FOMO-CASCI](#fomo-casci) | yes | yes | yes | yes | [`examples/fomo-casci`](../examples/fomo-casci/JOB_NAD/tera.sp) |
@@ -18,7 +18,7 @@ The inputs in [`examples/`](../examples/README.md) are for twisted ethylene with
 
 Every template is a single `JOB_NAD/tera.sp`. Leave out `run`, `castarget`, `cistarget`, `nacstate1`, `nacstate2`, `coordinates` and `scrdir`; the interface sets them at each step. See [Keywords the interface manages](dynamics.md#keywords-the-interface-manages).
 
-## Couplings: NAC and TD-BA
+## Coupling vectors and TD-BA couplings
 
 Surface hopping integrates the electronic amplitudes $`c_k`$ along the trajectory:
 
@@ -28,7 +28,7 @@ i\hbar\,\frac{dc_k}{dt} = c_k E_k - i\hbar \sum_j c_j\,\sigma_{kj}
 
 The time-derivative coupling $`\sigma_{kj}`$ drives population transfer and hops between states $`k`$ and $`j`$. NewtonX can get it in two ways with this interface. Set the choice with `vdoth` in `sh.inp`.
 
-### Nonadiabatic coupling vectors (NAC, `vdoth = 0`)
+### Coupling vectors (`vdoth = 0`)
 
 The nonadiabatic coupling vector between states $`i`$ and $`j`$ is
 
@@ -69,7 +69,7 @@ Overlap-based couplings (`vdoth = 1` or negative) are not supported, because Ter
 
 > Multireference states: bond breaking, conical intersections with the ground state, and small active spaces you can choose by hand. It is affordable for small molecules or small active spaces, because each step re-optimizes the orbitals.
 >
-> Couplings: NAC and TD-BA.
+> Couplings: coupling vectors and TD-BA couplings.
 
 ### Keywords
 
@@ -87,7 +87,7 @@ Overlap-based couplings (`vdoth = 1` or negative) are not supported, because Ter
 
 ### Couplings allowed
 
-Both [NAC](#nonadiabatic-coupling-vectors-nac-vdoth--0) and [TD-BA](#time-dependent-baeck-an-couplings-td-ba-vdoth--2).
+Both [coupling vectors](#coupling-vectors-vdoth--0) and [TD-BA](#time-dependent-baeck-an-couplings-td-ba-vdoth--2).
 
 ### Template
 
@@ -126,7 +126,7 @@ About 13–14 s per step for ethylene SA-3-CASSCF(2,2)/6-31G* with two coupling 
 
 > Large systems: a cheaper multireference method. Floating occupations give smooth orbitals, so no CASSCF optimization is needed.
 >
-> Couplings: NAC and TD-BA.
+> Couplings: coupling vectors and TD-BA couplings.
 
 ### Keywords
 
@@ -145,7 +145,7 @@ About 13–14 s per step for ethylene SA-3-CASSCF(2,2)/6-31G* with two coupling 
 
 ### Couplings allowed
 
-Both NAC and TD-BA.
+Both coupling vectors and TD-BA couplings.
 
 ### Template
 
@@ -183,7 +183,7 @@ About 10 s per step for ethylene FOMO-CASCI(4,4)/6-31G* with two coupling pairs,
 
 > Single-reference states: excited states of molecules with a well-behaved closed-shell ground state. It is not for S1/S0 crossings, because linear-response TDDFT describes the S1/S0 intersection poorly. If needed, restrict couplings to excited states with `never_state = 1` in `jiri.inp`.
 >
-> Couplings: NAC and TD-BA.
+> Couplings: coupling vectors and TD-BA couplings.
 
 ### Keywords
 
@@ -198,7 +198,7 @@ About 10 s per step for ethylene FOMO-CASCI(4,4)/6-31G* with two coupling pairs,
 
 ### Couplings allowed
 
-Both NAC and TD-BA.
+Both coupling vectors and TD-BA couplings.
 
 ### Template
 
@@ -231,7 +231,7 @@ About 13 s per step for ethylene TDA CAM-B3LYP/6-31G* with two coupling pairs, o
 
 > TDDFT-like cost with a correct S1/S0 intersection: hole-hole TDA builds the ground and excited states together from an (N+2)-electron reference.
 >
-> Couplings: NAC and TD-BA.
+> Couplings: coupling vectors and TD-BA couplings.
 
 ### Keywords
 
@@ -249,7 +249,7 @@ About 13 s per step for ethylene TDA CAM-B3LYP/6-31G* with two coupling pairs, o
 
 ### Couplings allowed
 
-Both NAC and TD-BA.
+Both coupling vectors and TD-BA couplings.
 
 ### Template
 

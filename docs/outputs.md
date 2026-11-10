@@ -10,11 +10,11 @@ NewtonX writes these files in `RESULTS/` during the run. The examples are from t
 
 | File | Contents |
 |---|---|
-| `RESULTS/dyn.out` | Geometry, velocity and acceleration of every step, the current state, the number of hops, and the energies |
-| `RESULTS/en.dat` | One line per step: time (fs), the energy of each state, the energy of the current state and the total energy, all in Hartree |
+| `RESULTS/dyn.out` | Geometry, velocity and acceleration of every step, the active state, the number of hops, and the energies |
+| `RESULTS/en.dat` | One line per step: time (fs), the energy of each state, the energy of the active state and the total energy, all in Hartree |
 | `RESULTS/sh.out` | Surface-hopping log: populations at each substep and every hop, as `SURFACE HOPPING! THE SURFACE CHANGES FROM` |
 | `RESULTS/tprob` | Random number and hopping probabilities at each substep |
-| `RESULTS/typeofdyn.log` | Step type and the gaps from the current state to the states below and above (eV), compared with `THRES` |
+| `RESULTS/typeofdyn.log` | Step type and the gaps from the active state to the states below and above (eV), compared with `THRES` |
 | `RESULTS/report.ci` | Points where the energy gap is below 0.200 eV |
 | `RESULTS/nx.log` | The NewtonX log, including the interface's lines |
 
@@ -62,7 +62,7 @@ The interface writes these files in `TEMP/` at every step. You do not need to re
 | File | Contents | Read by |
 |---|---|---|
 | `epot`, `oldepot`, `newepot` | State energies of this and the previous step | NewtonX 2.4 and 2.6 |
-| `grad`, `grad.all` | Gradient of the current state | NewtonX 2.4 and 2.6 |
+| `grad`, `grad.all` | Gradient of the active state | NewtonX 2.4 and 2.6 |
 | `nad_vectors` | Phase-corrected coupling vectors; zero for pairs not computed | NewtonX 2.4 and 2.6 |
 | `oldh`, `newh` | Coupling vectors of the previous and this step | NewtonX's `escalar`, which the interface calls for the phase correction, in 2.4 and 2.6; the interpolation between steps in NewtonX 2.4 only |
 | `nad_vectors-dt` | Coupling vectors of the previous step, written by NewtonX itself and used for the interpolation | NewtonX 2.6 |

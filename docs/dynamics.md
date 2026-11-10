@@ -73,7 +73,7 @@ coordinates     geom.xyz
 
 ```text
 JOB_NAD/
-├── GRAD/start.sp       # gradient of the current state
+├── GRAD/start.sp       # gradient of the active state
 ├── NAD_N1N0/start.sp   # coupling with the state below
 └── NAD_N1N2/start.sp   # coupling with the state above
 ```
@@ -85,7 +85,7 @@ The [sample trajectories](../sample_trajectories/README.md) use this layout. Eac
 | Keyword | Gradient job | Coupling job |
 |---|---|---|
 | `run` | `gradient` (single template only) | `coupling` (single template only) |
-| `castarget` / `cistarget` | current state − 1 | removed (single template only) |
+| `castarget` / `cistarget` | active state − 1 | removed (single template only) |
 | `nacstate1`, `nacstate2` | — | lower state − 1, upper state − 1 |
 | `guess`, and `maxit` and `convthre` with `use_prev_wf` | set only when [`use_prev_wf`](terachem-par.md#use_prev_wf) or [`use_prev_scf_wf`](terachem-par.md#use_prev_scf_wf) is on; both default to `0` | same as the gradient job |
 | `coordinates` | `geom.xyz` | `geom.xyz` |
@@ -127,7 +127,7 @@ Pairs that are not computed are written as zero vectors, as NewtonX expects. A p
 
 ## Coupling methods
 
-What these couplings are, and which methods allow them, is explained in [Couplings: NAC and TD-BA](methods.md#couplings-nac-and-td-ba).
+What these couplings are, and which methods allow them, is explained in [Coupling vectors and TD-BA couplings](methods.md#coupling-vectors-and-td-ba-couplings).
 
 | `vdoth` in `sh.inp` | Meaning | Supported |
 |---|---|---|
@@ -137,7 +137,7 @@ What these couplings are, and which methods allow them, is explained in [Couplin
 
 ## Adiabatic steps and hops
 
-- **Adiabatic steps:** NewtonX can mark a step as adiabatic, for pure adiabatic dynamics or when the gaps from the current state to the states just below and just above are both larger than `THRES`. The interface then runs only the gradient job and writes zero couplings, so no hop can come from the couplings of an earlier step. With TD-BA, NewtonX writes the couplings itself.
+- **Adiabatic steps:** NewtonX can mark a step as adiabatic, for pure adiabatic dynamics or when the gaps from the active state to the states just below and just above are both larger than `THRES`. The interface then runs only the gradient job and writes zero couplings, so no hop can come from the couplings of an earlier step. With TD-BA, NewtonX writes the couplings itself.
 - **Hops:** after a hop, NewtonX calls the interface a second time at the same geometry for the new state's gradient. Coupling jobs are skipped in this second call, because NewtonX already has the couplings of that step.
 
 ## See also

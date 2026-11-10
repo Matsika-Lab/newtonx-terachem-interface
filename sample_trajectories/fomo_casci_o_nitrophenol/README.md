@@ -37,3 +37,9 @@ This folder holds a complete 40 fs trajectory of o-nitrophenol that starts on S3
 | `JOB_NAD/NAD_N1N0/start.sp`, `JOB_NAD/NAD_N1N2/start.sp` | TeraChem templates for the couplings with the states below and above |
 | `moldyn.log` | NewtonX and interface log |
 | `RESULTS/` | NewtonX results: `dyn.out`, `en.dat`, `sh.out`, `tprob`, `typeofdyn.log`, `report.ci`, `nx.log`; see [Output files](../../docs/outputs.md) |
+
+## See also
+
+- [Sample trajectories](../README.md): both samples
+- [terachem.par options](../../docs/terachem-par.md): `couplings = neighbours` and `phase_ref = previous`
+- [Outputs](../../docs/outputs.md): what each result file holds

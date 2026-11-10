@@ -27,7 +27,7 @@
 | [`couplings`](#couplings) | `nx` | `nx`, `neighbours`, `current`, `all` | all | Which coupling vectors are computed |
 | [`use_prev_wf`](#use_prev_wf) | `0` | `0`, `1` | CASSCF | Start from the previous step's CASSCF orbitals |
 | [`use_prev_scf_wf`](#use_prev_scf_wf) | `0` | `0`, `1` | all except CASSCF | Start the SCF from the previous step's orbitals |
-| [`phase_ref`](#phase_ref) | `last` | `last`, `previous` | NAC (`vdoth = 0`) | Phase reference for a coupling pair that returns after a gap |
+| [`phase_ref`](#phase_ref) | `last` | `last`, `previous` | coupling vectors (`vdoth = 0`) | Phase reference for a coupling pair that returns after a gap |
 | [`archive_molden`](#archive_molden) | `1` | `0`, `1` | all | Keep a Molden file of every step |
 | [`archive_wf`](#archive_wf) | `1` | `0`, `1` | CASSCF | Keep the CASSCF orbitals of every step |
 
@@ -40,8 +40,8 @@ This key chooses which coupling vectors are computed at each step. TeraChem comp
 | Value | Pairs computed at each step |
 |---|---|
 | `nx` (default) | The pairs NewtonX lists in `transmomin`, set by `jiri.inp` and `THRES`. See [Which couplings are computed](dynamics.md#which-couplings-are-computed). |
-| `neighbours` | The current state with the state just below and the state just above. At most 2 runs. |
-| `current` | The current state with every other state. `nstat − 1` runs. |
+| `neighbours` | The active state with the state just below and the state just above. At most 2 runs. |
+| `current` | The active state with every other state. `nstat − 1` runs. |
 | `all` | Every pair of states. `nstat(nstat − 1)/2` runs. |
 
 `neighbors` is accepted as well. The [sample trajectories](../sample_trajectories/README.md) use `neighbours` with [`phase_ref = previous`](#phase_ref), the scheme of the script that made them.

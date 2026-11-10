@@ -67,7 +67,7 @@ Variant options, after the script path:
 | `par=FILE` | Use FILE as `terachem.par` |
 | `single` | Convert the three-template layout to one `tera.sp` |
 | `second` | Pretend the call is the second run after a hop |
-| `state=N` | Set the current state to N |
+| `state=N` | Set the active state to N |
 | `type=N` | Write N to `typeofdyn.out` (1 = adiabatic step) |
 | `cache=DIR` | Use a separate cache, to force real TeraChem runs |
 

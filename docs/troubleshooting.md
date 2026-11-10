@@ -19,7 +19,7 @@ These checks come from the NewtonX registration that the installer adds. A manua
 | Message contains | Cause | What to do |
 |---|---|---|
 | `TeraChem not found. Set the TeraChem variable to the TeraChem folder` | `$TeraChem` is not set, or `$TeraChem/bin/terachem` is not executable | Set `TeraChem` to the folder that contains `bin/terachem` |
-| `needs wavefunction overlaps, which the TeraChem interface does not provide` | `vdoth` in `sh.inp` is 1 or negative | Use `vdoth = 0` for coupling vectors or `vdoth = 2` for TD-BA |
+| `needs wavefunction overlaps, which the TeraChem interface does not provide` | `vdoth` in `sh.inp` is 1 or negative | Use `vdoth = 0` for coupling vectors or `vdoth = 2` for time-dependent Baeck-An (TD-BA) |
 | `Problem in` | `terachem.par` has an error; the message reads `Problem in terachem.par:`, and the rest of the line is one of the [settings file](#settings-file) messages | Fix the key or value it names |
 
 ## Dynamics errors (moldyn.log, DEBUG/runnx.error)

@@ -74,7 +74,7 @@ For real dynamics, take geometries and velocities from a Wigner sampling instead
 ### sh.inp and jiri.inp
 
 - **`sh.inp`:** surface-hopping settings. `vdoth = 0` asks for coupling vectors from TeraChem. See [Coupling methods](dynamics.md#coupling-methods).
-- **`jiri.inp`:** `kross = 0` and `current = 1` ask for the couplings of the current state with its two neighbors only. Without this file, NewtonX asks for every pair of states, at one TeraChem run per pair. See [Which couplings are computed](dynamics.md#which-couplings-are-computed).
+- **`jiri.inp`:** `kross = 0` and `current = 1` ask for the couplings of the active state with its two neighbors only. Without this file, NewtonX asks for every pair of states, at one TeraChem run per pair. See [Which couplings are computed](dynamics.md#which-couplings-are-computed).
 
 ### JOB_NAD/tera.sp
 
@@ -149,9 +149,9 @@ If the run stops with a line that contains `ERROR`, look it up in [Troubleshooti
 
 NewtonX writes its results to `RESULTS/`. Look at these files first:
 
-- **Energies.** `RESULTS/en.dat` has one line per step: the energy of each state, the energy of the current state and the total energy, in Hartree. The total energy should stay nearly constant.
+- **Energies.** `RESULTS/en.dat` has one line per step: the energy of each state, the energy of the active state and the total energy, in Hartree. The total energy should stay nearly constant.
 - **Hops.** `RESULTS/sh.out` has a line `SURFACE HOPPING!` for every hop. In this short run there is none, so the trajectory stays on S1.
-- **Gaps.** `RESULTS/typeofdyn.log` gives the gaps from the current state to the states below and above, in eV.
+- **Gaps.** `RESULTS/typeofdyn.log` gives the gaps from the active state to the states below and above, in eV.
 
 The numbers of the test run are in the [example's README](../examples/casscf/README.md#result). [Output files](outputs.md) describes every file.
 

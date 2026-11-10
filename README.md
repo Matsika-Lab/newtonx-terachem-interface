@@ -2,7 +2,7 @@
 
 Runs nonadiabatic surface-hopping dynamics in [NewtonX](https://newtonx.org/) with energies, gradients and couplings from [TeraChem](https://www.petachem.com/).
 
-At every time step, the interface runs TeraChem for the gradient of the current state and for the coupling vectors NewtonX asks for, and hands the results back to NewtonX. It also computes excitation energies and oscillator strengths for NewtonX's initial conditions and spectra.
+At every time step, the interface runs TeraChem for the gradient of the active state and for the coupling vectors NewtonX asks for, and hands the results back to NewtonX. It also computes excitation energies and oscillator strengths for NewtonX's initial conditions and spectra.
 
 ## Requirements
 
@@ -40,13 +40,13 @@ For your own molecule, copy a template from [`examples/`](examples/README.md) to
 
 | Method | Program keyword | Couplings | Tutorial |
 |---|---|---|---|
-| CASSCF | `casscf yes` | coupling vectors, TD-BA | [CASSCF](docs/methods.md#casscf) |
+| CASSCF | `casscf yes` | coupling vectors, time-dependent Baeck-An (TD-BA) | [CASSCF](docs/methods.md#casscf) |
 | FOMO-CASCI | `fon yes` + `casci yes` | coupling vectors, TD-BA | [FOMO-CASCI](docs/methods.md#fomo-casci) |
 | TDA/TDDFT | `cis yes` | coupling vectors, TD-BA | [TDA](docs/methods.md#tda-tddft) |
 | hh-TDA | `hhtda yes` | coupling vectors, TD-BA | [hh-TDA](docs/methods.md#hh-tda) |
 | Full TDDFT | `rpa yes` | TD-BA | [Full TDDFT](docs/methods.md#full-tddft-rpa) |
 
-Triplets work with CASSCF (untested), FOMO-CASCI and hh-TDA, and full TDDFT works with TD-BA couplings only.
+Triplets: FOMO-CASCI and hh-TDA are tested; CASSCF triplets are untested. Full TDDFT works with TD-BA couplings only.
 
 ## Where to go next
 

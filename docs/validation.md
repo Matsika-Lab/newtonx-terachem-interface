@@ -23,7 +23,7 @@ This page holds every benchmark, timing and validation run of interface version 
 | 13 | [Unit tests](#13-unit-tests) | Parsing and logic without GPU | 15 groups | pass |
 | 14 | [Example inputs](#14-example-inputs) | Each `examples/` input runs in NewtonX; time per step | 5 of 5 inputs; 13–14 s per CASSCF step | pass |
 | 15 | [Phase reference after a gap](#15-phase-reference-after-a-gap) | `phase_ref = last` keeps signs continuous | 297 of 299 vs 159 of 299 | pass |
-| 16 | [NewtonX 2.6](#16-newtonx-26) | Installer, dynamics, TD-BA, restart, initial conditions and signs under 2.6 | signs identical with and without gaps | pass |
+| 16 | [NewtonX 2.6](#16-newtonx-26) | Installer, dynamics, time-dependent Baeck-An (TD-BA), restart, initial conditions and signs under 2.6 | signs identical with and without gaps | pass |
 | 17 | [TeraChem behavior](#17-terachem-behavior) | Facts the interface relies on | 10 checks | – |
 
 ## Test environment
@@ -32,7 +32,7 @@ Unless a section says otherwise, every test ran in this environment.
 
 | Item | Version |
 |---|---|
-| Interface | 2.0.0, branch `interface-improvements` |
+| Interface | 2.0.0 development versions, commits `e78ad2f`–`26d5f9b` (November 2026); a section that used one commit names it |
 | Reference interface | `run-tera-cas.pl` at commit `35c7390` |
 | NewtonX | 2.4 (build 06); 2.6 (build 01) for [section 16](#16-newtonx-26) |
 | TeraChem | 1.96 beta (build 2024-11-09) |
@@ -254,10 +254,10 @@ Energy conservation over each run was the same as with the reference: worst devi
 
 | Template | Couplings | Pairs per step | Result |
 |---|---|---|---|
-| `casscf` | NAC | S1–S0, S2–S1 | 2 steps, no warnings |
-| `fomo-casci` | NAC | S1–S0, S2–S1 | 2 steps, no warnings |
-| `tda` | NAC | S1–S0, S2–S1 | 2 steps, no warnings |
-| `hh-tda` | NAC | S1–S0, S2–S1 | 2 steps, no warnings |
+| `casscf` | coupling vectors | S1–S0, S2–S1 | 2 steps, no warnings |
+| `fomo-casci` | coupling vectors | S1–S0, S2–S1 | 2 steps, no warnings |
+| `tda` | coupling vectors | S1–S0, S2–S1 | 2 steps, no warnings |
+| `hh-tda` | coupling vectors | S1–S0, S2–S1 | 2 steps, no warnings |
 | `rpa-tdba` | TD-BA | none (NewtonX computes TD-BA) | 2 steps, no warnings |
 
 The hh-TDA FOMO window was checked first. With `active 9`, the excitation energies were 6.5 and 7.9 eV, consistent with TDA (6.9 and 8.6 eV). With `active 8` TeraChem stopped, and with `active 10` the states came out wrong.
