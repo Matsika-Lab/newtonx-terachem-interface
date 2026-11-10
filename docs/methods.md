@@ -2,23 +2,23 @@
 
 # Method tutorials
 
-This page shows how to run NewtonX dynamics with each TeraChem method, and explains the two kinds of couplings the interface offers: coupling vectors from TeraChem and time-dependent Baeck-An (TD-BA) couplings from NewtonX. Read the section of your method before you write its template. Every method section has the same parts: when to use it, keywords, couplings allowed, template, settings, pitfalls and cost.
+This page shows how to run NewtonX dynamics with each TeraChem method, and explains the three kinds of couplings the interface offers: coupling vectors from TeraChem, time-derivative couplings from wavefunction overlaps, and time-dependent Baeck-An (TD-BA) couplings from NewtonX. Read the section of your method before you write its template. Every method section has the same parts: when to use it, keywords, couplings allowed, template, settings, pitfalls and cost.
 
 The inputs in [`examples/`](../examples/README.md) are for twisted ethylene with 6-31G* and three singlet states. Each one completed a 1 fs NewtonX trajectory with this interface; see [Validation](validation.md#14-example-inputs). For your molecule, change the basis, active space and number of states.
 
 ## Methods at a glance
 
-| Method | Gradients | Coupling vectors (`vdoth = 0`) | TD-BA couplings (`vdoth = 2`) | Triplets | Template |
-|---|---|---|---|---|---|
-| [CASSCF](#casscf) | yes | yes | yes | yes, untested | [`examples/casscf`](../examples/casscf/JOB_NAD/tera.sp) |
-| [FOMO-CASCI](#fomo-casci) | yes | yes | yes | yes | [`examples/fomo-casci`](../examples/fomo-casci/JOB_NAD/tera.sp) |
-| [TDA (TDDFT)](#tda-tddft) | yes | yes | yes | no | [`examples/tda`](../examples/tda/JOB_NAD/tera.sp) |
-| [hh-TDA](#hh-tda) | yes | yes | yes | yes | [`examples/hh-tda`](../examples/hh-tda/JOB_NAD/tera.sp) |
-| [Full TDDFT (RPA)](#full-tddft-rpa) | yes | **no** | yes | no | [`examples/rpa-tdba`](../examples/rpa-tdba/JOB_NAD/tera.sp) |
+| Method | Gradients | Coupling vectors (`vdoth = 0`) | Overlap couplings (`vdoth = 1`) | TD-BA couplings (`vdoth = 2`) | Triplets | Template |
+|---|---|---|---|---|---|---|
+| [CASSCF](#casscf) | yes | yes | yes | yes | yes, untested | [`examples/casscf`](../examples/casscf/JOB_NAD/tera.sp) |
+| [FOMO-CASCI](#fomo-casci) | yes | yes | yes | yes | yes | [`examples/fomo-casci`](../examples/fomo-casci/JOB_NAD/tera.sp) |
+| [TDA (TDDFT)](#tda-tddft) | yes | yes | **no** | yes | no | [`examples/tda`](../examples/tda/JOB_NAD/tera.sp) |
+| [hh-TDA](#hh-tda) | yes | yes | **no** | yes | yes | [`examples/hh-tda`](../examples/hh-tda/JOB_NAD/tera.sp) |
+| [Full TDDFT (RPA)](#full-tddft-rpa) | yes | **no** | **no** | yes | no | [`examples/rpa-tdba`](../examples/rpa-tdba/JOB_NAD/tera.sp) |
 
 Every template is a single `JOB_NAD/tera.sp`. Leave out `run`, `castarget`, `cistarget`, `nacstate1`, `nacstate2`, `coordinates` and `scrdir`; the interface sets them at each step. See [Keywords the interface manages](dynamics.md#keywords-the-interface-manages).
 
-## Coupling vectors and TD-BA couplings
+## Coupling vectors, overlap couplings and TD-BA couplings
 
 Surface hopping integrates the electronic amplitudes $`c_k`$ along the trajectory:
 
@@ -26,7 +26,7 @@ Surface hopping integrates the electronic amplitudes $`c_k`$ along the trajector
 i\hbar\,\frac{dc_k}{dt} = c_k E_k - i\hbar \sum_j c_j\,\sigma_{kj}
 ```
 
-The time-derivative coupling $`\sigma_{kj}`$ drives population transfer and hops between states $`k`$ and $`j`$. NewtonX can get it in two ways with this interface. Set the choice with `vdoth` in `sh.inp`.
+The time-derivative coupling $`\sigma_{kj}`$ drives population transfer and hops between states $`k`$ and $`j`$. NewtonX can get it in three ways with this interface. Set the choice with `vdoth` in `sh.inp`.
 
 ### Coupling vectors (`vdoth = 0`)
 
@@ -47,6 +47,28 @@ in 1/Bohr, one 3-vector per atom. The time-derivative coupling follows from the 
 - **Phase:** the sign of each vector is made continuous from step to step by NewtonX's phase correction, which the interface runs with NewtonX 2.4 and 2.6 alike. For a pair that returns after a gap, see [`phase_ref`](terachem-par.md#phase_ref). NewtonX 2.6 adds a second correction of its own; see [NewtonX 2.6](terachem-par.md#newtonx-26).
 - **Methods:** CASSCF, FOMO-CASCI, TDA and hh-TDA.
 
+### Time-derivative couplings from overlaps (`vdoth = 1`)
+
+The coupling is computed from the overlap of the CAS wavefunctions of two consecutive steps. NewtonX's own `read_cioverlap.pl` uses the Hammes-Schiffer–Tully finite difference
+
+```math
+\sigma_{mn}(t-\tfrac{dt}{2}) \approx \frac{S_{mn} - S_{nm}}{2\,dt}, \qquad S_{mn} = \langle \psi_m(t-dt) \,|\, \psi_n(t) \rangle
+```
+
+and extrapolates it to $`t`$. At the first step and after a hop it uses NewtonX's own CD approximation instead.
+
+- **Source:** the interface runs only the gradient job at each step, with `cassavevectors yes` added. It then runs one TeraChem job, `run ci_vec_overlap`, in `TEMP/ovl/`, between the previous step's and this step's CAS wavefunction. TeraChem 1.96 computes overlaps only for CAS wavefunctions.
+- **Wavefunction:** the orbitals are `c0.casscf` for CASSCF and `c0` otherwise. The CI vectors are `GRAD/scr.geom/CI_<mult>_<k>.dat` for `k` = 1 to `nstat`. The previous step's wavefunction is kept in `INFO_RESTART/WF_OLD/tdc_orb`, `tdc_civ` and `tdc_geom.xyz`.
+- **Signs:** the interface flips a state when its overlap with itself would be negative, so the state signs stay continuous. The flips are carried from step to step in `INFO_RESTART/WF_OLD/tdc_phase`. NewtonX 2.6's `phase_correction` is shielded as for coupling vectors; see [NewtonX 2.6](terachem-par.md#newtonx-26). On NewtonX 2.6 (build 01) all phase factors were +1, and the couplings equal those of NewtonX 2.4 to 10⁻⁸ over 10 fs of uracil.
+- **First step:** step 0 has no previous wavefunction, so its couplings are zero.
+- **Adiabatic steps and hops:** the overlap job runs at every step, including adiabatic steps. In NewtonX's second call after a hop, nothing is recomputed.
+- **Momentum after a hop:** NewtonX forces `adjmom = -1` with `vdoth = 1` and prints "With vdoth = 1 adjmom cannot be >= 0". The momentum is then rescaled along the velocity, not along a coupling vector.
+- **Output:** the overlap matrix goes to `run_cioverlap.log`. The couplings go to `nad_vectors`. Each step appends the raw overlap matrix, the signs and the couplings to `DEBUG/tdc_overlaps.log`.
+- **Cost:** one gradient run plus one overlap run at each step, instead of one run per coupling pair. See [Validation](validation.md#18-time-derivative-couplings-from-overlaps).
+- **Methods:** CASSCF, CASCI and FOMO-CASCI. The interface stops with "vdoth = 1 needs a CAS method" for TDA, hh-TDA and RPA, because TeraChem refuses overlaps for them ("Ci Vector overlaps only work with CAS methods!").
+- **Settings:** the `couplings` and `phase_ref` keys of `terachem.par` have no effect with `vdoth = 1`.
+- **Checked on:** NewtonX 2.4 and 2.6.
+
 ### Time-dependent Baeck-An couplings (TD-BA, `vdoth = 2`)
 
 TD-BA estimates $`\sigma_{ij}`$ from the energy gap $`\Delta E_{ij} = E_i - E_j`$ along the trajectory alone:
@@ -61,7 +83,7 @@ TD-BA estimates $`\sigma_{ij}`$ from the energy gap $`\Delta E_{ij} = E_i - E_j`
 - **Accuracy:** it is an approximation, and it gives no coupling direction. Reference: do Casal, Toldo, Pinheiro Jr and Barbatti, *Open Res. Europe* **2021**, 1, 49.
 - **Methods:** every method on this page, including full TDDFT.
 
-Overlap-based couplings (`vdoth = 1` or negative) are not supported, because TeraChem does not provide the wavefunction overlaps NewtonX needs.
+`vdoth` below 0 (local diabatization) is not supported.
 
 ## CASSCF
 
@@ -69,7 +91,7 @@ Overlap-based couplings (`vdoth = 1` or negative) are not supported, because Ter
 
 > Multireference states: bond breaking, conical intersections with the ground state, and small active spaces you can choose by hand. It is affordable for small molecules or small active spaces, because each step re-optimizes the orbitals.
 >
-> Couplings: coupling vectors and TD-BA couplings.
+> Couplings: coupling vectors, overlap couplings and TD-BA couplings.
 
 ### Keywords
 
@@ -87,7 +109,7 @@ Overlap-based couplings (`vdoth = 1` or negative) are not supported, because Ter
 
 ### Couplings allowed
 
-Both [coupling vectors](#coupling-vectors-vdoth--0) and [TD-BA](#time-dependent-baeck-an-couplings-td-ba-vdoth--2).
+[Coupling vectors](#coupling-vectors-vdoth--0), [time-derivative couplings from overlaps](#time-derivative-couplings-from-overlaps-vdoth--1) and [TD-BA](#time-dependent-baeck-an-couplings-td-ba-vdoth--2).
 
 ### Template
 
@@ -126,7 +148,7 @@ About 13–14 s per step for ethylene SA-3-CASSCF(2,2)/6-31G* with two coupling 
 
 > Large systems: a cheaper multireference method. Floating occupations give smooth orbitals, so no CASSCF optimization is needed.
 >
-> Couplings: coupling vectors and TD-BA couplings.
+> Couplings: coupling vectors, overlap couplings and TD-BA couplings.
 
 ### Keywords
 
@@ -145,7 +167,7 @@ About 13–14 s per step for ethylene SA-3-CASSCF(2,2)/6-31G* with two coupling 
 
 ### Couplings allowed
 
-Both coupling vectors and TD-BA couplings.
+[Coupling vectors](#coupling-vectors-vdoth--0), [time-derivative couplings from overlaps](#time-derivative-couplings-from-overlaps-vdoth--1) and [TD-BA](#time-dependent-baeck-an-couplings-td-ba-vdoth--2).
 
 ### Template
 
@@ -171,6 +193,7 @@ Full file: [`examples/fomo-casci/JOB_NAD/tera.sp`](../examples/fomo-casci/JOB_NA
 ### Pitfalls
 
 - **Do not skip the FON-SCF:** `use_prev_wf` is for CASSCF only, and the interface ignores it for FOMO.
+- **Overlap warning:** with `vdoth = 1`, the interface warns when a state overlaps less than 0.5 with itself at the previous step. In uracil FOMO-CASCI(14,10) this happened when the last closed and first active orbitals came close in energy; all three diagonals fell to 0.35–0.69 for two steps. Check the states around that step, and consider a smaller time step.
 - **Smearing width:** `fon_temperature` changes the orbitals, and with them the energies. Keep it fixed within one study.
 
 ### Cost
@@ -198,7 +221,7 @@ About 10 s per step for ethylene FOMO-CASCI(4,4)/6-31G* with two coupling pairs,
 
 ### Couplings allowed
 
-Both coupling vectors and TD-BA couplings.
+Both coupling vectors and TD-BA couplings. `vdoth = 1` is refused, because TeraChem computes overlaps only for CAS wavefunctions.
 
 ### Template
 
@@ -249,7 +272,7 @@ About 13 s per step for ethylene TDA CAM-B3LYP/6-31G* with two coupling pairs, o
 
 ### Couplings allowed
 
-Both coupling vectors and TD-BA couplings.
+Both coupling vectors and TD-BA couplings. `vdoth = 1` is refused, because TeraChem computes overlaps only for CAS wavefunctions.
 
 ### Template
 
@@ -305,7 +328,7 @@ About 17–19 s per step for ethylene hh-TDA BH&HLYP/6-31G* with two coupling pa
 
 ### Couplings allowed
 
-TD-BA only. Set `vdoth = 2` in `sh.inp`, as in [`examples/rpa-tdba/sh.inp`](../examples/rpa-tdba/sh.inp).
+TD-BA only. `vdoth = 0` and `vdoth = 1` are refused. Set `vdoth = 2` in `sh.inp`, as in [`examples/rpa-tdba/sh.inp`](../examples/rpa-tdba/sh.inp).
 
 ### Template
 

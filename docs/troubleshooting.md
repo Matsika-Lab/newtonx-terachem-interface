@@ -19,7 +19,7 @@ These checks come from the NewtonX registration that the installer adds. A manua
 | Message contains | Cause | What to do |
 |---|---|---|
 | `TeraChem not found. Set the TeraChem variable to the TeraChem folder` | `$TeraChem` is not set, or `$TeraChem/bin/terachem` is not executable | Set `TeraChem` to the folder that contains `bin/terachem` |
-| `needs wavefunction overlaps, which the TeraChem interface does not provide` | `vdoth` in `sh.inp` is 1 or negative | Use `vdoth = 0` for coupling vectors or `vdoth = 2` for time-dependent Baeck-An (TD-BA) |
+| `is not supported by the TeraChem interface. Use vdoth = 0` | `vdoth` in `sh.inp` is negative | Use `vdoth = 0` for coupling vectors, `vdoth = 1` for time-derivative couplings from overlaps (CAS methods only), or `vdoth = 2` for time-dependent Baeck-An (TD-BA) |
 | `Problem in` | `terachem.par` has an error; the message reads `Problem in terachem.par:`, and the rest of the line is one of the [settings file](#settings-file) messages | Fix the key or value it names |
 
 ## Dynamics errors (moldyn.log, DEBUG/runnx.error)
@@ -41,7 +41,7 @@ These checks come from the NewtonX registration that the installer adds. A manua
 | `the NX environment variable is not set.` | `$NX` is not set; this message appears only in `DEBUG/runnx.error` | Set `NX` to NewtonX's `bin` folder |
 | `The TeraChem environment variable is not set.` | `$TeraChem` is not set | Set `TeraChem` to the TeraChem installation |
 | `TeraChem executable not found at` | `$TeraChem/bin/terachem` is missing or not executable | Check the `TeraChem` variable |
-| `needs wavefunction overlaps, which the TeraChem interface does not provide.` | `vdoth` is 1 or negative | Use `vdoth = 0` or `2` |
+| `in sh.inp is not supported by the TeraChem interface.` | `vdoth` is negative | Use `vdoth = 0`, `1` or `2` |
 | `Could not determine dynamics type.` | `TEMP/` has neither `JOB_AD` nor `JOB_NAD` | Check that the trajectory folder has `JOB_NAD/` |
 
 ### Geometry, templates and coupling pairs
@@ -56,6 +56,7 @@ These checks come from the NewtonX registration that the installer adds. A manua
 | `not found. NX writes it every step from jiri.inp and THRES` | `TEMP/transmomin` is missing | Check `jiri.inp`, or set [`couplings`](terachem-par.md#couplings) to a fixed scheme |
 | `Bad state pair (` | `transmomin` lists a state outside 1 to `nstat` | Check `nstat` in `control.dyn` and `jiri.inp` |
 | `uses full TDDFT (rpa yes). TeraChem gives no RPA coupling vectors` | `rpa yes` with coupling vectors (`vdoth = 0`) | Use TD-BA (`vdoth = 2`) with RPA, or TDA (`cis yes`) for coupling vectors |
+| `vdoth = 1 needs a CAS method` | The template is TDA, hh-TDA or RPA, and TeraChem computes overlaps only for CAS wavefunctions | Use CASSCF, CASCI or FOMO-CASCI, or set `vdoth = 0` or `2` |
 | `asks for no singlets (cassinglets 0) but sets no castargetmult.` | A triplet CAS template without `castargetmult` | Add `castargetmult 3` |
 | `found, so the target state cannot be set.` | The template has none of `casscf yes`, `casci yes`, `cis yes`, `rpa yes`, `hhtda yes` | Add the method keyword; see [Method tutorials](methods.md) |
 | `castargetmult` … `is not supported.` | The multiplicity is not 1 to 5 | Use a supported multiplicity |
@@ -73,6 +74,10 @@ These checks come from the NewtonX registration that the installer adds. A manua
 | `not found or empty. The calculation may have failed.` | A gradient or coupling file is missing | Read the job's `tera.out` |
 | `Bad line in` | A gradient or coupling file has a line without three numbers | Read the job's `tera.out` |
 | `atom lines; expected` | A gradient or coupling file is incomplete | Read the job's `tera.out` |
+| `CI vector file` | With `vdoth = 1`, a file `GRAD/scr.geom/CI_<mult>_<k>.dat` is missing after the gradient job | Ask for at least `nstat` states in the template, and read the gradient job's `tera.out` |
+| `TeraChem wrote no overlap matrix` | The `ci_vec_overlap` job in `TEMP/ovl/` wrote no `CIVecOverlap.dat` | Read `TEMP/ovl/tera.out`; TeraChem refuses overlaps for non-CAS methods with "Ci Vector overlaps only work with CAS methods!" |
+| `read_cioverlap.pl failed` | NewtonX's overlap program stopped | Read `run_cioverlap.log` and `DEBUG/tdc_overlaps.log` |
+| `does not hold` | `INFO_RESTART/WF_OLD/tdc_phase` has a different number of signs than `nstat` | Do not change `nstat` in a running trajectory; restore `INFO_RESTART` from a backup |
 | `Phase adjustment (escalar) failed.` | NewtonX's `escalar` program failed | Check `$NX/escalar` and the `nad_vectors` and `oldh` files in `TEMP/` |
 
 ### Files
@@ -91,6 +96,8 @@ These messages end with the system's error text, for example "No space left on d
 | Message contains | Cause | What to do |
 |---|---|---|
 | `TeraChem returned an all-zero coupling vector for states` | TeraChem wrote a zero coupling vector, as it does for RPA | Check that the method gives coupling vectors |
+| `overlap less than 0.5 with themselves at the previous step` | With `vdoth = 1`, a state's overlap with itself fell below 0.5, so states may have changed order and signs may be unreliable | Check `DEBUG/tdc_overlaps.log`, and use a smaller time step; see [FOMO-CASCI pitfalls](methods.md#pitfalls-1) |
+| `With vdoth = 1 adjmom cannot be >= 0` | NewtonX warning: `adjmom` is forced to -1, so the momentum is rescaled along the velocity after a hop | Nothing |
 | `in sh.inp, but this interface always fixes the coupling phase` | `getphase` is not 1 under NewtonX 2.4; the interface still corrects the signs | Nothing, or set `getphase = 1` |
 
 ## Initial conditions (initcond.pl output, DEBUG/runnx.error)

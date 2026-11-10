@@ -2,6 +2,18 @@
 
 All notable changes to this interface. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Added
+
+- **Time-derivative couplings from overlaps (`vdoth = 1`).** The interface runs the gradient job with `cassavevectors yes` and one TeraChem `ci_vec_overlap` job between the previous and the current CAS wavefunction. NewtonX's `read_cioverlap.pl` turns the overlaps into couplings. It works for CASSCF, CASCI and FOMO-CASCI, on NewtonX 2.4 and 2.6. TDA, hh-TDA and RPA are refused with "vdoth = 1 needs a CAS method". See [Method tutorials](docs/methods.md#time-derivative-couplings-from-overlaps-vdoth--1).
+- **Continuous state signs.** States are flipped when their overlap with themselves would be negative. The signs and the previous wavefunction are kept in `INFO_RESTART/WF_OLD/`. A warning appears when a diagonal overlap is below 0.5.
+- **Overlap log.** `DEBUG/tdc_overlaps.log` records the raw overlap matrix, the signs and the couplings of every step.
+
+### Changed
+
+- **`vdoth` messages.** `vdoth` below 0 is still refused, with the message "is not supported by the TeraChem interface". The check in the installer's `check_thirdparty` accepts 0, 1 and 2.
+
 ## [2.0.0] - 2026-11-09
 
 ### Changed

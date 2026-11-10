@@ -40,13 +40,13 @@ For your own molecule, copy a template from [`examples/`](examples/README.md) to
 
 | Method | Program keyword | Couplings | Tutorial |
 |---|---|---|---|
-| CASSCF | `casscf yes` | coupling vectors, time-dependent Baeck-An (TD-BA) | [CASSCF](docs/methods.md#casscf) |
-| FOMO-CASCI | `fon yes` + `casci yes` | coupling vectors, TD-BA | [FOMO-CASCI](docs/methods.md#fomo-casci) |
+| CASSCF | `casscf yes` | coupling vectors, time-derivative couplings from overlaps, time-dependent Baeck-An (TD-BA) | [CASSCF](docs/methods.md#casscf) |
+| FOMO-CASCI | `fon yes` + `casci yes` | coupling vectors, overlap couplings, TD-BA | [FOMO-CASCI](docs/methods.md#fomo-casci) |
 | TDA/TDDFT | `cis yes` | coupling vectors, TD-BA | [TDA](docs/methods.md#tda-tddft) |
 | hh-TDA | `hhtda yes` | coupling vectors, TD-BA | [hh-TDA](docs/methods.md#hh-tda) |
 | Full TDDFT | `rpa yes` | TD-BA | [Full TDDFT](docs/methods.md#full-tddft-rpa) |
 
-Triplets: FOMO-CASCI and hh-TDA are tested; CASSCF triplets are untested. Full TDDFT works with TD-BA couplings only.
+Overlap couplings (`vdoth = 1`) need a CAS method. Triplets: FOMO-CASCI and hh-TDA are tested; CASSCF triplets are untested. Full TDDFT works with TD-BA couplings only.
 
 ## Where to go next
 

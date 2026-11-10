@@ -24,7 +24,7 @@
 
 | Key | Default | Allowed values | Methods | Effect |
 |---|---|---|---|---|
-| [`couplings`](#couplings) | `nx` | `nx`, `neighbours`, `current`, `all` | all | Which coupling vectors are computed |
+| [`couplings`](#couplings) | `nx` | `nx`, `neighbours`, `current`, `all` | coupling vectors (`vdoth = 0`) | Which coupling vectors are computed |
 | [`use_prev_wf`](#use_prev_wf) | `0` | `0`, `1` | CASSCF | Start from the previous step's CASSCF orbitals |
 | [`use_prev_scf_wf`](#use_prev_scf_wf) | `0` | `0`, `1` | all except CASSCF | Start the SCF from the previous step's orbitals |
 | [`phase_ref`](#phase_ref) | `last` | `last`, `previous` | coupling vectors (`vdoth = 0`) | Phase reference for a coupling pair that returns after a gap |
@@ -35,7 +35,7 @@
 
 ### couplings
 
-This key chooses which coupling vectors are computed at each step. TeraChem computes one coupling vector per run, so each extra pair of states costs one more TeraChem run per step. Change it when you want a fixed scheme instead of the list NewtonX writes from `jiri.inp`.
+This key chooses which coupling vectors are computed at each step. It applies to `vdoth = 0` only; with `vdoth = 1` it has no effect. TeraChem computes one coupling vector per run, so each extra pair of states costs one more TeraChem run per step. Change it when you want a fixed scheme instead of the list NewtonX writes from `jiri.inp`.
 
 | Value | Pairs computed at each step |
 |---|---|
@@ -77,7 +77,7 @@ use_prev_scf_wf = 1
 
 ### phase_ref
 
-This key decides how a coupling pair that was not computed at the previous step gets its sign. NewtonX corrects the sign of each coupling vector by comparing it with the previous step's vector, through its program `escalar`, which the interface runs with NewtonX 2.4 and 2.6 alike. A pair that was not computed at the previous step has no vector to compare with. This happens after a hop with `couplings = neighbours`, or when `THRES` or `jiri.inp` leaves a pair out for some steps. Keep the default for new trajectories. The [sample trajectories](../sample_trajectories/README.md) use `previous`, the rule of the script that made them.
+This key applies to `vdoth = 0` only; with `vdoth = 1` it has no effect. It decides how a coupling pair that was not computed at the previous step gets its sign. NewtonX corrects the sign of each coupling vector by comparing it with the previous step's vector, through its program `escalar`, which the interface runs with NewtonX 2.4 and 2.6 alike. A pair that was not computed at the previous step has no vector to compare with. This happens after a hop with `couplings = neighbours`, or when `THRES` or `jiri.inp` leaves a pair out for some steps. Keep the default for new trajectories. The [sample trajectories](../sample_trajectories/README.md) use `previous`, the rule of the script that made them.
 
 | Value | A pair that returns after a gap |
 |---|---|
@@ -95,7 +95,7 @@ phase_ref = previous
 
 #### NewtonX 2.6
 
-This part applies to NewtonX 2.6 only; it was checked on 2.6 (build 01). NewtonX 2.4 has no second sign correction. NewtonX 2.6 corrects the signs again after the interface, with its own program `phase_correction` (`getphase = 1` in `sh.inp`, its default). It compares each vector with a value extrapolated from the two previous steps, 2 h(t−dt) − h(t−2dt).
+This part applies to NewtonX 2.6 only; it was checked on 2.6 (build 01). It covers `vdoth = 0` and `vdoth = 1`; with `vdoth = 1` the interface shields the correction in the same way, and all phase factors were +1 over 10 fs of uracil. NewtonX 2.4 has no second sign correction. NewtonX 2.6 corrects the signs again after the interface, with its own program `phase_correction` (`getphase = 1` in `sh.inp`, its default). It compares each vector with a value extrapolated from the two previous steps, 2 h(t−dt) − h(t−2dt).
 
 - **Why the interface overrides it:** the extrapolation points the wrong way whenever a coupling shrinks by more than half in one step. This happens after the spike at a crossing, where hops occur, and for a pair that was zero at the previous step. NewtonX 2.6 then flips vectors that should keep their sign.
 - **What the interface does:** it rewrites NewtonX's file `nad_vectors-2dt`, which only the sign correction reads, so that the extrapolated value equals the interface's own vector. NewtonX 2.6 then keeps every sign set by the interface, and runs follow the same sign rules as with NewtonX 2.4, including `phase_ref`.

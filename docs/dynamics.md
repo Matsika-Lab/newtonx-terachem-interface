@@ -9,8 +9,8 @@ This page explains how to set up a trajectory folder, how the interface turns on
 1. Install the interface. See [Installation](installation.md).
 2. Set `prog = 21.0` in `control.dyn`.
 3. Copy the template for your method from [`examples/`](../examples/README.md) to `JOB_NAD/tera.sp` and adapt it. See [Method tutorials](methods.md) and [Templates](#templates).
-4. Set `vdoth` in `sh.inp`: `0` for coupling vectors or `2` for TD-BA. If `sh.inp` has no `vdoth`, NewtonX uses 2. See [Coupling methods](#coupling-methods).
-5. Choose the couplings with `jiri.inp`. See [Which couplings are computed](#which-couplings-are-computed).
+4. Set `vdoth` in `sh.inp`: `0` for coupling vectors, `1` for time-derivative couplings from overlaps (CAS methods only), or `2` for time-dependent Baeck-An (TD-BA). If `sh.inp` has no `vdoth`, NewtonX uses 2. See [Coupling methods](#coupling-methods).
+5. With `vdoth = 0`, choose the coupling pairs with `jiri.inp`. See [Which couplings are computed](#which-couplings-are-computed).
 6. Optionally, add `terachem.par`. See [terachem.par reference](terachem-par.md).
 7. Give the trajectory one GPU and run NewtonX:
 
@@ -26,7 +26,7 @@ A trajectory folder looks like this:
 ```text
 TRAJ1/
 ├── control.dyn      # prog = 21.0
-├── sh.inp           # vdoth = 0 (coupling vectors) or 2 (TD-BA)
+├── sh.inp           # vdoth = 0 (coupling vectors), 1 (overlaps) or 2 (TD-BA)
 ├── jiri.inp         # which couplings NewtonX asks for
 ├── terachem.par     # optional interface settings
 ├── geom             # initial geometry (Bohr)
@@ -127,18 +127,19 @@ Pairs that are not computed are written as zero vectors, as NewtonX expects. A p
 
 ## Coupling methods
 
-What these couplings are, and which methods allow them, is explained in [Coupling vectors and TD-BA couplings](methods.md#coupling-vectors-and-td-ba-couplings).
+What these couplings are, and which methods allow them, is explained in [Coupling vectors, overlap couplings and TD-BA couplings](methods.md#coupling-vectors-overlap-couplings-and-td-ba-couplings).
 
 | `vdoth` in `sh.inp` | Meaning | Supported |
 |---|---|---|
 | `0` | Coupling vectors from TeraChem | yes |
+| `1` | Time-derivative couplings from overlaps of the CAS wavefunctions of consecutive steps. Each step needs one gradient run and one overlap run. CASSCF, CASCI and FOMO-CASCI only; see [Time-derivative couplings from overlaps](methods.md#time-derivative-couplings-from-overlaps-vdoth--1). | yes |
 | `2` | Time-dependent Baeck-An (TD-BA). NewtonX builds the couplings from the energies, so each step needs one TeraChem run. | yes |
-| `1`, `< 0` | Time-derivative couplings or local diabatization from wavefunction overlaps | no |
+| `< 0` | Local diabatization from wavefunction overlaps | no |
 
 ## Adiabatic steps and hops
 
-- **Adiabatic steps:** NewtonX can mark a step as adiabatic, for pure adiabatic dynamics or when the gaps from the active state to the states just below and just above are both larger than `THRES`. The interface then runs only the gradient job and writes zero couplings, so no hop can come from the couplings of an earlier step. With TD-BA, NewtonX writes the couplings itself.
-- **Hops:** after a hop, NewtonX calls the interface a second time at the same geometry for the new state's gradient. Coupling jobs are skipped in this second call, because NewtonX already has the couplings of that step.
+- **Adiabatic steps:** NewtonX can mark a step as adiabatic, for pure adiabatic dynamics or when the gaps from the active state to the states just below and just above are both larger than `THRES`. The interface then runs only the gradient job and writes zero couplings, so no hop can come from the couplings of an earlier step. With TD-BA, NewtonX writes the couplings itself. With `vdoth = 1`, the overlap job still runs at every step, so the next step has its previous wavefunction.
+- **Hops:** after a hop, NewtonX calls the interface a second time at the same geometry for the new state's gradient. Coupling jobs are skipped in this second call, because NewtonX already has the couplings of that step. With `vdoth = 1` nothing is recomputed in this call.
 
 ## See also
 
