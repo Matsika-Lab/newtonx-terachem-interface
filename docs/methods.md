@@ -52,7 +52,7 @@ in 1/Bohr, one 3-vector per atom. The time-derivative coupling follows from the 
 TD-BA estimates $`\sigma_{ij}`$ from the energy gap $`\Delta E_{ij} = E_i - E_j`$ along the trajectory alone:
 
 ```math
-\sigma_{ij} \approx \operatorname{sign}(\Delta E_{ij})\,\frac{1}{2}\sqrt{\frac{1}{\Delta E_{ij}}\,\frac{d^2 \Delta E_{ij}}{dt^2}}
+\sigma_{ij} \approx \mathrm{sign}(\Delta E_{ij})\,\frac{1}{2}\sqrt{\frac{1}{\Delta E_{ij}}\,\frac{d^2 \Delta E_{ij}}{dt^2}}
 ```
 
 - **Source:** NewtonX computes it after each step from the energies of the last few steps. The second derivative comes from a quadratic fit.
