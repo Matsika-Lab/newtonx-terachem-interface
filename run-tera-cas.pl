@@ -33,7 +33,7 @@
 #   2. runs TeraChem for each job, one after another, on the GPU(s) it was given,
 #   3. writes epot, grad, grad.all and the phase-corrected nad_vectors/newh for NewtonX.
 #
-# Options are read from terachem.par (key = value). See README.md for the full list.
+# Options are read from terachem.par (key = value). See docs/terachem-par.md for the full list.
 #
 use strict;
 use warnings;

@@ -1,0 +1,3 @@
+# Reproduces the coupling behaviour of versions before 2.0, which made this sample.
+couplings = neighbours
+phase_ref = previous
