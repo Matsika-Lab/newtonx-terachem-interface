@@ -75,6 +75,14 @@ NewtonX fixes the sign of each coupling vector by comparing it with the previous
 - **What it is used for:** only for the sign. NewtonX's interpolation still starts from the previous step's couplings, which are zero for a returning pair.
 - **When it changes results:** only when a pair returns after a gap. Trajectories without gaps are identical with both values.
 
+### NewtonX 2.6
+
+NewtonX 2.6 corrects the signs again after the interface, with its own program `phase_correction` (`getphase = 1` in `sh.inp`, its default). It compares each vector with a value extrapolated from the two previous steps. This also catches a coupling that changes sign as it passes through zero.
+
+- **Pairs computed at the previous step:** NewtonX 2.6 decides their sign; `phase_ref` has no effect on them.
+- **Pairs that return after a gap:** the interface's sign is kept, as described above. For a gap of one step, NewtonX 2.6's extrapolation would turn the returning vector against its last vector. The interface prevents this by clearing that pair from NewtonX's file `nad_vectors-2dt`, which only the sign correction reads.
+- **`getphase = 0`:** NewtonX 2.6 leaves the signs to the interface, as NewtonX 2.4 does.
+
 `last` is the default because TeraChem's sign for a returning pair is arbitrary. The test results are in [validation.md](validation.md#15-phase-reference-after-a-gap).
 
 ## archive_molden

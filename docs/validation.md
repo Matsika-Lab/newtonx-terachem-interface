@@ -8,7 +8,7 @@ These tests were run for version 2.0 before release. The reference is the previo
 
 | Item | Version |
 |---|---|
-| NewtonX | 2.4 (build 06) |
+| NewtonX | 2.4 (build 06); 2.6 (build 01) for [section 16](#16-newtonx-26) |
 | TeraChem | 1.96 beta (build 2024-11-09) |
 | GPU | NVIDIA RTX 5000 Ada, one per job |
 | Perl | 5.34 |
@@ -33,6 +33,7 @@ These tests were run for version 2.0 before release. The reference is the previo
 | 13 | [Unit tests](#13-unit-tests) | Parsing and logic without GPU | 14 groups | pass |
 | 14 | [Example templates](#14-example-templates) | Each `examples/` template runs in NewtonX | 5 of 5 templates | pass |
 | 15 | [Phase reference after a gap](#15-phase-reference-after-a-gap) | `phase_ref = last` keeps signs continuous | 297 of 299 vs 159 of 299 | pass |
+| 16 | [NewtonX 2.6](#16-newtonx-26) | Installer, dynamics, TD-BA, restart, initial conditions and signs under 2.6 | one-step gap: 3 of 3 signs kept | pass |
 | – | [TeraChem behaviour](#terachem-behaviour) | Facts the interface relies on | 10 checks | – |
 
 ## How the comparisons work
@@ -233,6 +234,29 @@ The hh-TDA FOMO window was checked first. With `active 9`, the excitation energi
 - **`last` keeps signs continuous:** it agrees in 297 of 299 cases. The two misses were FOMO pairs after a 2.5 fs gap, where the vector had rotated by more than 90 degrees.
 - **No effect without gaps:** with `last`, the 101 recorded calls give byte-identical NewtonX files to the old version, `oldh` included. They contain no pair that returns after a gap.
 - **Default:** because of these results, `last` is the default.
+
+## 16. NewtonX 2.6
+
+**Setup.** A copy of NewtonX 2.6 (build 01) with the interface installed by `install_nx.pl`. Ethylene CASSCF, real TeraChem, one GPU.
+
+| Check | Result |
+|---|---|
+| Installer | Four blocks added; the edited `colib_perl.pm` compiles; a second run changes nothing |
+| NewtonX test `MD-TERA-CASSCF-NAD-VEC` | Every state and energy line equal to the NewtonX 2.4 reference |
+| TD-BA, `vdoth = 2` | Runs; energies equal to the coupling-vector run |
+| Restart from `INFO_RESTART/control.dyn` | Energies equal to a continuous run |
+| Initial conditions, uracil TDA, `initcond.pl` | Energies and oscillator strengths written |
+
+**Signs.** NewtonX 2.6 corrects the coupling signs itself (`getphase = 1`). Gaps were made by forcing adiabatic steps. The returning vector was compared with the pair's last vector before the gap, on the vectors NewtonX 2.6 keeps.
+
+| Case | Before the 2.6 handling | With it |
+|---|---|---|
+| One-step gap, `phase_ref = last` | 3 of 3 pairs flipped by NewtonX | 3 of 3 kept |
+| Two- and three-step gaps, `last` | kept | kept |
+| No gap | NewtonX flips pairs passing through zero, steps 14 and 16 | unchanged |
+| Gap right after a NewtonX flip | – | returning pair matches the gap-free run |
+
+The 2.4 replays (sections 1–7 and 15) give the same results as before this change.
 
 ## TeraChem behaviour
 

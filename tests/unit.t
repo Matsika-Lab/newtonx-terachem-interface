@@ -261,14 +261,42 @@ subtest 'phase_ref = last: phase memory' => sub {
     # pair 0 present now and before; pair 1 missing in oldh but remembered; pair 2 absent
     main::write_lines( "oldh", [ "1 0 0\n", "0 1 0\n", "0 0 0\n", "0 0 0\n", "0 0 0\n", "0 0 0\n" ] );
     main::write_lines( $main::phase_mem, [ "9 9 9\n", "9 9 9\n", "-2 0 0\n", "0 -2 0\n", "0 0 0\n", "0 0 0\n" ] );
-    my $true = main::phase_memory_into_oldh();
+    my $true = main::phase_memory_into_oldh( { 0 => 1, 1 => 1 } );
     is_deeply( main::read_lines("oldh"), [ "1 0 0\n", "0 1 0\n", "-2 0 0\n", "0 -2 0\n", "0 0 0\n", "0 0 0\n" ],
         "only the missing pair is taken from memory" );
     is( $true->[2], "0 0 0\n", "the real oldh is returned for restoring" );
     main::write_lines( "nad_vectors", [ "3 0 0\n", "0 3 0\n", "0 0 0\n", "0 0 0\n", "0 0 5\n", "0 0 5\n" ] );
-    main::update_phase_memory();
+    main::update_phase_memory("nad_vectors");
     is_deeply( main::read_lines($main::phase_mem), [ "3 0 0\n", "0 3 0\n", "-2 0 0\n", "0 -2 0\n", "0 0 5\n", "0 0 5\n" ],
         "memory keeps the last non-zero vector of each pair" );
+    main::write_lines( "oldh", [ "1 0 0\n", "0 1 0\n", "0 0 0\n", "0 0 0\n", "0 0 0\n", "0 0 0\n" ] );
+    my $none = main::phase_memory_into_oldh( { 0 => 1 } );
+    ok( !defined $none, "a remembered pair that is not computed now is left alone" );
+    chdir $root;
+};
+
+subtest 'NewtonX 2.6: pair returning after a one-step gap' => sub {
+    my $d = tempdir( CLEANUP => 1 );
+    local ( $main::nat, $main::ncoup, $main::istep ) = ( 2, 3, 5 );
+    local $ENV{NX} = $d;
+    chdir $d;
+    open my $fh, '>', "phase_correction" or die;
+    close $fh;
+    chmod 0755, "phase_correction";
+    open $fh, '>', "sh.inp" or die;
+    print $fh " &input\n vdoth = 0\n /\n";
+    close $fh;
+    # pair 0 present at t-dt; pair 1 absent at t-dt, present at t-2dt; pair 2 not computed now
+    main::write_lines( "nad_vectors-dt",  [ "1 0 0\n", "0 1 0\n", "0 0 0\n", "0 0 0\n", "0 0 0\n", "0 0 0\n" ] );
+    main::write_lines( "nad_vectors-2dt", [ "1 0 0\n", "0 1 0\n", "2 0 0\n", "0 2 0\n", "3 0 0\n", "0 3 0\n" ] );
+    main::shield_returning_pairs( { 0 => 1, 1 => 1 } );
+    is_deeply( main::read_lines("nad_vectors-2dt"),
+        [ "1 0 0\n", "0 1 0\n", "0.0  0.0  0.0\n", "0.0  0.0  0.0\n", "3 0 0\n", "0 3 0\n" ],
+        "only the returning, computed pair is zeroed in nad_vectors-2dt" );
+    unlink "phase_correction";
+    main::write_lines( "nad_vectors-2dt", [ "1 0 0\n", "0 1 0\n", "2 0 0\n", "0 2 0\n", "3 0 0\n", "0 3 0\n" ] );
+    main::shield_returning_pairs( { 0 => 1, 1 => 1 } );
+    is( main::read_lines("nad_vectors-2dt")->[2], "2 0 0\n", "no change without NewtonX's phase_correction (NX 2.4)" );
     chdir $root;
 };
 

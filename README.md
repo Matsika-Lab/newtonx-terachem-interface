@@ -6,7 +6,7 @@ Runs nonadiabatic surface-hopping dynamics in [NewtonX](https://newtonx.org/) wi
 
 | Software | Version |
 |---|---|
-| NewtonX | 2.4 (build 06) |
+| NewtonX | 2.4 (build 06) or 2.6 (build 01) |
 | TeraChem | 1.96 beta, tested |
 | Perl | 5.10 or newer |
 | Environment | `NX` points to NewtonX's `bin` folder. `TeraChem` points to the TeraChem installation, so that `$TeraChem/bin/terachem` exists. |

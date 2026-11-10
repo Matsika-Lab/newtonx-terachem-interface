@@ -25,6 +25,7 @@ All notable changes to this interface. The format follows [Keep a Changelog](htt
 - **Initial conditions.** `run_tera_ic.pl` is now part of the repository. It supports CASSCF, FOMO-CASCI, TDA/TDDFT, hh-TDA and full TDDFT, and `nis > 1`.
 - **`phase_ref` option.** A coupling pair that returns after a gap now gets its sign from its last computed vector (`phase_ref = last`, the default). Before, its sign was TeraChem's. `phase_ref = previous` keeps the old behaviour.
 - **Method tutorials and templates.** [methods.md](docs/methods.md) explains each method and the NAC and TD-BA couplings. Tested templates are in `examples/`.
+- **NewtonX 2.6.** The interface works with NewtonX 2.6 as well as 2.4. With 2.6's own sign correction on, a coupling pair that returns after one step without coupling keeps the interface's sign. See [NewtonX 2.6](docs/terachem-par.md#newtonx-26).
 - **Installer.** `install/install_nx.pl` registers TeraChem in NewtonX, copies the scripts and adds a NewtonX test.
 - **Tests.** Unit tests, a record-and-replay harness and a NewtonX test case. See [development.md](docs/development.md) and [validation.md](docs/validation.md).
 
@@ -38,7 +39,7 @@ All notable changes to this interface. The format follows [Keep a Changelog](htt
 
 ## 2026-10-29 – coupling phase fix
 
-NewtonX's `interpol.f90` rebuilds the couplings at every electronic substep from `oldh` and `newh`. The 2025 versions copied the raw couplings to `newh` before the phase correction, so the substep integration used couplings whose sign could flip between steps. The script now copies the phase-corrected couplings to `newh` after `escalar`. This affects every coupling-vector run made with the 2025 versions.
+NewtonX 2.4's `interpol.f90` rebuilds the couplings at every electronic substep from `oldh` and `newh`. The 2025 versions copied the raw couplings to `newh` before the phase correction, so the substep integration used couplings whose sign could flip between steps. The script now copies the phase-corrected couplings to `newh` after `escalar`. This affects every coupling-vector run made with the 2025 versions under NewtonX 2.4. NewtonX 2.6 reads its own copies of the couplings and was not affected.
 
 Added at the same time: the wavefunction guess options `use_prev_wf` (CASSCF) and `use_prev_scf_wf` (FOMO-CASCI, TDA/TDDFT, hh-TDA).
 

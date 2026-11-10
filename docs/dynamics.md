@@ -117,7 +117,7 @@ A `jiri.inp` for neighbour couplings:
  /
 ```
 
-Pairs that are not computed are written as zero vectors, as NewtonX expects. A pair that was zero at the previous step has no previous vector for NewtonX's phase fix. By default the interface compares it with the pair's last computed vector, so its sign stays continuous; see [`phase_ref`](terachem-par.md#phase_ref).
+Pairs that are not computed are written as zero vectors, as NewtonX expects. A pair that was zero at the previous step has no previous vector for NewtonX's phase fix. By default the interface compares it with the pair's last computed vector, so its sign stays continuous; see [`phase_ref`](terachem-par.md#phase_ref). NewtonX 2.6 also corrects the signs itself; see [NewtonX 2.6](terachem-par.md#newtonx-26).
 
 ## Coupling methods
 
@@ -155,7 +155,7 @@ The interface stops the trajectory with a message that starts with `run-tera-cas
 | Message contains | Cause | What to do |
 |---|---|---|
 | `TeraChem failed in <job>` | TeraChem returned an error | Read `TEMP/<job>/tera.out` |
-| `TeraChem did not finish in <job>` | The run was killed, for example by a licence time limit or the queue | Check the time limit. To continue, set `nxrestart = 1` in `control.dyn` and run `moldyn.pl` again |
+| `TeraChem did not finish in <job>` | The run was killed, for example by a licence time limit or the queue | Check the time limit. To continue, copy `INFO_RESTART/control.dyn` over `control.dyn`, raise `tmax` if needed, and run `moldyn.pl` again |
 | `Could not read N state energies` | Fewer states in the output than `nstat`, or the wrong multiplicity | Raise the number of states in the template; check `castargetmult` or `cismult` |
 | `... atom lines; expected N` | A gradient or coupling file is incomplete | Read the job's `tera.out` |
 | `Unknown option` | A typo in `terachem.par` | See [terachem-par.md](terachem-par.md) |

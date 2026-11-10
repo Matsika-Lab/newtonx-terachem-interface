@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-# Installs the TeraChem interface into a NewtonX 2.4 installation.
+# Installs the TeraChem interface into a NewtonX 2.4 or 2.6 installation.
 #
 #   perl install/install_nx.pl [--dry-run] [--no-tests] [NX_BIN]
 #
@@ -166,7 +166,7 @@ my $add_test  = !$notests && -d $tests_dir;
 foreach my $name (qw(prog_config check_thirdparty read_credits test_list)) {
     next if $name eq "test_list" && !$add_test;
     my $start = index( $text, "sub $name" );
-    die "colib: sub $name not found; this does not look like NewtonX 2.4.\n" if $start < 0;
+    die "colib: sub $name not found; this does not look like NewtonX 2.4 or 2.6.\n" if $start < 0;
     pos($text) = $start;
     $text =~ /$anchor{$name}/g or die "colib: insertion point for $name not found.\n";
     my $at = $-[0];

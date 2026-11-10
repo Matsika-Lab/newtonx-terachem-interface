@@ -69,7 +69,7 @@ our %DEFAULTS = (
     # Which coupling vectors to compute. TeraChem gives one coupling per run.
     #   nx         : the pairs NX lists in transmomin each step, set by jiri.inp (KROSS,
     #                CASCADE, CURRENT, NEVER_STATE, INCLUDE_PAIR) and THRES in control.dyn.
-    #                Without jiri.inp, NX 2.4 lists every pair (like 'all' below), so
+    #                Without jiri.inp, NX 2.4 and 2.6 list every pair (like 'all' below), so
     #                give a jiri.inp (e.g. kross = 0, current = 1 for neighbours).
     #   neighbours : current state with the states just below and above (up to 2 runs)
     #   current    : current state with every other state (nstat-1 runs)
@@ -287,7 +287,7 @@ sub determine_dynamics_type {
         $typeofinput = "jnd";
         my $getphase = getkeyword( "sh.inp", "getphase", 1 );
         print_STDOUT( "$mdle WARNING: getphase = $getphase in sh.inp, but this interface always fixes the coupling phase by the scalar product with the previous step (getphase = 1).\n", $istep, $kt )
-          if $getphase ne "" && $getphase != 1;
+          if $getphase ne "" && $getphase != 1 && !nx_corrects_phase();
     }
     elsif ( $vdoth == 2 ) {
         $typeofinput = "jad";    # TD-BA: NX computes the couplings after this call
@@ -816,8 +816,9 @@ sub treat_nacme {
     #
     # Writes nad_vectors for NX, with the phase fixed against the previous step.
     # Order matters (fix of 2026-10-29): escalar compares oldh with the raw newh; after
-    # it, newh must hold the phase-corrected couplings, because NX's interpol.f90
-    # rebuilds the couplings from oldh and newh at every substep.
+    # it, newh must hold the phase-corrected couplings, because NX 2.4's interpol.f90
+    # rebuilds the couplings from oldh and newh at every substep. NX 2.6 reads its own
+    # history files (nad_vectors-dt, nad_vectors-0) instead and corrects the phase again.
     #
     my ($nac_jobs) = @_;
     if ( $lvprt >= 3 ) { print_STDOUT( "$mdle Treating couplings.\n", $istep, $kt ); }
@@ -835,6 +836,10 @@ sub treat_nacme {
     else {
         write_nacme("oldh");
     }
+    # oldh is the previous step's vector as NX kept it. NX 2.6 may have changed its sign
+    # after this script wrote it, so the memory is brought up to date first.
+    update_phase_memory("oldh") if $opt{phase_ref} eq "last";
+    my %computed = map { ( pair_index( @{ $_->{pair} } ) => 1 ) } @$nac_jobs;
 
     # TeraChem's coupling for nacstate1 = i-1, nacstate2 = j-1 (i < j) has the opposite
     # sign to NX's h(j,i); hence the minus sign.
@@ -854,13 +859,49 @@ sub treat_nacme {
     write_nacme("nad_vectors");
 
     copy( "nad_vectors", "newh" ) or tc_fail("Copy to newh failed: $!");
-    my $true_oldh = $opt{phase_ref} eq "last" ? phase_memory_into_oldh() : undef;
+    my $true_oldh = $opt{phase_ref} eq "last" ? phase_memory_into_oldh( \%computed ) : undef;
     adjust_phase();
     if ($true_oldh) {    # NX's interpolation must see the real previous step
         write_lines( "oldh", $true_oldh );
     }
-    update_phase_memory() if $opt{phase_ref} eq "last";
+    update_phase_memory("nad_vectors") if $opt{phase_ref} eq "last";
     copy( "nad_vectors", "newh" ) or tc_fail("Copy of phase-corrected nad_vectors to newh failed: $!");
+    shield_returning_pairs( \%computed );
+}
+
+sub nx_corrects_phase {
+    #
+    # NewtonX 2.6 and later correct the coupling phase themselves after this script
+    # (program phase_correction, sh.inp getphase = 1). NewtonX 2.4 has no such program.
+    #
+    return defined $ENV{NX} && -x "$ENV{NX}/phase_correction";
+}
+
+sub shield_returning_pairs {
+    #
+    # NewtonX 2.6 fixes each sign against href = 2 h(t-dt) - h(t-2dt). For a pair that
+    # was not computed at the previous step, h(t-dt) = 0 and href = -h(t-2dt), which
+    # turns the returning vector against its last vector. Zeroing the pair's block in
+    # nad_vectors-2dt makes href = 0, so NewtonX keeps the sign set here. That file is
+    # read only by phase_correction and is replaced at the next step.
+    #
+    my ($computed) = @_;
+    return unless %$computed && $istep >= 2 && nx_corrects_phase();
+    my $getphase = getkeyword( "sh.inp", "getphase", 1 );
+    return if defined $getphase && $getphase ne "" && $getphase != 1;
+    return unless -s "nad_vectors-dt" && -s "nad_vectors-2dt";
+    my $dt  = read_lines("nad_vectors-dt");
+    my $dt2 = read_lines("nad_vectors-2dt");
+    return unless @$dt == $ncoup * $nat && @$dt2 == $ncoup * $nat;
+    my @done;
+    for my $nc ( sort { $a <=> $b } keys %$computed ) {
+        next unless block_is_zero( $dt, $nc ) && !block_is_zero( $dt2, $nc );
+        $dt2->[$_] = "0.0  0.0  0.0\n" for $nc * $nat .. ( $nc + 1 ) * $nat - 1;
+        push @done, $nc;
+    }
+    return unless @done;
+    write_lines( "nad_vectors-2dt", $dt2 );
+    print_STDOUT( "$mdle coupling(s) " . join( ", ", @done ) . " return after one step without coupling; NewtonX's phase correction keeps the sign set here.\n", $istep, $kt );
 }
 
 sub read_lines {
@@ -892,6 +933,7 @@ sub phase_memory_into_oldh {
     # put the remembered vector into oldh for escalar. Returns the real oldh, which the
     # caller restores after escalar, or undef if nothing was changed.
     #
+    my ($computed) = @_;
     return undef unless -s $phase_mem;
     my $old = read_lines("oldh");
     my $mem = read_lines($phase_mem);
@@ -899,7 +941,7 @@ sub phase_memory_into_oldh {
     my @ref = @$old;
     my @used;
     for my $nc ( 0 .. $ncoup - 1 ) {
-        next unless block_is_zero( $old, $nc ) && !block_is_zero( $mem, $nc );
+        next unless $computed->{$nc} && block_is_zero( $old, $nc ) && !block_is_zero( $mem, $nc );
         @ref[ $nc * $nat .. ( $nc + 1 ) * $nat - 1 ] = @$mem[ $nc * $nat .. ( $nc + 1 ) * $nat - 1 ];
         push @used, $nc;
     }
@@ -911,9 +953,11 @@ sub phase_memory_into_oldh {
 
 sub update_phase_memory {
     #
-    # Remembers the last phase-corrected, non-zero vector of every pair.
+    # Remembers the last phase-corrected, non-zero vector of every pair, from FILE.
     #
-    my $new = read_lines("nad_vectors");
+    my ($file) = @_;
+    my $new = read_lines($file);
+    return unless @$new == $ncoup * $nat;
     my $mem = -s $phase_mem ? read_lines($phase_mem) : [];
     $mem = [ ("0.0  0.0  0.0\n") x ( $ncoup * $nat ) ] unless @$mem == $ncoup * $nat;
     for my $nc ( 0 .. $ncoup - 1 ) {
