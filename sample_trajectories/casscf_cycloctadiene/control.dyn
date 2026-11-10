@@ -5,7 +5,7 @@
 	istep      = 0
 	dt         = 0.25
 	t          = 0
-	tmax       = 500
+	tmax       = 20
 	prog       = 21.0
 	thres      = 100
 	killstat   = 1
