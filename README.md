@@ -2,6 +2,8 @@
 
 Runs nonadiabatic surface-hopping dynamics in [NewtonX](https://newtonx.org/) with energies, gradients and couplings from [TeraChem](https://www.petachem.com/).
 
+At every time step, the interface runs TeraChem for the gradient of the current state and for the coupling vectors NewtonX asks for, and hands the results back to NewtonX. It also computes excitation energies and oscillator strengths for NewtonX's initial conditions and spectra.
+
 ## Requirements
 
 | Software | Version |
@@ -19,56 +21,67 @@ cd newtonx-terachem-interface
 perl install/install_nx.pl $NX
 ```
 
-Then, in a trajectory folder:
+Then run the ethylene CASSCF example as a first trajectory:
 
-1. Set `prog = 21.0` in `control.dyn`.
-2. Set `vdoth = 0` in `sh.inp` for coupling vectors, or `vdoth = 2` for time-dependent Baeck-An (TD-BA) couplings. If `sh.inp` has no `vdoth`, NewtonX uses 2.
-3. Choose the couplings in `jiri.inp`. Without it, NewtonX asks for every pair of states, at one TeraChem run per pair. See [Which couplings are computed](docs/dynamics.md#which-couplings-are-computed).
-4. Copy a template from [`examples/`](examples) to `JOB_NAD/tera.sp` and adapt it.
-5. Give the trajectory one GPU and start NewtonX:
+1. Copy the example folder, which is a complete input: `cp -r examples/casscf ~/runs/ethylene-casscf`.
+2. Go to the copy: `cd ~/runs/ethylene-casscf`.
+3. Give the trajectory one GPU and start NewtonX:
 
    ```bash
    export CUDA_VISIBLE_DEVICES=0
    $NX/moldyn.pl > moldyn.log
    ```
 
+The run is 1 fs long, with 3 interface calls and 9 TeraChem runs. It takes about one minute on one NVIDIA RTX 5000 Ada GPU, about 13–14 s per step ([Validation](docs/validation.md#14-example-inputs)). [Your first trajectory](docs/first-trajectory.md) explains every input and the output.
+
+For your own molecule, copy a template from [`examples/`](examples/README.md) to `JOB_NAD/tera.sp` in the trajectory folder, and set `prog = 21.0` in `control.dyn`.
+
 ## Methods
 
-Five TeraChem methods are supported: CASSCF, FOMO-CASCI, TDA/TDDFT, hole-hole TDA (hh-TDA) and full TDDFT (RPA). Full TDDFT works with TD-BA couplings only. Triplets work with CASSCF, FOMO-CASCI and hh-TDA. See [Method tutorials](docs/methods.md).
-
-## Documentation
-
-- [Installation](docs/installation.md)
-- [Method tutorials](docs/methods.md)
-- [Running dynamics](docs/dynamics.md)
-- [terachem.par options](docs/terachem-par.md)
-- [Initial conditions and spectra](docs/initial-conditions.md)
-- [Validation](docs/validation.md)
-- [Development and testing](docs/development.md)
-- [Changelog](CHANGELOG.md)
-
-## Examples and samples
-
-- **[`examples/`](examples):** one TeraChem template for each method, for ethylene.
-- **[`sample_trajectories/`](sample_trajectories):** two complete short trajectories with all inputs and NewtonX output. They were made with a version before 2.0, so each has a `terachem.par` that keeps the old coupling behaviour.
-
-| Folder | Molecule | Method | States |
+| Method | Program keyword | Couplings | Tutorial |
 |---|---|---|---|
-| `casscf_cycloctadiene` | cyclooctadiene | SA-3 CASSCF(4,3)/cc-pVDZ | 3, start in S1 |
-| `fomo_casci_o_nitrophenol` | o-nitrophenol | FOMO-CASCI(12,10)/cc-pVDZ | 5, start in S3 |
+| CASSCF | `casscf yes` | coupling vectors, TD-BA | [CASSCF](docs/methods.md#casscf) |
+| FOMO-CASCI | `fon yes` + `casci yes` | coupling vectors, TD-BA | [FOMO-CASCI](docs/methods.md#fomo-casci) |
+| TDA/TDDFT | `cis yes` | coupling vectors, TD-BA | [TDA](docs/methods.md#tda-tddft) |
+| hh-TDA | `hhtda yes` | coupling vectors, TD-BA | [hh-TDA](docs/methods.md#hh-tda) |
+| Full TDDFT | `rpa yes` | TD-BA | [Full TDDFT](docs/methods.md#full-tddft-rpa) |
 
-## Credits
+Triplets work with CASSCF (untested), FOMO-CASCI and hh-TDA, and full TDDFT works with TD-BA couplings only.
+
+## Where to go next
+
+| I want to… | Read |
+|---|---|
+| Install, or see what the installer changes | [Installation](docs/installation.md) |
+| Run my first trajectory step by step | [Your first trajectory](docs/first-trajectory.md) |
+| Choose a method and write its template | [Method tutorials](docs/methods.md) |
+| Set up my own trajectories and choose the couplings | [Running dynamics](docs/dynamics.md) |
+| Change an interface setting or look up a default | [terachem.par reference](docs/terachem-par.md) |
+| Make initial conditions or an absorption spectrum | [Initial conditions and spectra](docs/initial-conditions.md) |
+| Find a file the run wrote | [Output files](docs/outputs.md) |
+| Understand an error message | [Troubleshooting](docs/troubleshooting.md) |
+| See the tests, benchmarks and timings | [Validation](docs/validation.md) |
+| Run the tests or change the code | [Development and testing](docs/development.md) |
+| Start from a tested input | [Examples](examples/README.md) |
+| See what changed between versions | [Changelog](CHANGELOG.md) |
+| Follow the documentation style | [Documentation style](docs/STYLE.md) |
+
+## Examples
+
+[`examples/`](examples/README.md) has one complete, tested 1 fs input per method, for ethylene. [`sample_trajectories/`](sample_trajectories/README.md) has two complete, longer trajectories with their output.
+
+## Credits, citation and license
 
 - **Authors:** Dakshitha Abeygunewardane, Vaibhav Singh and Spiridoula Matsika, Matsika Lab, Department of Chemistry, Temple University. The interface was built from the NewtonX interface template by Mario Barbatti (2021).
-- **AI use:** the 2026-11-09 revision (version 2.0) was refactored and improved with Claude Code (Anthropic), using the Claude Opus 5.5 model.
+- **AI use:** The 2026-11-09 revision (version 2.0.0) was refactored and improved with Claude Code (Anthropic), using the Claude Opus 5.5 model.
   - **What it covered:**
     - the rewrite of `run-tera-cas.pl`: couplings chosen by NewtonX, one template, `terachem.par`, adiabatic steps and TD-BA, triplets and safety checks;
     - the rewrite of `run_tera_ic.pl`;
     - the NewtonX installer;
     - the unit tests and the replay harness;
     - the validation runs;
-    - the method tutorials, the example templates and the documentation.
+    - the method tutorials, the example inputs and the documentation.
   - **Decisions:** the authors made the design decisions.
   - **Commits:** the commits of this revision carry `Co-Authored-By: Claude` lines.
 - **Citation:** see [`CITATION.cff`](CITATION.cff). Please also cite NewtonX and TeraChem.
-- **Licence:** GPL-3.0-or-later, see [`LICENSE`](LICENSE). Versions before 2.0 were released under the MIT licence.
+- **License:** GPL-3.0-or-later, see [`LICENSE`](LICENSE). Versions before 2.0 were released under the MIT license.

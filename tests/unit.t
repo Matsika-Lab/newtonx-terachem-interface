@@ -211,7 +211,7 @@ subtest 'run-tera-cas.pl --check-options (used by NX at startup)' => sub {
 subtest 'examples/ templates' => sub {
     my %want = ( casscf => "cas", "fomo-casci" => "cas", tda => "cis", "hh-tda" => "cis", "rpa-tdba" => "rpa" );
     for my $m ( sort keys %want ) {
-        my $f = "$root/examples/$m/tera.sp";
+        my $f = "$root/examples/$m/JOB_NAD/tera.sp";
         ok( -e $f, "$m: template exists" ) or next;
         open my $fh, '<', $f; my @l = <$fh>; close $fh;
         my $i = main::template_info( \@l );
@@ -234,7 +234,7 @@ subtest 'run_tera_ic.pl end to end with a fake TeraChem' => sub {
         close $fh;
         chmod 0755, "$base/tc/bin/terachem";
         system( "cp", "$root/tests/nx/MD-TERA-CASSCF-NAD-VEC/geom", "$base/TEMP/geom" );
-        system( "cp", "$root/examples/casscf/tera.sp", "$base/TEMP/tera.sp" );
+        system( "cp", "$root/examples/casscf/JOB_NAD/tera.sp", "$base/TEMP/tera.sp" );
         open $fh, '>', "$base/TEMP/initqp_input";
         print $fh " &dat\n nis = $nis\n nfs = 3\n lvprt = 1\n /\n";
         close $fh;

@@ -1,6 +1,8 @@
-[← README](../README.md)
+[Home](../README.md) / Development and testing
 
 # Development and testing
+
+This page describes the unit tests, the record-and-replay harness, the phase-gap check and the NewtonX test case. Read it before you change the interface, so that you can show the change does not alter what NewtonX receives.
 
 ## Layout of tests/
 
@@ -56,7 +58,7 @@ python3 $H/replay.py --snapshots TRAJ1/SNAPSHOTS --cache ~/tc_cache --work ~/rep
 
 Here `neighbours.par` is a `terachem.par` with the line `couplings = neighbours`.
 
-The harness needs Python 3.12 or newer, and NumPy for `phase_gap_check.py`. It uses `/software/NX-2.4-B06/bin` and this host's TeraChem by default. Set `SYS_NX` for `make_nxbin.sh`, `--nx` for the Python scripts and `TCPROXY_REAL` for the real TeraChem.
+The harness needs Python 3.12 or newer, and NumPy for `phase_gap_check.py`. It uses `/software/NX-2.4-B06/bin` and this host's TeraChem by default. Set `SYS_NX` for `make_nxbin.sh`, `--nx` for the Python scripts and `TCPROXY_REAL` for the real TeraChem. The files it compares include `oldh` and `newh`, which NewtonX 2.4 reads for its interpolation; NewtonX 2.6 reads `nad_vectors-dt` instead.
 
 Variant options, after the script path:
 
@@ -85,6 +87,12 @@ python3 tests/harness/phase_gap_check.py --snapshots TRAJ1/SNAPSHOTS --cache ~/t
 
 ## NewtonX test
 
-`tests/nx/MD-TERA-CASSCF-NAD-VEC` is a 2 fs CASSCF(2,2) run of twisted ethylene with neighbour couplings. The [installer](installation.md) adds it to NewtonX's `test-nx` folder and to `test_list`. NewtonX's test tool compares the `Wave function state` lines of `RESULTS/dyn.out` with the reference within 1e-3.
+`tests/nx/MD-TERA-CASSCF-NAD-VEC` is a 2 fs CASSCF(2,2) run of twisted ethylene with neighbor couplings. The [installer](installation.md) adds it to NewtonX's `test-nx` folder and to `test_list`. NewtonX's test tool compares the `Wave function state` lines of `RESULTS/dyn.out` with the reference within 1e-3.
 
 To update the reference after an intended change, run the test folder with NewtonX and copy its `RESULTS/dyn.out` to `tests/nx/STANDARD-RESULTS/MD-TERA-CASSCF-NAD-VEC/RESULTS/`. Say why in the commit message.
+
+## See also
+
+- [Validation](validation.md): the results of these tests for version 2.0.0
+- [Installation](installation.md): how the NewtonX test case is installed
+- [Changelog](../CHANGELOG.md): record each change there

@@ -1,6 +1,8 @@
-[← README](../README.md)
+[Home](../README.md) / Installation
 
 # Installation
+
+This page shows how to install the interface into NewtonX, what the installer changes, how to install by hand, and how to check the install. Read it before your first run, and again when you update the interface.
 
 ## Automatic install
 
@@ -76,9 +78,15 @@ A manual install skips the startup checks and the NewtonX test. The interface st
 ## Check the install
 
 - **Options reader:** in a folder without `terachem.par`, `$NX/run-tera-cas.pl --check-options` should print the default options.
-- **NewtonX test:** run `$NX/test-nx.pl` and pick `MD-TERA-CASSCF-NAD-VEC`. It needs a GPU and about one minute.
-- **Unit tests:** see [development.md](development.md). They need no GPU.
+- **NewtonX test:** run `$NX/test-nx.pl` and pick `MD-TERA-CASSCF-NAD-VEC`. It needs a GPU and about one minute ([Validation](validation.md#12-installer)).
+- **Unit tests:** see [Development and testing](development.md#unit-tests). They need no GPU.
 
-## Program key and licence
+## Program key and license
 
-`prog = 21.0` is not an official NewtonX key. The NewtonX team assigns keys to interfaces that join the official distribution. Joining requires a GPL licence. This repository is licensed under GPL-3.0-or-later, so it meets that condition.
+`prog = 21.0` is not an official NewtonX key. The NewtonX team assigns keys to interfaces that join the official distribution. Joining requires a GPL license. This repository is licensed under GPL-3.0-or-later, so it meets that condition.
+
+## See also
+
+- [Your first trajectory](first-trajectory.md): the next step after the install
+- [Troubleshooting](troubleshooting.md#terminal): installer messages
+- [Development and testing](development.md): unit tests and the NewtonX test case
