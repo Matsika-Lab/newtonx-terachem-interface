@@ -25,7 +25,7 @@ This page holds every benchmark, timing and validation run of interface version 
 | 15 | [Phase reference after a gap](#15-phase-reference-after-a-gap) | `phase_ref = last` keeps signs continuous | 297 of 299 vs 159 of 299 | pass |
 | 16 | [NewtonX 2.6](#16-newtonx-26) | Installer, dynamics, time-dependent Baeck-An (TD-BA), restart, initial conditions and signs under 2.6 | signs identical with and without gaps | pass |
 | 17 | [TeraChem behavior](#17-terachem-behavior) | Facts the interface relies on | 10 checks | – |
-| 18 | [Time-derivative couplings from overlaps](#18-time-derivative-couplings-from-overlaps) | `vdoth = 1` against coupling vectors on 3 uracil trajectories | same hops and paths with the same velocity rescaling; coupling sizes within 5% | pass |
+| 18 | [Time-derivative couplings from overlaps](#18-time-derivative-couplings-from-overlaps) | `vdoth = 1` against coupling vectors on 3 uracil trajectories | same hops and paths with the same velocity rescaling; coupling sizes within 10% at the median | pass |
 
 ## Test environment
 
@@ -357,21 +357,22 @@ The NewtonX 2.4 replays (sections 1–7 and 15) give the same results with the N
 | Control | coupling vectors, `vdoth = 0` | `-1`, rescaling along the momentum | same as the reference |
 | Overlap | overlaps, `vdoth = 1` | `-1`; NewtonX allows no other value with `vdoth = 1` | none |
 
-**Same-geometry check.** `tests/harness/tdc_along_path.py` recomputed every step of each reference trajectory with `cassavevectors yes`, ran `ci_vec_overlap` between neighbouring steps and compared the overlap coupling at the midpoint with the mean of the reference's v·h at both ends. Only pairs the reference computed are compared, at the 159 intervals where |v·h| > 10⁻³ a.u. The single points reproduce the reference energies to 0.03 meV.
+**Same-geometry check.** `tests/harness/tdc_along_path.py` recomputed every step of each reference trajectory with `cassavevectors yes`, ran `ci_vec_overlap` between neighbouring steps and compared the overlap coupling at the midpoint with the mean of the reference's v·h at both ends. Only pairs the reference computed at both ends are compared, at the 147 intervals where |v·h| > 10⁻³ a.u. At a hop step, v·h is taken before the velocity rescaling. The single points reproduce the reference energies to 0.03 meV.
 
 | Trajectory | Pair | Intervals | Same sign | Median ratio of sizes (quartiles) |
 |---|---|---|---|---|
-| TRAJ16 | S1–S0 | 22 | 22 | 1.05 (0.96–1.06) |
-| TRAJ16 | S2–S1 | 13 | 12 | 0.96 (0.92–0.97) |
-| TRAJ35 | S1–S0 | 19 | 0, opposite throughout | 1.09 (0.91–1.17) |
-| TRAJ35 | S2–S1 | 19 | 18 | 0.97 (0.87–1.01) |
-| TRAJ37 | S1–S0 | 45 | 22 before 52 fs, 0 after | 0.97 (0.92–0.99) |
-| TRAJ37 | S2–S1 | 23 | 23 | 0.98 (0.96–0.99) |
+| TRAJ16 | S1–S0 | 23 | 23 | 1.04 (0.96–1.06) |
+| TRAJ16 | S2–S1 | 14 | 13 | 0.96 (0.91–0.98) |
+| TRAJ35 | S1–S0 | 20 | 0, opposite throughout | 1.09 (0.90–1.17) |
+| TRAJ35 | S2–S1 | 20 | 19 | 0.97 (0.88–1.01) |
+| TRAJ37 | S1–S0 | 46 | 22 before 52 fs, 0 after | 0.97 (0.92–0.99) |
+| TRAJ37 | S2–S1 | 24 | 24 | 0.99 (0.96–0.99) |
 
-- **Sizes agree.** The overlap couplings are within 5% of v·h at the median, and within 10% for TRAJ35 S1–S0.
+- **Sizes agree.** The overlap couplings are within 4% of v·h at the median for five of the six pairs, and within 9% for TRAJ35 S1–S0.
+- **Sharp peaks.** The largest size differences are in intervals where the coupling peaks inside the step, such as 26.75 fs in TRAJ35 just before the 3 → 2 hop, with a ratio of 0.50. The mean of the two end values is a poor estimate there.
 - **TRAJ35 S1–S0 has the opposite sign at every step.** A constant sign difference is a different phase choice for one state and does not change the dynamics.
-- **TRAJ37 S1–S0 changes relative sign once, at 52.25 fs.** The two states mix strongly in that step: the off-diagonal overlap is 0.77. The raw coupling vector turns by 95 degrees between 51.75 and 52.25 fs, with a cosine of −0.09, so the reference's sign at that step rests on a cosine of 0.09. The overlap sign at that step is well defined.
-- **One single-step miss.** At 1.75 fs in TRAJ16 the S2–S1 signs differ while the self-overlap is 0.69. There the last closed and first active orbitals are within 0.006 Eh, and the overlaps lose norm.
+- **TRAJ37 S1–S0 changes relative sign once, at 52.25 fs, and the reference has the wrong sign there.** The two states mix strongly in that step: the off-diagonal overlap is 0.77. The raw coupling vector at 52.25 fs is almost perpendicular to the one at 51.75 fs, with a cosine of −0.09, so the reference chose its sign from a cosine of 0.09. Coupling vectors at three geometries between the two steps show that the vector peaks at 27 bohr⁻¹ inside the step and reverses twice, with cosines of −0.99 and −0.94. Followed continuously, its sign is opposite to the one the reference used, and it agrees with the overlap coupling. No full run here passes through this point with both coupling types, because the control and overlap runs leave the reference's path at 18 fs.
+- **Two single-step misses.** At 1.75 fs in TRAJ16 the S2–S1 signs differ while the self-overlap is 0.69. There the last closed and first active orbitals are within 0.006 Eh, and the overlaps lose norm. At 2.75 fs in TRAJ35, S2 and S3 change order within one step, with a self-overlap of 0.04, and the overlap coupling is 6% of v·h.
 
 **Full trajectories.**
 
@@ -381,7 +382,8 @@ The NewtonX 2.4 replays (sections 1–7 and 15) give the same results with the N
 | TRAJ35 | 3 → 2 at 27.0 fs, 2 → 1 at 51.5 fs | same | same | identical to 0.000 Å |
 | TRAJ37 | 3 → 2 at 17.5 fs, 2 → 1 at 66.5 fs | 3 → 2 at 17.5 fs, stays on S1 | same as control | identical to 0.000 Å |
 
-- **The coupling source does not change these runs.** With the same rescaling, the overlap runs follow the control runs step by step. Populations differ by up to 0.22 just after a hop, and the median difference is 0.
+- **The coupling source does not change these runs.** With the same rescaling, the overlap runs follow the control runs step by step. Populations differ by more than 0.05 at 3, 10 and 8 of 241 steps, all within 3 fs of a hop or in the first 12 fs after it, with a largest difference of 0.22.
+- **One pair more.** The overlap runs couple all three pairs, including S3–S1. The reference and control compute only the active state's neighbours. The S3–S1 coupling stays below 1.4×10⁻³ a.u. in the overlap runs. The control and overlap runs agree, so it does not change these results.
 - **The rescaling direction does.** The reference and the control are identical until the first hop and then separate, by 0.11 Å RMS at 60 fs in TRAJ16 and 0.07 Å in TRAJ35. In TRAJ37 they separate by 0.5–1.0 Å; on the control's path the S1–S0 gap stays at 3–4 eV and no second hop happens.
 - **Energy.** TRAJ16 loses a hydrogen atom in all three runs, as in the original trajectory. On S0 after 31 fs the control and overlap runs gain 0.36 eV of total energy and the reference 0.06 eV; single points at those geometries reproduce the run's energies to 0.2 meV. TRAJ35 and TRAJ37 stay within 0.13 eV in all runs.
 - **NewtonX 2.6.** The first 10 fs of TRAJ16 give couplings identical to NewtonX 2.4 to 10⁻⁸ a.u. NewtonX 2.6's phase factors were +1 at all 60 values, and the hop at 8.5 fs is the same.
