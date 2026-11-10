@@ -20,7 +20,7 @@ These checks come from the NewtonX registration that the installer adds. A manua
 |---|---|---|
 | `TeraChem not found. Set the TeraChem variable to the TeraChem folder` | `$TeraChem` is not set, or `$TeraChem/bin/terachem` is not executable | Set `TeraChem` to the folder that contains `bin/terachem` |
 | `cannot be used with vdoth = 1. Time-derivative couplings give no coupling vector` | `adjmom` in `sh.inp` is 0 or more with `vdoth = 1` | Set `adjmom = -1` in `sh.inp`, or leave it out |
-| `is not supported by the TeraChem interface. Use vdoth = 0` | `vdoth` in `sh.inp` is negative | Use `vdoth = 0` for coupling vectors, `vdoth = 1` for time-derivative couplings from overlaps (CAS methods only), or `vdoth = 2` for time-dependent Baeck-An (TD-BA) |
+| `is not supported by the TeraChem interface. Use vdoth = 0` | `vdoth` in `sh.inp` is negative | Use `vdoth = 0` for coupling vectors, `vdoth = 1` for time-derivative couplings from overlaps (CASSCF and FOMO-CASCI), or `vdoth = 2` for time-dependent Baeck-An (TD-BA) |
 | `Problem in` | `terachem.par` has an error; the message reads `Problem in terachem.par:`, and the rest of the line is one of the [settings file](#settings-file) messages | Fix the key or value it names |
 
 ## Dynamics errors (moldyn.log, DEBUG/runnx.error)

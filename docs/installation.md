@@ -27,7 +27,7 @@ You can run the installer again after an update. It replaces its own earlier cha
 - **Scripts:** copies `run-tera-cas.pl` and `run_tera_ic.pl` into `$NX/` with mode 755.
 - **`$NX/lib/colib_perl.pm`:** registers TeraChem as `prog = 21.0`. It changes four subroutines:
   - **`prog_config`:** the program entry, which points NewtonX to both scripts and to `terachem.par`.
-  - **`check_thirdparty`:** checks `$TeraChem` and `vdoth` (0, 1 or 2) when a run starts, then validates and prints `terachem.par`.
+  - **`check_thirdparty`:** checks `$TeraChem`, `vdoth` (0, 1 or 2) and, with `vdoth = 1`, that `adjmom` is negative, when a run starts, then validates and prints `terachem.par`.
   - **`read_credits`:** the credit line printed in NewtonX output.
   - **`test_list`:** the test `MD-TERA-CASSCF-NAD-VEC`, when the test is added.
 - **Test:** copies the test inputs and reference results into `$NX/../test-nx/`. If that folder does not exist, the test is not added.
@@ -73,7 +73,7 @@ If you cannot run the installer, do the minimum by hand.
        }
    ```
 
-A manual install skips the startup checks and the NewtonX test. The interface still checks `terachem.par` and the TeraChem path at every call, and `vdoth` at every nonadiabatic step.
+A manual install skips the startup checks and the NewtonX test. The interface still checks `terachem.par` and the TeraChem path at every call, `vdoth` at every nonadiabatic step, and `adjmom` at every step with `vdoth = 1`.
 
 ## Check the install
 

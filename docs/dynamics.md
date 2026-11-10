@@ -9,7 +9,7 @@ This page explains how to set up a trajectory folder, how the interface turns on
 1. Install the interface. See [Installation](installation.md).
 2. Set `prog = 21.0` in `control.dyn`.
 3. Copy the template for your method from [`examples/`](../examples/README.md) to `JOB_NAD/tera.sp` and adapt it. See [Method tutorials](methods.md) and [Templates](#templates).
-4. Set `vdoth` in `sh.inp`: `0` for coupling vectors, `1` for time-derivative couplings from overlaps (CAS methods only), or `2` for time-dependent Baeck-An (TD-BA). If `sh.inp` has no `vdoth`, NewtonX uses 2. See [Coupling methods](#coupling-methods).
+4. Set `vdoth` in `sh.inp`: `0` for coupling vectors, `1` for time-derivative couplings from overlaps (CASSCF and FOMO-CASCI), or `2` for time-dependent Baeck-An (TD-BA). If `sh.inp` has no `vdoth`, NewtonX uses 2. See [Coupling methods](#coupling-methods).
 5. With `vdoth = 0`, choose the coupling pairs with `jiri.inp`. See [Which couplings are computed](#which-couplings-are-computed).
 6. Optionally, add `terachem.par`. See [terachem.par reference](terachem-par.md).
 7. Give the trajectory one GPU and run NewtonX:
