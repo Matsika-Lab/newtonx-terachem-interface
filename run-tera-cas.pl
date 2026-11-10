@@ -597,7 +597,7 @@ sub write_job_input {
             tc_fail("$job->{template}: no 'casscf yes', 'casci yes', 'cis yes', 'rpa yes' or 'hhtda yes' found, so the target state cannot be set.");
         }
         if ($tdc) {
-            tc_fail("vdoth = 1 needs a CAS method (CASSCF, CASCI or FOMO-CASCI): TeraChem computes wavefunction overlaps only for CAS wavefunctions. Use vdoth = 0 or 2 with $job->{template}.")
+            tc_fail("vdoth = 1 needs a CAS method (CASSCF or FOMO-CASCI): TeraChem computes wavefunction overlaps only for CAS wavefunctions. Use vdoth = 0 or 2 with $job->{template}.")
               unless $info->{cas};
             set_keyword( \@lines, "cassavevectors", "yes" );    # CI vectors for the overlaps
         }

@@ -65,7 +65,7 @@ and extrapolates it to $`t`$. At the first step and after a hop it uses NewtonX'
 - **Momentum after a hop:** set `adjmom = -1` in `sh.inp`, or leave `adjmom` out; NewtonX's default with `vdoth = 1` is −1. Time-derivative couplings give no coupling vector, so after a hop the momentum is rescaled along the velocity, as the NewtonX manual states for time-derivative couplings. With `adjmom` of 0 or more the run stops before the first step with "cannot be used with vdoth = 1". This differs from `vdoth = 0`, where the default `adjmom = 0` rescales along the coupling vector, so the two coupling types can follow different paths after a hop; see [Validation](validation.md#18-time-derivative-couplings-from-overlaps).
 - **Output:** the overlap matrix goes to `run_cioverlap.log`. The couplings go to `nad_vectors`. Each step appends the raw overlap matrix, the signs and the couplings to `DEBUG/tdc_overlaps.log`.
 - **Cost:** one gradient run plus one overlap run at each step, instead of one run per coupling pair. See [Validation](validation.md#18-time-derivative-couplings-from-overlaps).
-- **Methods:** CASSCF, CASCI and FOMO-CASCI. The interface stops with "vdoth = 1 needs a CAS method" for TDA, hh-TDA and RPA, because TeraChem refuses overlaps for them ("Ci Vector overlaps only work with CAS methods!").
+- **Methods:** CASSCF and FOMO-CASCI. The interface stops with "vdoth = 1 needs a CAS method" for TDA, hh-TDA and RPA, because TeraChem refuses overlaps for them ("Ci Vector overlaps only work with CAS methods!").
 - **Settings:** the `couplings` and `phase_ref` keys of `terachem.par` have no effect with `vdoth = 1`.
 - **Checked on:** NewtonX 2.4 and 2.6.
 

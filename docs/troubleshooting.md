@@ -58,7 +58,7 @@ These checks come from the NewtonX registration that the installer adds. A manua
 | `Bad state pair (` | `transmomin` lists a state outside 1 to `nstat` | Check `nstat` in `control.dyn` and `jiri.inp` |
 | `uses full TDDFT (rpa yes). TeraChem gives no RPA coupling vectors` | `rpa yes` with coupling vectors (`vdoth = 0`) | Use TD-BA (`vdoth = 2`) with RPA, or TDA (`cis yes`) for coupling vectors |
 | `cannot be used with vdoth = 1. Time-derivative couplings give no coupling vector` | `adjmom` in `sh.inp` is 0 or more with `vdoth = 1`. Without the NewtonX registration this is caught here, at the first step | Set `adjmom = -1` in `sh.inp`, or leave it out |
-| `vdoth = 1 needs a CAS method` | The template is TDA, hh-TDA or RPA, and TeraChem computes overlaps only for CAS wavefunctions | Use CASSCF, CASCI or FOMO-CASCI, or set `vdoth = 0` or `2` |
+| `vdoth = 1 needs a CAS method` | The template is TDA, hh-TDA or RPA, and TeraChem computes overlaps only for CAS wavefunctions | Use CASSCF or FOMO-CASCI, or set `vdoth = 0` or `2` |
 | `asks for no singlets (cassinglets 0) but sets no castargetmult.` | A triplet CAS template without `castargetmult` | Add `castargetmult 3` |
 | `found, so the target state cannot be set.` | The template has none of `casscf yes`, `casci yes`, `cis yes`, `rpa yes`, `hhtda yes` | Add the method keyword; see [Method tutorials](methods.md) |
 | `castargetmult` … `is not supported.` | The multiplicity is not 1 to 5 | Use a supported multiplicity |
