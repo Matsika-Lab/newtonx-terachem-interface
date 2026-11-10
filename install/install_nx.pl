@@ -83,8 +83,8 @@ $block{check_thirdparty} = <<'EOT';
        }
        if ($type eq "dyn"){
          my $vd = getkeyword("$BASEDIR/sh.inp","vdoth",2);   # NX's own default is 2
-         if (($vd == 1) or ($vd < 0)){
-           exit_error("vdoth = $vd needs wavefunction overlaps, which the TeraChem interface does not provide. Use vdoth = 0 (coupling vectors) or 2 (TD-BA).",$mdle);
+         if ($vd < 0){
+           exit_error("vdoth = $vd is not supported by the TeraChem interface. Use vdoth = 0 (coupling vectors), 1 (overlaps, CAS methods only) or 2 (TD-BA).",$mdle);
          }
          # Validate and show terachem.par with the interface's own reader.
          my $chk = `$ENV{"NX"}/run-tera-cas.pl --check-options $BASEDIR/$progpar 2>&1`;

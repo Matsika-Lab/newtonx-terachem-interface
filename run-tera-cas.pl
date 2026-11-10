@@ -32,6 +32,9 @@
 #      coupling job per state pair that is needed,
 #   2. runs TeraChem for each job, one after another, on the GPU(s) it was given,
 #   3. writes epot, grad, grad.all and the phase-corrected nad_vectors/newh for NewtonX.
+# With vdoth = 1 in sh.inp it runs no coupling jobs. It computes the overlaps of the
+# CAS wavefunctions of this step and the previous one instead (TeraChem ci_vec_overlap),
+# and NewtonX's read_cioverlap.pl turns them into time-derivative couplings.
 #
 # Options are read from terachem.par (key = value). See docs/terachem-par.md for the full list.
 #
@@ -99,7 +102,8 @@ our ( $old_scf_guess, $old_guess, $molden_ar, $wf_ar, $phase_mem );
 our ( $nat, $istep, $nstat, $nstatdyn, $ndamp, $kt, $dt, $t, $tmax, $nintc );
 our ( $nxrestart, $thres, $killstat, $timekill, $prog, $lvprt, $etot_jump, $etot_drift, $mem );
 our ( @symb, @x, @y, @z );
-our ( $typeofinput, $run_flag, $layout, %opt, $vdoth_nx );
+our ( $typeofinput, $run_flag, $layout, %opt, $vdoth_nx, $tdc );
+our ( $tdc_dir, $tdc_old_orb, $tdc_old_civ, $tdc_old_geom, $tdc_phase, $tdc_log );
 our ( @epot, @gx, @gy, @gz, @hx, @hy, @hz, $ncoup );
 our $CLI = 0;
 $mdle = "run-tera-cas.pl:";
@@ -141,6 +145,8 @@ sub main {
     # pair is computed, so zero couplings are written instead of keeping the last
     # step's. With TD-BA (vdoth = 2) NX writes the couplings itself.
     treat_nacme( [ grep { $_->{kind} eq "nac" } @jobs ] ) if $vdoth_nx == 0;
+    # Time-derivative couplings (vdoth = 1) from the overlaps with the previous step.
+    treat_overlaps( $jobs[0] ) if $tdc;
 }
 
 #====================================================================================
@@ -161,6 +167,14 @@ sub define_variables {
     $molden_ar     = "../INFO_RESTART/MOLDEN_ARCHIVE";
     $wf_ar         = "../INFO_RESTART/WF_ARCHIVE";
     $phase_mem     = "../INFO_RESTART/WF_OLD/nac_phase_ref";
+
+    # vdoth = 1: the previous step's wavefunction, kept for the overlaps.
+    $tdc_dir      = "ovl";
+    $tdc_old_orb  = "../INFO_RESTART/WF_OLD/tdc_orb";
+    $tdc_old_civ  = "../INFO_RESTART/WF_OLD/tdc_civ";
+    $tdc_old_geom = "../INFO_RESTART/WF_OLD/tdc_geom.xyz";
+    $tdc_phase    = "../INFO_RESTART/WF_OLD/tdc_phase";
+    $tdc_log      = "../DEBUG/tdc_overlaps.log";
     mkpath( [ $molden_ar, $wf_ar, "../INFO_RESTART/WF_OLD" ], 0, 0755 );
 
     $BASEDIR = getcwd();
@@ -258,7 +272,9 @@ sub determine_dynamics_type {
     #     adiabatic dynamics, or every energy gap above THRES (control.dyn).
     #   * Otherwise couplings are computed here only with vdoth = 0 in sh.inp. With
     #     vdoth = 2 (TD-BA), NX builds the couplings itself from the energies.
-    #   * vdoth = 1 or < 0 need wavefunction overlaps, which this interface cannot give.
+    #   * With vdoth = 1 only the gradient job runs. The couplings come from the overlaps
+    #     of this step's and the previous step's wavefunctions (treat_overlaps).
+    #   * vdoth < 0 (local diabatization) is not supported.
     # NX copies JOB_NAD to JOB_AD when JOB_AD is missing, so both folders are usually in
     # TEMP and cannot tell the step type by themselves.
     #
@@ -292,9 +308,15 @@ sub determine_dynamics_type {
     elsif ( $vdoth == 2 ) {
         $typeofinput = "jad";    # TD-BA: NX computes the couplings after this call
     }
-    else {
-        tc_fail("vdoth = $vdoth in sh.inp needs wavefunction overlaps, which the TeraChem interface does not provide. Use vdoth = 0 (coupling vectors) or vdoth = 2 (TD-BA).");
+    elsif ( $vdoth == 1 ) {
+        $typeofinput = "jad";    # overlaps: no coupling jobs
     }
+    else {
+        tc_fail("vdoth = $vdoth in sh.inp is not supported by the TeraChem interface. Use vdoth = 0 (coupling vectors), 1 (time-derivative couplings from overlaps, CAS methods only) or 2 (TD-BA).");
+    }
+    # Overlaps are computed at every step, also on adiabatic steps, because the next step
+    # needs this step's wavefunction.
+    $tdc = $vdoth == 1 ? 1 : 0;
     if ( $lvprt >= 2 ) {
         print_STDOUT( "$mdle step type $type, vdoth $vdoth: " . ( $typeofinput eq "jnd" ? "computing coupling vectors" : "energies and gradient only" ) . ".\n", $istep, $kt );
     }
@@ -562,6 +584,11 @@ sub write_job_input {
         }
         else {
             tc_fail("$job->{template}: no 'casscf yes', 'casci yes', 'cis yes', 'rpa yes' or 'hhtda yes' found, so the target state cannot be set.");
+        }
+        if ($tdc) {
+            tc_fail("vdoth = 1 needs a CAS method (CASSCF, CASCI or FOMO-CASCI): TeraChem computes wavefunction overlaps only for CAS wavefunctions. Use vdoth = 0 or 2 with $job->{template}.")
+              unless $info->{cas};
+            set_keyword( \@lines, "cassavevectors", "yes" );    # CI vectors for the overlaps
         }
         # The old templates may set both; keep them consistent.
         foreach my $k (qw(castarget cistarget)) {
@@ -867,6 +894,159 @@ sub treat_nacme {
     update_phase_memory("nad_vectors") if $opt{phase_ref} eq "last";
     copy( "nad_vectors", "newh" ) or tc_fail("Copy of phase-corrected nad_vectors to newh failed: $!");
     shield_returning_pairs( \%computed );
+}
+
+#====================================================================================
+#                      TIME-DERIVATIVE COUPLINGS FROM OVERLAPS (vdoth = 1)
+#====================================================================================
+
+sub treat_overlaps {
+    #
+    # vdoth = 1. TeraChem's ci_vec_overlap gives S(I,J) = <psi_I(t-dt)|psi_J(t)> for the
+    # CAS states (file 1 = previous step). The states' signs are made continuous: state J
+    # at t is flipped when its overlap with itself would be negative, and the flips are
+    # carried from step to step in tdc_phase. NewtonX's read_cioverlap.pl reads
+    # run_cioverlap.log, which holds <psi_m(t)|psi_n(t-dt)>, that is the transpose, and
+    # writes the couplings sigma = (S(n,m) - S(m,n)) / 2dt, extrapolated to t, to
+    # nad_vectors, one value per pair repeated over atoms and x, y, z.
+    #
+    my ($grad_job) = @_;
+    return if $nstat <= 1;
+    return if $run_flag eq "second run";    # the couplings of this step are already written
+
+    my $info = $grad_job->{info};
+    $ncoup = $nstat * ( $nstat - 1 ) / 2;
+
+    # This step's orbitals and CI vectors, from the gradient job.
+    my $src     = "GRAD/scr.geom";
+    my $orb_new = $info->{casscf} ? "$src/c0.casscf" : "$src/c0";
+    tc_fail("vdoth = 1: orbital file $orb_new not found after the gradient job.") unless -s $orb_new;
+    my $civ_new = "$tdc_dir/civ_new";
+    mkpath( $tdc_dir, 0, 0755 ) unless -d $tdc_dir;
+    open my $cfh, '>:raw', $civ_new or tc_fail("Cannot write $civ_new: $!");
+    foreach my $k ( 1 .. $nstat ) {
+        my $f = "$src/CI_$info->{mult}_$k.dat";
+        unless ( -s $f ) {
+            opendir my $dh, $src;
+            my @have = sort grep { /^CI_.*\.dat$/ } readdir $dh;
+            closedir $dh;
+            tc_fail( "vdoth = 1: CI vector file $f not found (found: " . ( @have ? join( " ", @have ) : "none" ) . "). The template must ask for at least nstat = $nstat states." );
+        }
+        open my $in, '<:raw', $f or tc_fail("Cannot open $f: $!");
+        local $/;
+        print {$cfh} <$in>;
+        close $in;
+    }
+    close $cfh;
+
+    # The previous step's couplings become oldh, as for coupling vectors.
+    if ( -s "nad_vectors" ) {
+        copy( "nad_vectors", "oldh" ) or tc_fail("Copy of nad_vectors to oldh failed: $!");
+    }
+    else {
+        for my $nc ( 0 .. $ncoup - 1 ) {
+            for my $ia ( 0 .. $nat - 1 ) { $hx[$nc][$ia] = $hy[$nc][$ia] = $hz[$nc][$ia] = 0.0; }
+        }
+        write_nacme("oldh");
+    }
+
+    my @p_old = (1) x $nstat;
+    if ( $istep > 0 && -s $tdc_phase ) {
+        @p_old = split ' ', join( '', @{ read_lines($tdc_phase) } );
+        tc_fail("$tdc_phase does not hold $nstat signs.") unless @p_old == $nstat;
+    }
+    my @S;
+    my $have_old = $istep > 0 && -s $tdc_old_orb && -s $tdc_old_civ && -s $tdc_old_geom;
+    if ($have_old) {
+        @S = run_overlap_job( $grad_job, $orb_new, $civ_new );
+    }
+    else {
+        print_STDOUT( "$mdle vdoth = 1: no previous wavefunction at step $istep; the couplings of this step are zero.\n", $istep, $kt )
+          if $istep > 0;
+        @S = map { my $i = $_; [ map { $_ == $i ? 1.0 : 0.0 } 0 .. $nstat - 1 ] } 0 .. $nstat - 1;
+    }
+
+    # Continuous signs: p_new(J) = p_old(J) * sign(S(J,J)).
+    my @p_new = @p_old;
+    my @warn;
+    foreach my $j ( 0 .. $nstat - 1 ) {
+        $p_new[$j] = -$p_old[$j] if $S[$j][$j] < 0;
+        push @warn, $j + 1 if abs( $S[$j][$j] ) < 0.5;
+    }
+    my @Sal = map { my $i = $_; [ map { $p_old[$i] * $S[$i][$_] * $p_new[$_] } 0 .. $nstat - 1 ] } 0 .. $nstat - 1;
+    if (@warn) {
+        print_STDOUT( "$mdle WARNING: vdoth = 1: state(s) " . join( ", ", @warn ) . " overlap less than 0.5 with themselves at the previous step. The states may have changed order; their signs may be unreliable. Consider a smaller time step.\n", $istep, $kt );
+    }
+
+    # run_cioverlap.log for read_cioverlap.pl: <psi_m(t)|psi_n(t-dt)> = Sal(n, m).
+    open my $lfh, '>', "run_cioverlap.log" or tc_fail("Cannot write run_cioverlap.log: $!");
+    print $lfh " CI overlap matrix <psi_m(t)|psi_n(t-dt)> (TeraChem interface)\n";
+    foreach my $m ( 0 .. $nstat - 1 ) {
+        print $lfh join( " ", map { sprintf( "%22.15e", $Sal[$_][$m] ) } 0 .. $nstat - 1 ), "\n";
+    }
+    close $lfh;
+    my $retval = callprogsp( $mld, "read_cioverlap.pl", $mdle );
+    tc_fail("read_cioverlap.pl failed.") if $retval != 0;
+    my $nv = read_lines("nad_vectors");
+    tc_fail( "read_cioverlap.pl wrote " . scalar(@$nv) . " lines to nad_vectors; expected " . ( $ncoup * $nat ) . "." )
+      unless @$nv == $ncoup * $nat;
+    copy( "nad_vectors", "newh" ) or tc_fail("Copy of nad_vectors to newh failed: $!");
+    shield_returning_pairs( { map { ( $_ => 1 ) } 0 .. $ncoup - 1 } );
+
+    # Log, and keep this step's wavefunction for the next step.
+    my @sig = map { ( split ' ', $nv->[ $_ * $nat ] )[0] } 0 .. $ncoup - 1;
+    if ( open my $dfh, '>>', $tdc_log ) {
+        printf $dfh "t = %s fs  step %d  state %d\n", $t, $istep, $nstatdyn;
+        print $dfh "  S raw <I(t-dt)|J(t)>:\n";
+        print $dfh "   " . join( " ", map { sprintf( "%12.8f", $_ ) } @$_ ) . "\n" foreach @S;
+        print $dfh "  signs old: @p_old  new: @p_new\n";
+        print $dfh "  couplings (2-1, 3-1, 3-2, ...): " . join( " ", map { sprintf( "%14.6e", $_ ) } @sig ) . "\n";
+        close $dfh;
+    }
+    if ( $lvprt >= 2 ) {
+        print_STDOUT( "$mdle vdoth = 1: time-derivative couplings (2-1, 3-1, 3-2, ...): " . join( " ", @sig ) . "\n", $istep, $kt );
+    }
+    copy( $orb_new,  $tdc_old_orb )  or tc_fail("Failed to copy $orb_new to $tdc_old_orb: $!");
+    copy( $civ_new,  $tdc_old_civ )  or tc_fail("Failed to copy $civ_new to $tdc_old_civ: $!");
+    copy( "geom.xyz", $tdc_old_geom ) or tc_fail("Failed to copy geom.xyz to $tdc_old_geom: $!");
+    write_lines( $tdc_phase, [ join( " ", @p_new ) . "\n" ] );
+}
+
+sub run_overlap_job {
+    #
+    # Runs TeraChem ci_vec_overlap between the previous step (file 1) and this step
+    # (file 2), with the gradient job's method keywords. TeraChem lowercases keyword
+    # values, so every file is copied into the lowercase folder ovl/ first.
+    #
+    my ( $grad_job, $orb_new, $civ_new ) = @_;
+    copy( $tdc_old_orb,  "$tdc_dir/orb_old" ) or tc_fail("Copy of $tdc_old_orb failed: $!");
+    copy( $tdc_old_civ,  "$tdc_dir/civ_old" ) or tc_fail("Copy of $tdc_old_civ failed: $!");
+    copy( $tdc_old_geom, "$tdc_dir/old.xyz" ) or tc_fail("Copy of $tdc_old_geom failed: $!");
+    copy( $orb_new,      "$tdc_dir/orb_new" ) or tc_fail("Copy of $orb_new failed: $!");
+
+    my @lines = @{ $grad_job->{lines} };
+    remove_keyword( \@lines, $_ ) for qw(run castarget cistarget nacstate1 nacstate2 cassavevectors guess maxit convthre scrdir);
+    set_keyword( \@lines, "coordinates", "geom.xyz" );
+    insert_lines( \@lines,
+        "run             ci_vec_overlap\n",
+        "old_coors       $tdc_dir/old.xyz\n",
+        "orb1afile       $tdc_dir/orb_old\n",
+        "orb2afile       $tdc_dir/orb_new\n",
+        "cvec1file       $tdc_dir/civ_old\n",
+        "cvec2file       $tdc_dir/civ_new\n" );
+    write_lines( "$tdc_dir/start.sp", \@lines );
+    run_job( { dir => $tdc_dir } );
+
+    my $f = "$tdc_dir/scr.geom/CIVecOverlap.dat";
+    tc_fail("TeraChem wrote no overlap matrix $f. Check $tdc_dir/$tpp_outfile.") unless -s $f;
+    open my $fh, '<:raw', $f or tc_fail("Cannot open $f: $!");
+    local $/;
+    my @v = unpack( "d*", <$fh> );
+    close $fh;
+    my $n = int( sqrt( scalar(@v) ) + 0.5 );
+    tc_fail( "$f holds " . scalar(@v) . " numbers, not a square matrix for at least $nstat states." )
+      unless $n * $n == @v && $n >= $nstat;
+    return map { my $i = $_; [ map { $v[ $i * $n + $_ ] } 0 .. $nstat - 1 ] } 0 .. $nstat - 1;
 }
 
 sub nx_corrects_phase {
