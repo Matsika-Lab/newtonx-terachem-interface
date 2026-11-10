@@ -879,29 +879,32 @@ sub nx_corrects_phase {
 
 sub shield_returning_pairs {
     #
-    # NewtonX 2.6 fixes each sign against href = 2 h(t-dt) - h(t-2dt). For a pair that
-    # was not computed at the previous step, h(t-dt) = 0 and href = -h(t-2dt), which
-    # turns the returning vector against its last vector. Zeroing the pair's block in
-    # nad_vectors-2dt makes href = 0, so NewtonX keeps the sign set here. That file is
-    # read only by phase_correction and is replaced at the next step.
+    # NewtonX 2.6 fixes each sign again after this script, against the extrapolation
+    # href = 2 h(t-dt) - h(t-2dt). That reference points the wrong way whenever a
+    # coupling shrinks by more than half in one step, for example after the spike at a
+    # crossing, and for a pair that was zero at t-dt (href = -h(t-2dt)). Writing
+    # nad_vectors-2dt = 2 h(t-dt) - h(t) makes href = h(t), so NewtonX keeps every sign
+    # set here, as NewtonX 2.4 does. nad_vectors-2dt is read only by phase_correction
+    # and is replaced at the next step.
     #
     my ($computed) = @_;
     return unless %$computed && $istep >= 2 && nx_corrects_phase();
     my $getphase = getkeyword( "sh.inp", "getphase", 1 );
     return if defined $getphase && $getphase ne "" && $getphase != 1;
     return unless -s "nad_vectors-dt" && -s "nad_vectors-2dt";
-    my $dt  = read_lines("nad_vectors-dt");
-    my $dt2 = read_lines("nad_vectors-2dt");
-    return unless @$dt == $ncoup * $nat && @$dt2 == $ncoup * $nat;
-    my @done;
-    for my $nc ( sort { $a <=> $b } keys %$computed ) {
-        next unless block_is_zero( $dt, $nc ) && !block_is_zero( $dt2, $nc );
-        $dt2->[$_] = "0.0  0.0  0.0\n" for $nc * $nat .. ( $nc + 1 ) * $nat - 1;
-        push @done, $nc;
+    my $h1 = read_lines("nad_vectors-dt");
+    my $h0 = read_lines("nad_vectors");
+    return unless @$h1 == $ncoup * $nat && @$h0 == $ncoup * $nat;
+    my @out;
+    for my $k ( 0 .. $#$h0 ) {
+        my @a = split ' ', $h1->[$k];
+        my @b = split ' ', $h0->[$k];
+        push @out, sprintf( "%24.15e %24.15e %24.15e\n", map { 2 * $a[$_] - $b[$_] } 0 .. 2 );
     }
-    return unless @done;
-    write_lines( "nad_vectors-2dt", $dt2 );
-    print_STDOUT( "$mdle coupling(s) " . join( ", ", @done ) . " return after one step without coupling; NewtonX's phase correction keeps the sign set here.\n", $istep, $kt );
+    write_lines( "nad_vectors-2dt", \@out );
+    if ( $lvprt >= 2 ) {
+        print_STDOUT( "$mdle NewtonX 2.6: nad_vectors-2dt set so that its phase correction keeps the signs set here.\n", $istep, $kt );
+    }
 }
 
 sub read_lines {

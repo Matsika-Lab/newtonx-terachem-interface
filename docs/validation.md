@@ -33,7 +33,7 @@ These tests were run for version 2.0 before release. The reference is the previo
 | 13 | [Unit tests](#13-unit-tests) | Parsing and logic without GPU | 14 groups | pass |
 | 14 | [Example templates](#14-example-templates) | Each `examples/` template runs in NewtonX | 5 of 5 templates | pass |
 | 15 | [Phase reference after a gap](#15-phase-reference-after-a-gap) | `phase_ref = last` keeps signs continuous | 297 of 299 vs 159 of 299 | pass |
-| 16 | [NewtonX 2.6](#16-newtonx-26) | Installer, dynamics, TD-BA, restart, initial conditions and signs under 2.6 | one-step gap: 3 of 3 signs kept | pass |
+| 16 | [NewtonX 2.6](#16-newtonx-26) | Installer, dynamics, TD-BA, restart, initial conditions and signs under 2.6 | signs identical with and without gaps | pass |
 | – | [TeraChem behaviour](#terachem-behaviour) | Facts the interface relies on | 10 checks | – |
 
 ## How the comparisons work
@@ -247,14 +247,16 @@ The hh-TDA FOMO window was checked first. With `active 9`, the excitation energi
 | Restart from `INFO_RESTART/control.dyn` | Energies equal to a continuous run |
 | Initial conditions, uracil TDA, `initcond.pl` | Energies and oscillator strengths written |
 
-**Signs.** NewtonX 2.6 corrects the coupling signs itself (`getphase = 1`). Gaps were made by forcing adiabatic steps. The returning vector was compared with the pair's last vector before the gap, on the vectors NewtonX 2.6 keeps.
+**Signs.** NewtonX 2.6 corrects the coupling signs again by extrapolation (`getphase = 1`). Gaps were made by forcing adiabatic steps. Signs were checked on the vectors NewtonX 2.6 keeps.
 
-| Case | Before the 2.6 handling | With it |
+| Case | NewtonX 2.6 on its own | With the interface setting its reference |
 |---|---|---|
-| One-step gap, `phase_ref = last` | 3 of 3 pairs flipped by NewtonX | 3 of 3 kept |
-| Two- and three-step gaps, `last` | kept | kept |
-| No gap | NewtonX flips pairs passing through zero, steps 14 and 16 | unchanged |
-| Gap right after a NewtonX flip | – | returning pair matches the gap-free run |
+| One-step gap, `phase_ref = last` | 3 of 3 returning pairs flipped against their last vector | 3 of 3 kept |
+| Two- and three-step gaps | kept | kept |
+| Whole run with gaps vs the run without gaps | signs differ for pairs after a gap | identical signs for every pair and step |
+| Coupling shrinking 10 → 3 → 1, same direction, run through `phase_correction` | flipped | – |
+
+The last row is why the interface overrides NewtonX 2.6's own correction. The extrapolation flips a coupling that shrinks by more than half per step, as after the spike at a crossing. A separate NewtonX 2.6 run of another interface saw this near a hop. The cost is that a coupling passing smoothly through zero keeps its sign, as with NewtonX 2.4. In the ethylene run, NewtonX 2.6 alone had flipped two such pairs, at steps 14 and 16.
 
 The 2.4 replays (sections 1–7 and 15) give the same results as before this change.
 

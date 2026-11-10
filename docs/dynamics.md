@@ -117,7 +117,7 @@ A `jiri.inp` for neighbour couplings:
  /
 ```
 
-Pairs that are not computed are written as zero vectors, as NewtonX expects. A pair that was zero at the previous step has no previous vector for NewtonX's phase fix. By default the interface compares it with the pair's last computed vector, so its sign stays continuous; see [`phase_ref`](terachem-par.md#phase_ref). NewtonX 2.6 also corrects the signs itself; see [NewtonX 2.6](terachem-par.md#newtonx-26).
+Pairs that are not computed are written as zero vectors, as NewtonX expects. A pair that was zero at the previous step has no previous vector for NewtonX's phase fix. By default the interface compares it with the pair's last computed vector, so its sign stays continuous; see [`phase_ref`](terachem-par.md#phase_ref). NewtonX 2.6 would correct the signs again; the interface makes it keep these signs. See [NewtonX 2.6](terachem-par.md#newtonx-26).
 
 ## Coupling methods
 

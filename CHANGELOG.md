@@ -25,7 +25,7 @@ All notable changes to this interface. The format follows [Keep a Changelog](htt
 - **Initial conditions.** `run_tera_ic.pl` is now part of the repository. It supports CASSCF, FOMO-CASCI, TDA/TDDFT, hh-TDA and full TDDFT, and `nis > 1`.
 - **`phase_ref` option.** A coupling pair that returns after a gap now gets its sign from its last computed vector (`phase_ref = last`, the default). Before, its sign was TeraChem's. `phase_ref = previous` keeps the old behaviour.
 - **Method tutorials and templates.** [methods.md](docs/methods.md) explains each method and the NAC and TD-BA couplings. Tested templates are in `examples/`.
-- **NewtonX 2.6.** The interface works with NewtonX 2.6 as well as 2.4. With 2.6's own sign correction on, a coupling pair that returns after one step without coupling keeps the interface's sign. See [NewtonX 2.6](docs/terachem-par.md#newtonx-26).
+- **NewtonX 2.6.** The interface works with NewtonX 2.6 as well as 2.4. NewtonX 2.6 corrects coupling signs again by extrapolation, which flips couplings that shrink quickly after a crossing. The interface sets NewtonX's reference so that 2.6 keeps the interface's signs, as 2.4 does. See [NewtonX 2.6](docs/terachem-par.md#newtonx-26).
 - **Installer.** `install/install_nx.pl` registers TeraChem in NewtonX, copies the scripts and adds a NewtonX test.
 - **Tests.** Unit tests, a record-and-replay harness and a NewtonX test case. See [development.md](docs/development.md) and [validation.md](docs/validation.md).
 

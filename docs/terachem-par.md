@@ -77,13 +77,12 @@ NewtonX fixes the sign of each coupling vector by comparing it with the previous
 
 ### NewtonX 2.6
 
-NewtonX 2.6 corrects the signs again after the interface, with its own program `phase_correction` (`getphase = 1` in `sh.inp`, its default). It compares each vector with a value extrapolated from the two previous steps. This also catches a coupling that changes sign as it passes through zero.
+NewtonX 2.6 corrects the signs again after the interface, with its own program `phase_correction` (`getphase = 1` in `sh.inp`, its default). It compares each vector with a value extrapolated from the two previous steps, 2 h(t−dt) − h(t−2dt).
 
-- **Pairs computed at the previous step:** NewtonX 2.6 decides their sign; `phase_ref` has no effect on them.
-- **Pairs that return after a gap:** the interface's sign is kept, as described above. For a gap of one step, NewtonX 2.6's extrapolation would turn the returning vector against its last vector. The interface prevents this by clearing that pair from NewtonX's file `nad_vectors-2dt`, which only the sign correction reads.
-- **`getphase = 0`:** NewtonX 2.6 leaves the signs to the interface, as NewtonX 2.4 does.
-
-`last` is the default because TeraChem's sign for a returning pair is arbitrary. The test results are in [validation.md](validation.md#15-phase-reference-after-a-gap).
+- **Why the interface overrides it:** the extrapolation points the wrong way whenever a coupling shrinks by more than half in one step. This happens after the spike at a crossing, where hops occur, and for a pair that was zero at the previous step. NewtonX 2.6 then flips vectors that should keep their sign.
+- **What the interface does:** it rewrites NewtonX's file `nad_vectors-2dt`, which only the sign correction reads, so that the extrapolated value equals the interface's own vector. NewtonX 2.6 then keeps every sign set by the interface, and runs follow the same sign rules as with NewtonX 2.4, including `phase_ref`.
+- **What is lost:** NewtonX 2.6's extrapolation can follow a coupling that changes sign as it passes smoothly through zero. With the interface's rule such a coupling keeps its sign, as with NewtonX 2.4.
+- **`getphase = 0`:** NewtonX 2.6 does not correct the signs, and the interface does nothing extra.
 
 ## archive_molden
 
