@@ -9,6 +9,7 @@ All notable changes to this interface. The format follows [Keep a Changelog](htt
 - **Time-derivative couplings from overlaps (`vdoth = 1`).** The interface runs the gradient job with `cassavevectors yes` and one TeraChem `ci_vec_overlap` job between the previous and the current CAS wavefunction. NewtonX's `read_cioverlap.pl` turns the overlaps into couplings. It works for CASSCF, CASCI and FOMO-CASCI, on NewtonX 2.4 and 2.6. TDA, hh-TDA and RPA are refused with "vdoth = 1 needs a CAS method". See [Method tutorials](docs/methods.md#time-derivative-couplings-from-overlaps-vdoth--1).
 - **Continuous state signs.** States are flipped when their overlap with themselves would be negative. The signs and the previous wavefunction are kept in `INFO_RESTART/WF_OLD/`. A warning appears when a diagonal overlap is below 0.5.
 - **Overlap log.** `DEBUG/tdc_overlaps.log` records the raw overlap matrix, the signs and the couplings of every step.
+- **Overlap check script.** `tests/harness/tdc_along_path.py` recomputes a recorded trajectory with overlaps and compares the couplings with its coupling vectors. Results are in [Validation](docs/validation.md#18-time-derivative-couplings-from-overlaps).
 
 ### Changed
 

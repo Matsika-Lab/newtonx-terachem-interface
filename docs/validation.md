@@ -25,6 +25,7 @@ This page holds every benchmark, timing and validation run of interface version 
 | 15 | [Phase reference after a gap](#15-phase-reference-after-a-gap) | `phase_ref = last` keeps signs continuous | 297 of 299 vs 159 of 299 | pass |
 | 16 | [NewtonX 2.6](#16-newtonx-26) | Installer, dynamics, time-dependent Baeck-An (TD-BA), restart, initial conditions and signs under 2.6 | signs identical with and without gaps | pass |
 | 17 | [TeraChem behavior](#17-terachem-behavior) | Facts the interface relies on | 10 checks | – |
+| 18 | [Time-derivative couplings from overlaps](#18-time-derivative-couplings-from-overlaps) | `vdoth = 1` against coupling vectors on 3 uracil trajectories | same hops and paths with the same velocity rescaling; coupling sizes within 5% | pass |
 
 ## Test environment
 
@@ -343,6 +344,51 @@ The NewtonX 2.4 replays (sections 1–7 and 15) give the same results with the N
 | hh-TDA `cistarget` | `cistarget k` gives the gradient of root k + 1, counting the ground state as root 1 (finite differences on two coordinates agree to 1e-4). The `FINAL Target State Energy` line shows root k instead. | `cistarget` = state − 1 is right; that output line is not used |
 
 **Conclusion.** The interface relies on these 10 behaviors, and each one was observed in TeraChem 1.96 beta.
+
+## 18. Time-derivative couplings from overlaps
+
+**Purpose.** Check `vdoth = 1`, where the interface computes the couplings from wavefunction overlaps between steps, against the coupling vectors of `vdoth = 0`.
+
+**Setup.** Interface on branch `tdc-overlaps`, commit `c2498d0`; the reference used the released `run-tera-cas.pl` at `706084c`. NewtonX 2.4 (build 06) for the full runs, NewtonX 2.6 (build 01) for a 10 fs check. TeraChem 1.96 beta, one RTX 5000 Ada per run, 2 OpenMP threads, with up to 7 runs on the node at once. Uracil, FOMO-CASCI(14,10)/cc-pVDZ, T = 0.2, 3 singlets, dt = 0.5 fs, `ms = 20`, seed 10, 120 fs. Three trajectories that start on S2 and reach S0 within 70 fs: TRAJ16, TRAJ35 and TRAJ37 of the November 2026 FOMO set, with their initial conditions. Three runs per trajectory:
+
+| Run | Couplings | `adjmom` | `terachem.par` |
+|---|---|---|---|
+| Reference | coupling vectors, `vdoth = 0` | `0`, rescaling along the coupling vector | `couplings = neighbours`, `phase_ref = previous` |
+| Control | coupling vectors, `vdoth = 0` | `-1`, rescaling along the momentum | same as the reference |
+| Overlap | overlaps, `vdoth = 1` | `-1`; NewtonX allows no other value with `vdoth = 1` | none |
+
+**Same-geometry check.** `tests/harness/tdc_along_path.py` recomputed every step of each reference trajectory with `cassavevectors yes`, ran `ci_vec_overlap` between neighbouring steps and compared the overlap coupling at the midpoint with the mean of the reference's v·h at both ends. Only pairs the reference computed are compared, at the 159 intervals where |v·h| > 10⁻³ a.u. The single points reproduce the reference energies to 0.03 meV.
+
+| Trajectory | Pair | Intervals | Same sign | Median ratio of sizes (quartiles) |
+|---|---|---|---|---|
+| TRAJ16 | S1–S0 | 22 | 22 | 1.05 (0.96–1.06) |
+| TRAJ16 | S2–S1 | 13 | 12 | 0.96 (0.92–0.97) |
+| TRAJ35 | S1–S0 | 19 | 0, opposite throughout | 1.09 (0.91–1.17) |
+| TRAJ35 | S2–S1 | 19 | 18 | 0.97 (0.87–1.01) |
+| TRAJ37 | S1–S0 | 45 | 22 before 52 fs, 0 after | 0.97 (0.92–0.99) |
+| TRAJ37 | S2–S1 | 23 | 23 | 0.98 (0.96–0.99) |
+
+- **Sizes agree.** The overlap couplings are within 5% of v·h at the median, and within 10% for TRAJ35 S1–S0.
+- **TRAJ35 S1–S0 has the opposite sign at every step.** A constant sign difference is a different phase choice for one state and does not change the dynamics.
+- **TRAJ37 S1–S0 changes relative sign once, at 52.25 fs.** The two states mix strongly in that step: the off-diagonal overlap is 0.77. The raw coupling vector turns by 95 degrees between 51.75 and 52.25 fs, with a cosine of −0.09, so the reference's sign at that step rests on a cosine of 0.09. The overlap sign at that step is well defined.
+- **One single-step miss.** At 1.75 fs in TRAJ16 the S2–S1 signs differ while the self-overlap is 0.69. There the last closed and first active orbitals are within 0.006 Eh, and the overlaps lose norm.
+
+**Full trajectories.**
+
+| Trajectory | Hops, reference | Hops, control | Hops, overlap | Path, control vs overlap |
+|---|---|---|---|---|
+| TRAJ16 | 3 → 2 at 8.5 fs, 2 → 1 at 26.0 fs | same | same | within 0.008 Å to 120 fs |
+| TRAJ35 | 3 → 2 at 27.0 fs, 2 → 1 at 51.5 fs | same | same | identical to 0.000 Å |
+| TRAJ37 | 3 → 2 at 17.5 fs, 2 → 1 at 66.5 fs | 3 → 2 at 17.5 fs, stays on S1 | same as control | identical to 0.000 Å |
+
+- **The coupling source does not change these runs.** With the same rescaling, the overlap runs follow the control runs step by step. Populations differ by up to 0.22 just after a hop, and the median difference is 0.
+- **The rescaling direction does.** The reference and the control are identical until the first hop and then separate, by 0.11 Å RMS at 60 fs in TRAJ16 and 0.07 Å in TRAJ35. In TRAJ37 they separate by 0.5–1.0 Å; on the control's path the S1–S0 gap stays at 3–4 eV and no second hop happens.
+- **Energy.** TRAJ16 loses a hydrogen atom in all three runs, as in the original trajectory. On S0 after 31 fs the control and overlap runs gain 0.36 eV of total energy and the reference 0.06 eV; single points at those geometries reproduce the run's energies to 0.2 meV. TRAJ35 and TRAJ37 stay within 0.13 eV in all runs.
+- **NewtonX 2.6.** The first 10 fs of TRAJ16 give couplings identical to NewtonX 2.4 to 10⁻⁸ a.u. NewtonX 2.6's phase factors were +1 at all 60 values, and the hop at 8.5 fs is the same.
+
+**Time per step.** About 17 s with overlaps against about 30 s with coupling vectors, with 6 runs sharing the node. The gradient run takes about 14 s in both. Each coupling-vector run adds about 14 s. The overlap run and NewtonX's own work add about 3 s.
+
+**Conclusion.** With the same velocity rescaling, overlap couplings reproduce the coupling-vector trajectories of three uracil FOMO runs; the remaining differences come from the rescaling direction that `vdoth = 1` requires.
 
 ## See also
 

@@ -15,7 +15,8 @@ tests/
 │   ├── record_wrapper.sh      # snapshots TEMP before and after each interface call
 │   ├── make_nxbin.sh          # builds a private NewtonX bin folder
 │   ├── replay.py              # replays recorded calls with several script versions
-│   └── phase_gap_check.py     # tests phase_ref on simulated coupling gaps
+│   ├── phase_gap_check.py     # tests phase_ref on simulated coupling gaps
+│   └── tdc_along_path.py      # overlap couplings along a recorded trajectory (vdoth = 1)
 └── nx/                        # NewtonX-style test and its reference results
     ├── MD-TERA-CASSCF-NAD-VEC/
     └── STANDARD-RESULTS/MD-TERA-CASSCF-NAD-VEC/
