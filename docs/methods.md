@@ -67,6 +67,7 @@ and extrapolates it to $`t`$. At the first step and after a hop it uses NewtonX'
 - **Cost:** one gradient run plus one overlap run at each step, instead of one run per coupling pair. See [Validation](validation.md#18-time-derivative-couplings-from-overlaps).
 - **Methods:** CASSCF and FOMO-CASCI. The interface stops with "vdoth = 1 needs a CAS method" for TDA, hh-TDA and RPA, because TeraChem refuses overlaps for them ("Ci Vector overlaps only work with CAS methods!").
 - **Settings:** the `couplings` and `phase_ref` keys of `terachem.par` have no effect with `vdoth = 1`.
+- **Agreement with coupling vectors:** in uracil FOMO-CASCI(14,10) and ethylene CASSCF(2,2) the overlap couplings agree with v·h from coupling vectors within about 5–10%. In ethylene single points with a (4,4) active space they differed by up to 2.5 times, for reasons not known. See [Validation](validation.md#18-time-derivative-couplings-from-overlaps).
 - **Checked on:** NewtonX 2.4 and 2.6.
 
 ### Time-dependent Baeck-An couplings (TD-BA, `vdoth = 2`)
