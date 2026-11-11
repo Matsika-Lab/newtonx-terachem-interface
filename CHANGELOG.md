@@ -2,6 +2,12 @@
 
 All notable changes to this interface. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Added
+
+- **Future work page.** [`docs/future-work.md`](docs/future-work.md) records a known limit of coupling vectors: a vector that turns by more than 90 degrees within one step gets the wrong sign, and a coupling peak inside a step is missed. It proposes coupling points inside such steps. The evidence from 45 production trajectories is in [Validation, section 19](docs/validation.md#19-coupling-vectors-that-turn-within-a-step). The code is unchanged.
+
 ## [2.1.0] - 2026-11-10
 
 ### Added

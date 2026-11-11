@@ -2,7 +2,7 @@
 
 # Validation
 
-This page holds every benchmark, timing and validation run of interface versions 2.0.0 and 2.1.0. Sections 1–17 test 2.0.0; section 18 tests the overlap couplings of 2.1.0. Read it when you want the evidence behind a statement on another page, or when you change the interface and need to repeat a test. The reference for the comparisons is the previous version of `run-tera-cas.pl`, at commit `35c7390`, which includes the coupling phase correction of October 2026.
+This page holds every benchmark, timing and validation run of interface versions 2.0.0 and 2.1.0. Sections 1–17 test 2.0.0; section 18 tests the overlap couplings of 2.1.0; section 19 records a limit of coupling vectors found in production runs. Read it when you want the evidence behind a statement on another page, or when you change the interface and need to repeat a test. The reference for the comparisons is the previous version of `run-tera-cas.pl`, at commit `35c7390`, which includes the coupling phase correction of October 2026.
 
 ## Summary
 
@@ -26,6 +26,7 @@ This page holds every benchmark, timing and validation run of interface versions
 | 16 | [NewtonX 2.6](#16-newtonx-26) | Installer, dynamics, time-dependent Baeck-An (TD-BA), restart, initial conditions and signs under 2.6 | signs identical with and without gaps | pass |
 | 17 | [TeraChem behavior](#17-terachem-behavior) | Facts the interface relies on | 10 checks | – |
 | 18 | [Time-derivative couplings from overlaps](#18-time-derivative-couplings-from-overlaps) | `vdoth = 1` against coupling vectors on 3 uracil trajectories | same hops and paths with the same velocity rescaling; coupling sizes within 10% at the median | pass |
+| 19 | [Coupling vectors that turn within a step](#19-coupling-vectors-that-turn-within-a-step) | Sign rule and in-step peaks in 45 production trajectories | 7 wrong signs; each lowers the hop probability | known limit, see [Future work](future-work.md) |
 
 ## Test environment
 
@@ -396,8 +397,50 @@ The NewtonX 2.4 replays (sections 1–7 and 15) give the same results with the N
 
 **Conclusion.** With the same velocity rescaling, overlap couplings reproduce the coupling-vector trajectories of three uracil FOMO runs; the remaining differences come from the rescaling direction that `vdoth = 1` requires.
 
+## 19. Coupling vectors that turn within a step
+
+**Purpose.** Find how often the sign rule for coupling vectors fails in production runs, and how much the wrong signs change the hop probabilities. The rule keeps the sign that makes the new vector point the same way as the previous one, so it fails when the vector turns by more than 90 degrees within one step. [Future work](future-work.md#coupling-vectors-that-turn-within-a-step) describes the problem and a proposed fix.
+
+**Setup.** 45 uracil trajectories, FOMO-CASCI(14,10)/cc-pVDZ, T = 0.2, 3 singlets, dt = 0.5 fs, `ms = 20`, `adjmom = 0`, `decay = 0.1`, seed 10, coupling vectors (`vdoth = 0`) for the neighbor pairs. They ran on Expanse in November 2026 with NewtonX 2.4 (build 06) and the phase-corrected interface of October 2026, a copy made before 2.0.0 that is not a commit in this repository. It fixes signs with NewtonX's `escalar` against the previous step, as `phase_ref = previous` does. The checks used TeraChem 1.96 beta on one RTX 5000 Ada per job, in November 2026. The single points reproduce the runs' energies within 0.02 meV and their v·h within 2%. The analysis scripts are kept with the run data, outside this repository.
+
+**Sign check.** A scan flagged every step where the v·h of a pair changes sign and is above 5×10⁻³ a.u. at both ends: 14 steps in 10 of the 45 trajectories. For each step, TeraChem coupling vectors were computed at both ends and at geometries inside the step, interpolated linearly. Points were added until neighboring vectors had |cos| ≥ 0.8. The sign was then followed through the points and compared with the sign the run used.
+
+- **Wrong sign:** 7 of the 14 steps, in 7 trajectories. In all 7 the vector turns by more than 90 degrees within the step, and the run's signs agree with the dot-product rule. TRAJ37 at 52.25 fs is the case from [section 18](#18-time-derivative-couplings-from-overlaps).
+- **Right sign:** 6 steps. There v·h changes sign because the velocity or the vector changes, not because of the sign rule.
+- **Unresolved:** 1 step, TRAJ22 at 26.75 fs. Inside it the FOMO SCF lands on two different solutions, so the vector cannot be followed.
+- **Lower bound:** the scan misses wrong signs where v·h is small on one side or keeps its sign, so 7 is a lower bound.
+
+**Effect on hopping.** NewtonX 2.4's electronic propagation (`sh_mod.f90`: integrator 5, `phase = 1`, `tully = 1`, decoherence model 1) was reimplemented and driven by each run's recorded substep data: v·h from `sh.out`, energies from `en.dat` interpolated as NewtonX's `polint` does, and the random numbers from `tprob`. Replayed from t = 0, TRAJ21 and TRAJ37 hop on the same substeps as NewtonX, with hop probabilities within 1.2×10⁻⁴. The nuclear path does not depend on the coupling sign until the first hop, so each wrong step was replayed three ways on the same path:
+
+- **Reference:** v·h as the run used it.
+- **Sign fixed:** the vector at the end of the step with the correct sign, interpolated linearly as NewtonX does.
+- **Resolved:** the vector and the energies interpolated through all the points inside the step, which follows the coupling peak inside the step.
+
+P is the probability of the hop within the step and the next 1 fs, or up to the run's hop if that comes sooner. The turn is the sum of the angles between neighboring points, an upper bound on the net turn.
+
+| Trajectory | Time | Pair | Turn | Hop | P reference | P sign fixed | P resolved |
+|---|---|---|---|---|---|---|---|
+| TRAJ1 | 26.25 fs | S1–S0 | 130° | S1 → S0 | 0.009 | 0.078 | 0.977 |
+| TRAJ7 | 148.75 fs | S1–S0 | 108° | S1 → S0 | 0.148 | 0.749 | 0.958 |
+| TRAJ9 | 23.25 fs | S2–S1 | 96° | S1 → S2 | 0.389 | 0.836 | 0.833 |
+| TRAJ21 | 100.75 fs | S1–S0 | 125° | S1 → S0 | 0.759 | 0.991 | 0.994 |
+| TRAJ25 | 180.25 fs | S1–S0 | 161° | S1 → S0 | 0.095 | 0.473 | 1.000 |
+| TRAJ37 | 52.25 fs | S1–S0 | 98° | S1 → S0 | 0.602 | 0.924 | 0.996 |
+| TRAJ43 | 82.75 fs | S2–S1 | 95° | S2 → S1 | 0.025 | 0.273 | 0.273 |
+
+- **Wrong signs lower the hop probability:** in all 7 steps. The flipped sign reverses the population flow in the second half of the coupling peak.
+- **The sign alone is not enough:** in TRAJ1, TRAJ7 and TRAJ25 the coupling peaks inside the step, at up to 0.16 a.u. in v·h. Linear interpolation between the step ends misses most of the peak, even with the right sign.
+- **Size of the resolved peak:** for TRAJ37 the resolved v·h averages 0.043 a.u. over the step, against 0.030 a.u. with the sign fixed. The overlap coupling of [section 18](#18-time-derivative-couplings-from-overlaps) for the same step is 0.037 a.u.; its run follows a nearly identical path.
+- **Steps with the right sign:** the missed peak also occurs there. Resolved, the S2 → S1 hop probability rises from 0.040 to 0.378 at TRAJ9 25.25 fs, and from 0.071 to 0.117 at TRAJ16 1.75 fs.
+- **First hops:** with the runs' own random numbers, the resolved couplings move the first S1 → S0 hop from 58.3 to 26.2 fs in TRAJ1, from 154.9 to 148.8 fs in TRAJ7, from 211.4 to 180.1 fs in TRAJ25 and from 66.1 to 52.5 fs in TRAJ37.
+- **Not tested:** the effect on state lifetimes. After the first hop that differs, the trajectories differ, so lifetimes need reruns. Only this FOMO set was checked.
+- **TRAJ5, open:** at the 128.0–128.5 fs step, v·h at the end of the step and at the start of the next step have opposite signs. The hop came at the first substep, 128.025 fs, so NewtonX's velocities after the hop enter both values, and the vector's sign there is not resolved. The hop itself does not depend on it.
+
+**Conclusion.** In 7 of 45 production trajectories a coupling vector turned by more than 90 degrees within one 0.5 fs step and got the wrong sign, which lowered the hop probability at that step every time; following the coupling inside such steps raises it further, to 0.96–1.0 for three S1 → S0 cases.
+
 ## See also
 
 - [Development and testing](development.md): the replay harness and how to repeat these tests
 - [Method tutorials](methods.md): what each method needs, with one typical cost figure each
+- [Future work](future-work.md): known limits and proposed fixes
 - [Changelog](../CHANGELOG.md): what changed in 2.0.0

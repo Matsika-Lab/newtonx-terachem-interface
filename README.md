@@ -62,6 +62,7 @@ Overlap couplings (`vdoth = 1`) work with CASSCF and FOMO-CASCI only, and need `
 | Understand an error message | [Troubleshooting](docs/troubleshooting.md) |
 | See the tests, benchmarks and timings | [Validation](docs/validation.md) |
 | Run the tests or change the code | [Development and testing](docs/development.md) |
+| See known limits and planned fixes | [Future work](docs/future-work.md) |
 | Start from a tested input | [Examples](examples/README.md) |
 | See what changed between versions | [Changelog](CHANGELOG.md) |
 | Follow the documentation style | [Documentation style](docs/STYLE.md) |
