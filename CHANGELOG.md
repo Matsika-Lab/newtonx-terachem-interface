@@ -8,6 +8,11 @@ All notable changes to this interface. The format follows [Keep a Changelog](htt
 
 - **Future work page.** [`docs/future-work.md`](docs/future-work.md) records a known limit of coupling vectors: a vector that turns by more than 90 degrees within one step gets the wrong sign, and a coupling peak inside a step is missed. It proposes coupling points inside such steps. The evidence from 45 production trajectories is in [Validation, section 19](docs/validation.md#19-coupling-vectors-that-turn-within-a-step). The code is unchanged.
 
+### Fixed
+
+- **Perl compile warning.** `run-tera-cas.pl` printed `Parentheses missing around "my" list` on every run, into NewtonX's `DEBUG/runnx.error`. The cause was an `opendir` call in the `vdoth = 1` error path. The warning is gone. Behaviour is unchanged.
+- **Recording wrapper.** `tests/harness/record_wrapper.sh` ignored its arguments. NewtonX 2.4 calls `run-tera-cas.pl --check-options` at start-up, so every recorded run failed before step 1. The wrapper now passes `--check-options` straight to the real script and does not record it. Reported by the 2026-11-18 interface QA.
+
 ## [2.1.0] - 2026-11-10
 
 ### Added

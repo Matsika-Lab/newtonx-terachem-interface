@@ -4,6 +4,9 @@
 # Runs from TEMP/. Saves, per call, a "before" tarball of TEMP plus INFO_RESTART/WF_OLD,
 # the interface's stdout, and the files the interface writes for NX.
 REAL=@REAL_SCRIPT@
+# NX 2.4 colib calls '$NX/run-tera-cas.pl --check-options' at start-up. Pass that
+# straight to the real script; recording it would run a TeraChem call and fail.
+if [ "$1" = "--check-options" ]; then exec perl "$REAL" "$@"; fi
 SNAP=${NXREC_DIR:-../SNAPSHOTS}
 mkdir -p "$SNAP"
 n=$(ls "$SNAP" | grep -c '^call_' || true)

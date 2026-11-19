@@ -938,7 +938,7 @@ sub treat_overlaps {
     foreach my $k ( 1 .. $nstat ) {
         my $f = "$src/CI_$info->{mult}_$k.dat";
         unless ( -s $f ) {
-            opendir my $dh, $src;
+            opendir( my $dh, $src );
             my @have = sort grep { /^CI_.*\.dat$/ } readdir $dh;
             closedir $dh;
             tc_fail( "vdoth = 1: CI vector file $f not found (found: " . ( @have ? join( " ", @have ) : "none" ) . "). The template must ask for at least nstat = $nstat states." );
